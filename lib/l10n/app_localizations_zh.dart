@@ -9,20 +9,20 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get navigation => '导航';
+  String get login => '登录';
 
   @override
-  String get home => '主页';
+  String get email => '电子邮件';
 
   @override
-  String get search => '搜索';
+  String get password => '密码';
 
   @override
-  String get notifications => '通知';
+  String get remember_me => '记住我，忘记密码';
 
   @override
-  String get settings => '设置';
+  String get log_in => '登录';
 
   @override
-  String get selected_language => '选择的语言';
+  String get register => '没有账户？注册';
 }

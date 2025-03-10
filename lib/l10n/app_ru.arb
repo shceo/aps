@@ -1,9 +1,8 @@
 {
-    "navigation": "Навигация",
-    "home": "Главная",
-    "search": "Поиск",
-    "notifications": "Уведомления",
-    "settings": "Настройки",
-    "selected_language": "Выбран язык"
-  }
-  
+  "login": "Вход",
+  "email": "Эл. почта",
+  "password": "Пароль",
+  "remember_me": "Запомнить меня, ЗАБЫЛИ ПАРОЛЬ",
+  "log_in": "Войти",
+  "register": "Нет аккаунта? РЕГИСТРАЦИЯ"
+}

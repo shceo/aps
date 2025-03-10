@@ -1,9 +1,8 @@
 {
-    "navigation": "Navigasyon",
-    "home": "Ana Sayfa",
-    "search": "Arama",
-    "notifications": "Bildirimler",
-    "settings": "Ayarlar",
-    "selected_language": "Seçilen Dil"
-  }
-  
+  "login": "Giriş Yap",
+  "email": "E-posta",
+  "password": "Şifre",
+  "remember_me": "Beni hatırla, ŞİFREMİ UNUTTUM",
+  "log_in": "Giriş Yap",
+  "register": "Hesabınız yok mu? KAYIT OL"
+}

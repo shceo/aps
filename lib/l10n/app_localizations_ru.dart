@@ -9,20 +9,20 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
-  String get navigation => 'Навигация';
+  String get login => 'Вход';
 
   @override
-  String get home => 'Главная';
+  String get email => 'Эл. почта';
 
   @override
-  String get search => 'Поиск';
+  String get password => 'Пароль';
 
   @override
-  String get notifications => 'Уведомления';
+  String get remember_me => 'Запомнить меня, ЗАБЫЛИ ПАРОЛЬ';
 
   @override
-  String get settings => 'Настройки';
+  String get log_in => 'Войти';
 
   @override
-  String get selected_language => 'Выбран язык';
+  String get register => 'Нет аккаунта? РЕГИСТРАЦИЯ';
 }

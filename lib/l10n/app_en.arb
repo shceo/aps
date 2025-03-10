@@ -1,9 +1,8 @@
 {
-    "navigation": "Navigation",
-    "home": "Home",
-    "search": "Search",
-    "notifications": "Notifications",
-    "settings": "Settings",
-    "selected_language": "Selected language"
-  }
-  
+  "login": "Login",
+  "email": "Email",
+  "password": "Password",
+  "remember_me": "Remember Me , FORGET PASSWORD",
+  "log_in": "Log In",
+  "register": "Don't have an account? REGISTER"
+}

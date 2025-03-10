@@ -9,20 +9,20 @@ class AppLocalizationsUz extends AppLocalizations {
   AppLocalizationsUz([String locale = 'uz']) : super(locale);
 
   @override
-  String get navigation => 'Navigatsiya';
+  String get login => 'Kirish';
 
   @override
-  String get home => 'Bosh sahifa';
+  String get email => 'Elektron pochta';
 
   @override
-  String get search => 'Qidiruv';
+  String get password => 'Parol';
 
   @override
-  String get notifications => 'Bildirishnomalar';
+  String get remember_me => 'Meni eslab qoling, PAROLNI UNUTDINGIZMI';
 
   @override
-  String get settings => 'Sozlamalar';
+  String get log_in => 'Kirish';
 
   @override
-  String get selected_language => 'Tanlangan til';
+  String get register => 'Hisobingiz yo‘qmi? RO‘YXATDAN O‘TISH';
 }

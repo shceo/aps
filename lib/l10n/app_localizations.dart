@@ -101,41 +101,41 @@ abstract class AppLocalizations {
     Locale('zh')
   ];
 
-  /// No description provided for @navigation.
+  /// No description provided for @login.
   ///
   /// In en, this message translates to:
-  /// **'Navigation'**
-  String get navigation;
+  /// **'Login'**
+  String get login;
 
-  /// No description provided for @home.
+  /// No description provided for @email.
   ///
   /// In en, this message translates to:
-  /// **'Home'**
-  String get home;
+  /// **'Email'**
+  String get email;
 
-  /// No description provided for @search.
+  /// No description provided for @password.
   ///
   /// In en, this message translates to:
-  /// **'Search'**
-  String get search;
+  /// **'Password'**
+  String get password;
 
-  /// No description provided for @notifications.
+  /// No description provided for @remember_me.
   ///
   /// In en, this message translates to:
-  /// **'Notifications'**
-  String get notifications;
+  /// **'Remember Me , FORGET PASSWORD'**
+  String get remember_me;
 
-  /// No description provided for @settings.
+  /// No description provided for @log_in.
   ///
   /// In en, this message translates to:
-  /// **'Settings'**
-  String get settings;
+  /// **'Log In'**
+  String get log_in;
 
-  /// No description provided for @selected_language.
+  /// No description provided for @register.
   ///
   /// In en, this message translates to:
-  /// **'Selected language'**
-  String get selected_language;
+  /// **'Don\'t have an account? REGISTER'**
+  String get register;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

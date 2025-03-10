@@ -9,20 +9,20 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get navigation => 'Navigation';
+  String get login => 'Login';
 
   @override
-  String get home => 'Home';
+  String get email => 'Email';
 
   @override
-  String get search => 'Search';
+  String get password => 'Password';
 
   @override
-  String get notifications => 'Notifications';
+  String get remember_me => 'Remember Me , FORGET PASSWORD';
 
   @override
-  String get settings => 'Settings';
+  String get log_in => 'Log In';
 
   @override
-  String get selected_language => 'Selected language';
+  String get register => 'Don\'t have an account? REGISTER';
 }

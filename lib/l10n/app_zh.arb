@@ -1,9 +1,8 @@
 {
-    "navigation": "导航",
-    "home": "主页",
-    "search": "搜索",
-    "notifications": "通知",
-    "settings": "设置",
-    "selected_language": "选择的语言"
-  }
-  
+  "login": "登录",
+  "email": "电子邮件",
+  "password": "密码",
+  "remember_me": "记住我，忘记密码",
+  "log_in": "登录",
+  "register": "没有账户？注册"
+}
