@@ -25,4 +25,22 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get register => 'Hisobingiz yo‘qmi? RO‘YXATDAN O‘TISH';
+
+  @override
+  String get customer => 'Buyurtmachi';
+
+  @override
+  String get recipient => 'Qabul qiluvchi';
+
+  @override
+  String get phone => 'Telefon';
+
+  @override
+  String get email_hint => 'Email kiriting';
+
+  @override
+  String get phone_hint => 'Telefon raqamingizni kiriting';
+
+  @override
+  String get password_hint => 'Parolingizni kiriting';
 }

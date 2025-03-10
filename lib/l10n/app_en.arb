@@ -4,5 +4,11 @@
   "password": "Password",
   "remember_me": "Remember Me , FORGET PASSWORD",
   "log_in": "Log In",
-  "register": "Don't have an account? REGISTER"
+  "register": "Don't have an account? REGISTER",
+  "customer": "Customer",
+  "recipient": "Recipient",
+  "phone": "Phone",
+  "email_hint": "Enter email",
+  "phone_hint": "Enter phone number",
+  "password_hint": "Enter password"
 }

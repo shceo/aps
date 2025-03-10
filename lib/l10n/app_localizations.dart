@@ -136,6 +136,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Don\'t have an account? REGISTER'**
   String get register;
+
+  /// No description provided for @customer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get customer;
+
+  /// No description provided for @recipient.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient'**
+  String get recipient;
+
+  /// No description provided for @phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phone;
+
+  /// No description provided for @email_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter email'**
+  String get email_hint;
+
+  /// No description provided for @phone_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter phone number'**
+  String get phone_hint;
+
+  /// No description provided for @password_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter password'**
+  String get password_hint;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

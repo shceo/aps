@@ -1,7 +1,7 @@
 import 'dart:ui';
-import 'package:aps/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-
+import 'package:aps/l10n/app_localizations.dart';
+import 'package:aps/main.dart';
 import 'package:aps/src/ui/components/auth_anin.dart';
 import 'package:aps/src/ui/components/text_u.dart';
 import 'package:aps/src/ui/constants/back_images.dart';
@@ -16,11 +16,20 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   int selectedIndex = 0;
   bool showOption = false;
+  int _selectedRole = 0;
+  bool _obscurePassword = true;
+
+  final List<Locale> _supportedLocales = const [
+    Locale('ru'),
+    Locale('en'),
+    Locale('uz'),
+    Locale('zh'),
+    Locale('tr'),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    // final isMobile = MediaQuery.of(context).size.width < 600;
-    final loc = AppLocalizations.of(context); // Используем локализацию
+    final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
       floatingActionButton: Container(
@@ -30,38 +39,40 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Row(
           children: [
             Expanded(
-              child: showOption
-                  ? ShowUpAnimation(
-                      delay: 100,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: bgList.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedIndex = index;
-                              });
-                            },
-                            child: CircleAvatar(
-                              radius: 30,
-                              backgroundColor: selectedIndex == index
-                                  ? Colors.white
-                                  : Colors.transparent,
-                              child: Padding(
-                                padding: const EdgeInsets.all(1),
-                                child: CircleAvatar(
-                                  radius: 30,
-                                  backgroundImage: AssetImage(bgList[index]),
+              child:
+                  showOption
+                      ? ShowUpAnimation(
+                        delay: 100,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: bgList.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedIndex = index;
+                                });
+                              },
+                              child: CircleAvatar(
+                                radius: 30,
+                                backgroundColor:
+                                    selectedIndex == index
+                                        ? Colors.white
+                                        : Colors.transparent,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(1),
+                                  child: CircleAvatar(
+                                    radius: 30,
+                                    backgroundImage: AssetImage(bgList[index]),
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                  : const SizedBox(),
+                            );
+                          },
+                        ),
+                      )
+                      : const SizedBox(),
             ),
             const SizedBox(width: 20),
             GestureDetector(
@@ -95,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         alignment: Alignment.center,
         child: Container(
-          height: 400,
+          height: 450,
           width: double.infinity,
           margin: const EdgeInsets.symmetric(horizontal: 30),
           decoration: BoxDecoration(
@@ -112,34 +123,74 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Spacer(),
-                    Center(
-                      child: TextUtil(
-                        text: loc.login, // Используем локализацию
-                        weight: true,
-                        size: 30,
+                    // Переключатель языка (изменяет локаль во всём приложении)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: DropdownButton<Locale>(
+                        value: Localizations.localeOf(context),
+                        dropdownColor: Colors.black,
+                        icon: const Icon(Icons.language, color: Colors.white),
+                        underline: const SizedBox(),
+                        items:
+                            _supportedLocales.map((locale) {
+                              return DropdownMenuItem(
+                                value: locale,
+                                child: Text(
+                                  locale.languageCode.toUpperCase(),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              );
+                            }).toList(),
+                        onChanged: (Locale? newLocale) {
+                          if (newLocale != null) {
+                            MyApp.setLocale(context, newLocale);
+                          }
+                        },
                       ),
                     ),
-                    const Spacer(),
-                    TextUtil(text: loc.email),
-                    _buildTextField(Icons.mail),
-                    const Spacer(),
-                    TextUtil(text: loc.password),
-                    _buildTextField(Icons.lock),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        Container(height: 15, width: 15, color: Colors.white),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: TextUtil(
-                            text: loc.remember_me,
-                            size: 12,
-                            weight: true,
-                          ),
-                        ),
-                      ],
+
+                    // Переключатель "Заказчик / Получатель"
+                    Container(
+                      margin: const EdgeInsets.only(top: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        children: [
+                          _roleButton(loc.customer, 0),
+                          _roleButton(loc.recipient, 1),
+                        ],
+                      ),
                     ),
+
+                    const Spacer(),
+                    Center(
+                      child: TextUtil(text: loc.login, weight: true, size: 30),
+                    ),
+                    const Spacer(),
+
+                    // Поле ввода (Email или Телефон)
+                    TextUtil(text: _selectedRole == 0 ? loc.email : loc.phone),
+                    _buildTextField(
+                      icon: _selectedRole == 0 ? Icons.mail : Icons.phone,
+                      hintText:
+                          _selectedRole == 0 ? loc.email_hint : loc.phone_hint,
+                      obscureText: false,
+                    ),
+
+                    const Spacer(),
+
+                    // Поле ввода пароля
+                    TextUtil(text: loc.password),
+                    _buildTextField(
+                      icon: Icons.lock,
+                      hintText: loc.password_hint,
+                      obscureText: _obscurePassword,
+                      isPassword: true,
+                    ),
+
                     const Spacer(),
                     Container(
                       height: 40,
@@ -152,14 +203,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: TextUtil(text: loc.log_in, color: Colors.black),
                     ),
                     const Spacer(),
-                    Center(
-                      child: TextUtil(
-                        text: loc.register,
-                        size: 12,
-                        weight: true,
-                      ),
-                    ),
-                    const Spacer(),
                   ],
                 ),
               ),
@@ -170,16 +213,65 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildTextField(IconData icon) {
+  Widget _roleButton(String text, int index) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedRole = index;
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          decoration: BoxDecoration(
+            color:
+                _selectedRole == index ? Colors.blueAccent : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            text,
+            style: TextStyle(
+              color: _selectedRole == index ? Colors.white : Colors.grey[300],
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required IconData icon,
+    required String hintText,
+    required bool obscureText,
+    bool isPassword = false,
+  }) {
     return Container(
-      height: 35,
+      height: 45,
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: Colors.white)),
       ),
       child: TextFormField(
+        obscureText: obscureText,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
-          suffixIcon: Icon(icon, color: Colors.white),
+          hintText: hintText,
+          hintStyle: const TextStyle(color: Colors.grey),
+          suffixIcon:
+              isPassword
+                  ? IconButton(
+                    icon: Icon(
+                      obscureText ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  )
+                  : Icon(icon, color: Colors.white),
           fillColor: Colors.white,
           border: InputBorder.none,
         ),

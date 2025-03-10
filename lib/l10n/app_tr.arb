@@ -4,5 +4,12 @@
   "password": "Şifre",
   "remember_me": "Beni hatırla, ŞİFREMİ UNUTTUM",
   "log_in": "Giriş Yap",
-  "register": "Hesabınız yok mu? KAYIT OL"
+  "register": "Hesabınız yok mu? KAYIT OL",
+  "customer": "Müşteri",
+  "recipient": "Alıcı",
+    "phone": "Telefon",
+    "email_hint": "E-posta girin",
+    "phone_hint": "Telefon numaranızı girin",
+    "password_hint": "Şifrenizi girin"
+  
 }

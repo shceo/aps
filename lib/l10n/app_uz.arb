@@ -4,5 +4,13 @@
   "password": "Parol",
   "remember_me": "Meni eslab qoling, PAROLNI UNUTDINGIZMI",
   "log_in": "Kirish",
-  "register": "Hisobingiz yo‘qmi? RO‘YXATDAN O‘TISH"
+  "register": "Hisobingiz yo‘qmi? RO‘YXATDAN O‘TISH",
+  "customer": "Buyurtmachi",
+  "recipient": "Qabul qiluvchi",
+    "phone": "Telefon",
+    "email_hint": "Email kiriting",
+    "phone_hint": "Telefon raqamingizni kiriting",
+    "password_hint": "Parolingizni kiriting"
+ 
+  
 }

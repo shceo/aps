@@ -25,4 +25,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get register => 'Don\'t have an account? REGISTER';
+
+  @override
+  String get customer => 'Customer';
+
+  @override
+  String get recipient => 'Recipient';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get email_hint => 'Enter email';
+
+  @override
+  String get phone_hint => 'Enter phone number';
+
+  @override
+  String get password_hint => 'Enter password';
 }

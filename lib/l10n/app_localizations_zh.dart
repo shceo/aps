@@ -25,4 +25,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get register => '没有账户？注册';
+
+  @override
+  String get customer => '客户';
+
+  @override
+  String get recipient => '收件人';
+
+  @override
+  String get phone => '电话';
+
+  @override
+  String get email_hint => '输入电子邮件';
+
+  @override
+  String get phone_hint => '输入电话号码';
+
+  @override
+  String get password_hint => '输入密码';
 }

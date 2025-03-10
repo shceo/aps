@@ -25,4 +25,22 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get register => 'Hesabınız yok mu? KAYIT OL';
+
+  @override
+  String get customer => 'Müşteri';
+
+  @override
+  String get recipient => 'Alıcı';
+
+  @override
+  String get phone => 'Telefon';
+
+  @override
+  String get email_hint => 'E-posta girin';
+
+  @override
+  String get phone_hint => 'Telefon numaranızı girin';
+
+  @override
+  String get password_hint => 'Şifrenizi girin';
 }

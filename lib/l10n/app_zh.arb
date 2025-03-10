@@ -4,5 +4,15 @@
   "password": "密码",
   "remember_me": "记住我，忘记密码",
   "log_in": "登录",
-  "register": "没有账户？注册"
+  "register": "没有账户？注册",
+  "customer": "客户",
+  "recipient": "收件人",
+  
+    "phone": "电话",
+    "email_hint": "输入电子邮件",
+    "phone_hint": "输入电话号码",
+    "password_hint": "输入密码"
+  
+  
+  
 }
