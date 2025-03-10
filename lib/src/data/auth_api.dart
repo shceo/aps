@@ -1,0 +1,24 @@
+import 'package:dio/dio.dart';
+
+class ApiService {
+  final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: "http://127.0.0.1:8000/api/",
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 5),
+    ),
+  );
+
+  Future<Map<String, dynamic>> login(String username, String password) async {
+    try {
+      Response response = await _dio.post(
+        "login/",
+        data: {"username": username, "password": password},
+      );
+
+      return response.data; // JSON автоматически парсится
+    } catch (e) {
+      return {"status": "error", "message": "Login failed"};
+    }
+  }
+}
