@@ -2,6 +2,7 @@ import 'package:aps/src/ui/screens/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:aps/l10n/app_localizations.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -20,6 +21,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale('ru');
+  int selectedIndex = 0; // <--- Добавлено
 
   void setLocale(Locale newLocale) {
     setState(() {
@@ -39,7 +41,7 @@ class _MyAppState extends State<MyApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const LoginScreen(),
+      home: LoginScreen(selectedIndex: selectedIndex), // <--- Передано правильно
     );
   }
 }

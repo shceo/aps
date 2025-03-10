@@ -12,35 +12,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get login => 'Login';
 
   @override
-  String get email => 'Email';
-
-  @override
-  String get password => 'Password';
-
-  @override
-  String get remember_me => 'Remember Me , FORGET PASSWORD';
-
-  @override
-  String get log_in => 'Log In';
-
-  @override
-  String get register => 'Don\'t have an account? REGISTER';
-
-  @override
-  String get customer => 'Customer';
-
-  @override
-  String get recipient => 'Recipient';
+  String get register => 'Sign Up';
 
   @override
   String get phone => 'Phone';
 
   @override
-  String get email_hint => 'Enter email';
+  String get password => 'Password';
+
+  @override
+  String get confirm_password => 'Confirm Password';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get log_in => 'Log In';
+
+  @override
+  String get sign_up => 'Sign Up';
+
+  @override
+  String get already_have_account => 'Already have an account? Log in';
+
+  @override
+  String get dont_have_account => 'Don\'t have an account? Sign up';
 
   @override
   String get phone_hint => 'Enter phone number';
 
   @override
   String get password_hint => 'Enter password';
+
+  @override
+  String get confirm_password_hint => 'Repeat password';
+
+  @override
+  String get name_hint => 'Enter your name';
 }

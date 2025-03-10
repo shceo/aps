@@ -1,16 +1,16 @@
 {
   "login": "Kirish",
-  "email": "Elektron pochta",
+  "register": "Ro'yxatdan o'tish",
+  "phone": "Telefon",
   "password": "Parol",
-  "remember_me": "Meni eslab qoling, PAROLNI UNUTDINGIZMI",
+  "confirm_password": "Parolni tasdiqlang",
+  "name": "Ism",
   "log_in": "Kirish",
-  "register": "Hisobingiz yo‘qmi? RO‘YXATDAN O‘TISH",
-  "customer": "Buyurtmachi",
-  "recipient": "Qabul qiluvchi",
-    "phone": "Telefon",
-    "email_hint": "Email kiriting",
-    "phone_hint": "Telefon raqamingizni kiriting",
-    "password_hint": "Parolingizni kiriting"
- 
-  
+  "sign_up": "Ro'yxatdan o'tish",
+  "already_have_account": "Allaqachon hisobingiz bormi? Kirish",
+  "dont_have_account": "Hisobingiz yo'qmi? Ro'yxatdan o'ting",
+  "phone_hint": "Telefon raqamingizni kiriting",
+  "password_hint": "Parolni kiriting",
+  "confirm_password_hint": "Parolni takrorlang",
+  "name_hint": "Ismingizni kiriting"
 }

@@ -1,15 +1,16 @@
 {
-  "login": "Giriş Yap",
-  "email": "E-posta",
+  "login": "Giriş",
+  "register": "Kayıt Ol",
+  "phone": "Telefon",
   "password": "Şifre",
-  "remember_me": "Beni hatırla, ŞİFREMİ UNUTTUM",
+  "confirm_password": "Şifreyi Onaylayın",
+  "name": "İsim",
   "log_in": "Giriş Yap",
-  "register": "Hesabınız yok mu? KAYIT OL",
-  "customer": "Müşteri",
-  "recipient": "Alıcı",
-    "phone": "Telefon",
-    "email_hint": "E-posta girin",
-    "phone_hint": "Telefon numaranızı girin",
-    "password_hint": "Şifrenizi girin"
-  
+  "sign_up": "Kayıt Ol",
+  "already_have_account": "Zaten hesabınız var mı? Giriş yap",
+  "dont_have_account": "Hesabınız yok mu? Kayıt olun",
+  "phone_hint": "Telefon numaranızı girin",
+  "password_hint": "Şifrenizi girin",
+  "confirm_password_hint": "Şifreyi tekrar girin",
+  "name_hint": "Adınızı girin"
 }

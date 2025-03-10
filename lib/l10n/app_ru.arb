@@ -1,15 +1,16 @@
 {
   "login": "Вход",
-  "email": "Эл. почта",
-  "password": "Пароль",
-  "remember_me": "Запомнить меня, ЗАБЫЛИ ПАРОЛЬ",
-  "log_in": "Войти",
-  "register": "Нет аккаунта? РЕГИСТРАЦИЯ",
-  "customer": "Заказчик",
-  "recipient": "Получатель",
+  "register": "Регистрация",
   "phone": "Телефон",
-  "email_hint": "Введите email",
+  "password": "Пароль",
+  "confirm_password": "Подтвердите пароль",
+  "name": "Имя",
+  "log_in": "Войти",
+  "sign_up": "Зарегистрироваться",
+  "already_have_account": "Уже есть аккаунт? Войти",
+  "dont_have_account": "Нет аккаунта? Зарегистрируйтесь",
   "phone_hint": "Введите номер телефона",
-  "password_hint": "Введите пароль"
-  }
-  
+  "password_hint": "Введите пароль",
+  "confirm_password_hint": "Повторите пароль",
+  "name_hint": "Введите ваше имя"
+}

@@ -1,14 +1,16 @@
 {
   "login": "Login",
-  "email": "Email",
-  "password": "Password",
-  "remember_me": "Remember Me , FORGET PASSWORD",
-  "log_in": "Log In",
-  "register": "Don't have an account? REGISTER",
-  "customer": "Customer",
-  "recipient": "Recipient",
+  "register": "Sign Up",
   "phone": "Phone",
-  "email_hint": "Enter email",
+  "password": "Password",
+  "confirm_password": "Confirm Password",
+  "name": "Name",
+  "log_in": "Log In",
+  "sign_up": "Sign Up",
+  "already_have_account": "Already have an account? Log in",
+  "dont_have_account": "Don't have an account? Sign up",
   "phone_hint": "Enter phone number",
-  "password_hint": "Enter password"
+  "password_hint": "Enter password",
+  "confirm_password_hint": "Repeat password",
+  "name_hint": "Enter your name"
 }

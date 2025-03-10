@@ -12,35 +12,41 @@ class AppLocalizationsZh extends AppLocalizations {
   String get login => '登录';
 
   @override
-  String get email => '电子邮件';
-
-  @override
-  String get password => '密码';
-
-  @override
-  String get remember_me => '记住我，忘记密码';
-
-  @override
-  String get log_in => '登录';
-
-  @override
-  String get register => '没有账户？注册';
-
-  @override
-  String get customer => '客户';
-
-  @override
-  String get recipient => '收件人';
+  String get register => '注册';
 
   @override
   String get phone => '电话';
 
   @override
-  String get email_hint => '输入电子邮件';
+  String get password => '密码';
+
+  @override
+  String get confirm_password => '确认密码';
+
+  @override
+  String get name => '姓名';
+
+  @override
+  String get log_in => '登录';
+
+  @override
+  String get sign_up => '注册';
+
+  @override
+  String get already_have_account => '已有账户？登录';
+
+  @override
+  String get dont_have_account => '没有账户？注册';
 
   @override
   String get phone_hint => '输入电话号码';
 
   @override
   String get password_hint => '输入密码';
+
+  @override
+  String get confirm_password_hint => '重复密码';
+
+  @override
+  String get name_hint => '输入您的姓名';
 }

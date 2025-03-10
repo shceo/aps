@@ -107,47 +107,11 @@ abstract class AppLocalizations {
   /// **'Login'**
   String get login;
 
-  /// No description provided for @email.
-  ///
-  /// In en, this message translates to:
-  /// **'Email'**
-  String get email;
-
-  /// No description provided for @password.
-  ///
-  /// In en, this message translates to:
-  /// **'Password'**
-  String get password;
-
-  /// No description provided for @remember_me.
-  ///
-  /// In en, this message translates to:
-  /// **'Remember Me , FORGET PASSWORD'**
-  String get remember_me;
-
-  /// No description provided for @log_in.
-  ///
-  /// In en, this message translates to:
-  /// **'Log In'**
-  String get log_in;
-
   /// No description provided for @register.
   ///
   /// In en, this message translates to:
-  /// **'Don\'t have an account? REGISTER'**
+  /// **'Sign Up'**
   String get register;
-
-  /// No description provided for @customer.
-  ///
-  /// In en, this message translates to:
-  /// **'Customer'**
-  String get customer;
-
-  /// No description provided for @recipient.
-  ///
-  /// In en, this message translates to:
-  /// **'Recipient'**
-  String get recipient;
 
   /// No description provided for @phone.
   ///
@@ -155,11 +119,47 @@ abstract class AppLocalizations {
   /// **'Phone'**
   String get phone;
 
-  /// No description provided for @email_hint.
+  /// No description provided for @password.
   ///
   /// In en, this message translates to:
-  /// **'Enter email'**
-  String get email_hint;
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @confirm_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirm_password;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @log_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Log In'**
+  String get log_in;
+
+  /// No description provided for @sign_up.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get sign_up;
+
+  /// No description provided for @already_have_account.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Log in'**
+  String get already_have_account;
+
+  /// No description provided for @dont_have_account.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account? Sign up'**
+  String get dont_have_account;
 
   /// No description provided for @phone_hint.
   ///
@@ -172,6 +172,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter password'**
   String get password_hint;
+
+  /// No description provided for @confirm_password_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat password'**
+  String get confirm_password_hint;
+
+  /// No description provided for @name_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your name'**
+  String get name_hint;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

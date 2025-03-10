@@ -1,18 +1,16 @@
 {
   "login": "登录",
-  "email": "电子邮件",
+  "register": "注册",
+  "phone": "电话",
   "password": "密码",
-  "remember_me": "记住我，忘记密码",
+  "confirm_password": "确认密码",
+  "name": "姓名",
   "log_in": "登录",
-  "register": "没有账户？注册",
-  "customer": "客户",
-  "recipient": "收件人",
-  
-    "phone": "电话",
-    "email_hint": "输入电子邮件",
-    "phone_hint": "输入电话号码",
-    "password_hint": "输入密码"
-  
-  
-  
+  "sign_up": "注册",
+  "already_have_account": "已有账户？登录",
+  "dont_have_account": "没有账户？注册",
+  "phone_hint": "输入电话号码",
+  "password_hint": "输入密码",
+  "confirm_password_hint": "重复密码",
+  "name_hint": "输入您的姓名"
 }

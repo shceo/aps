@@ -12,35 +12,41 @@ class AppLocalizationsUz extends AppLocalizations {
   String get login => 'Kirish';
 
   @override
-  String get email => 'Elektron pochta';
-
-  @override
-  String get password => 'Parol';
-
-  @override
-  String get remember_me => 'Meni eslab qoling, PAROLNI UNUTDINGIZMI';
-
-  @override
-  String get log_in => 'Kirish';
-
-  @override
-  String get register => 'Hisobingiz yo‘qmi? RO‘YXATDAN O‘TISH';
-
-  @override
-  String get customer => 'Buyurtmachi';
-
-  @override
-  String get recipient => 'Qabul qiluvchi';
+  String get register => 'Ro\'yxatdan o\'tish';
 
   @override
   String get phone => 'Telefon';
 
   @override
-  String get email_hint => 'Email kiriting';
+  String get password => 'Parol';
+
+  @override
+  String get confirm_password => 'Parolni tasdiqlang';
+
+  @override
+  String get name => 'Ism';
+
+  @override
+  String get log_in => 'Kirish';
+
+  @override
+  String get sign_up => 'Ro\'yxatdan o\'tish';
+
+  @override
+  String get already_have_account => 'Allaqachon hisobingiz bormi? Kirish';
+
+  @override
+  String get dont_have_account => 'Hisobingiz yo\'qmi? Ro\'yxatdan o\'ting';
 
   @override
   String get phone_hint => 'Telefon raqamingizni kiriting';
 
   @override
-  String get password_hint => 'Parolingizni kiriting';
+  String get password_hint => 'Parolni kiriting';
+
+  @override
+  String get confirm_password_hint => 'Parolni takrorlang';
+
+  @override
+  String get name_hint => 'Ismingizni kiriting';
 }
