@@ -1,21 +1,29 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
-
-
-class Account(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='User')
-    is_seller = models.BooleanField(default=False, verbose_name='Отправитель')
-    is_customer = models.BooleanField(default=True, verbose_name='Получатель')
+class Branch(models.Model):
+    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Seller')
     email = models.EmailField(null=True, blank=True, verbose_name='Email')
     phone = models.CharField(max_length=20, null=True, blank=True, verbose_name='Телефон')
 
     class Meta:
-        verbose_name = "Аккаунт"
-        verbose_name_plural = "Аккаунты"
-        ordering = ['user']  # Orders by user
+        verbose_name = "Филиал"
+        verbose_name_plural = "Филиалы"
+        ordering = ['seller']
 
     def __str__(self):
-        return f"{self.user.username} ({'Seller' if self.is_seller else 'Customer'})"
+        return f"{self.seller if self.seller else 'No user'}"
 
+
+class Receiver(models.Model):
+    receiver = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='User')
+    email = models.EmailField(null=True, blank=True, verbose_name='Email')
+    phone = models.CharField(max_length=20, null=True, blank=True, verbose_name='Телефон')
+
+    class Meta:
+        verbose_name = "Получатель"
+        verbose_name_plural = "Получатели"
+        ordering = ['receiver']
+
+    def __str__(self):
+        return f"{self.receiver.username if self.user else 'No User'}"
