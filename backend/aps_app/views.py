@@ -1,5 +1,5 @@
 import json
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
