@@ -2,6 +2,7 @@ import json
 from django.contrib.auth import authenticate
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
 
 @csrf_exempt
 def login_view(request):
@@ -14,16 +15,26 @@ def login_view(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            username = data.get('username')
+            phone = data.get('phone')  # Изменено с username на phone
             password = data.get('password')
 
-            if not username or not password:
+            if not phone or not password:
                 return JsonResponse(
-                    {'message': 'Username and password are required', 'status': 'error'},
+                    {'message': 'Phone number and password are required', 'status': 'error'},
                     status=400
                 )
 
-            user = authenticate(username=username, password=password)
+            # Поиск пользователя по номеру телефона
+            try:
+                user = User.objects.get(username=phone)  # В Django `username` может быть телефоном
+            except User.DoesNotExist:
+                return JsonResponse(
+                    {'message': 'User not found', 'status': 'error'},
+                    status=404
+                )
+
+            # Проверка пароля
+            user = authenticate(username=user.username, password=password)
 
             if user:
                 return JsonResponse(
@@ -32,7 +43,7 @@ def login_view(request):
                 )
             else:
                 return JsonResponse(
-                    {'message': 'Invalid username or password', 'status': 'error'},
+                    {'message': 'Invalid phone number or password', 'status': 'error'},
                     status=401
                 )
 

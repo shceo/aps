@@ -8,14 +8,15 @@ import 'package:aps/src/ui/components/text_u.dart';
 import 'package:aps/src/ui/constants/back_images.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key, required int selectedIndex});
+  final int selectedIndex;
+  const LoginScreen({super.key, required this.selectedIndex});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  int selectedIndex = 0;
+  late int selectedIndex;
   bool showOption = false;
   bool _obscurePassword = true;
   final TextEditingController _phoneController = TextEditingController();
@@ -30,6 +31,12 @@ class _LoginScreenState extends State<LoginScreen> {
     Locale('tr'),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    selectedIndex = widget.selectedIndex; // Используем переданное значение
+  }
+
   Future<void> _login() async {
     setState(() {
       _isLoading = true;
@@ -38,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       Dio dio = Dio();
       Response response = await dio.post(
-        "http://127.0.0.1:8000/api/login/",
+        "http://127.0.0.1:8000/login/", // Исправленный путь
         data: {
           "phone": _phoneController.text,
           "password": _passwordController.text,
@@ -223,7 +230,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-  
 
   Widget _buildThemeSwitcher() {
     return Container(

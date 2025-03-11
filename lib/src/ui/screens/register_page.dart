@@ -23,6 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
+  bool showOption = false;
 
   final List<Locale> _supportedLocales = const [
     Locale('ru'),
@@ -81,6 +82,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
+        floatingActionButton: _buildThemeSwitcher(),
       body: Container(
         height: double.infinity,
         width: double.infinity,
@@ -277,4 +279,66 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+  
+  Widget _buildThemeSwitcher() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      height: 49,
+      width: double.infinity,
+      child: Row(
+        children: [
+          Expanded(
+            child: showOption
+                ? ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: bgList.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedIndex = index;
+                          });
+                        },
+                        child: CircleAvatar(
+                          radius: 30,
+                          backgroundColor: selectedIndex == index
+                              ? Colors.white
+                              : Colors.transparent,
+                          child: Padding(
+                            padding: const EdgeInsets.all(1),
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundImage: AssetImage(bgList[index]),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : const SizedBox(),
+          ),
+          const SizedBox(width: 20),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                showOption = !showOption;
+              });
+            },
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(1),
+                child: CircleAvatar(
+                  radius: 30,
+                  backgroundImage: AssetImage(bgList[selectedIndex]),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
 }
