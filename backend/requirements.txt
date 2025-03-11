@@ -1,5 +1,7 @@
 asgiref==3.8.1
+backend==0.2.4.1
 Django==5.1.7
+django-cors-headers==4.7.0
 django-jazzmin==3.0.1
 pillow==11.1.0
 sqlparse==0.5.3
