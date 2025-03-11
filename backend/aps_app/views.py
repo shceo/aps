@@ -1,5 +1,5 @@
 import json
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
@@ -57,3 +57,19 @@ def login_view(request):
         {'message': 'Only POST requests are allowed', 'status': 'error'},
         status=405
     )
+
+
+def logout_view(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'message': 'You have to be authenticated to logout from the system',
+                             'status': 'error'}, status=400)
+    else:
+        logout(request)
+        return JsonResponse({'message': 'You logged out from the system', 'status': 'ok'}, status=200)
+
+
+# def registration_view(request):
+#     if request.user.is_authenticated:
+#         return JsonResponse({'message': f'You are already authenticated as {request.user.username}'},status=200)
+#
+#
