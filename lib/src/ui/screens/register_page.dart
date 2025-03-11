@@ -21,7 +21,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _isLoading = false;
   bool showOption = false;
 
@@ -35,9 +36,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _register() async {
     if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Пароли не совпадают")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Пароли не совпадают")));
       return;
     }
 
@@ -56,20 +57,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
         },
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response.data["message"])),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(response.data["message"])));
 
       if (response.statusCode == 201) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => LoginScreen(selectedIndex: selectedIndex,)),
+          MaterialPageRoute(
+            builder: (context) => LoginScreen(selectedIndex: selectedIndex),
+          ),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Ошибка регистрации")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Ошибка регистрации")));
     }
 
     setState(() {
@@ -82,7 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
-        floatingActionButton: _buildThemeSwitcher(),
+      floatingActionButton: _buildThemeSwitcher(),
       body: Container(
         height: double.infinity,
         width: double.infinity,
@@ -119,15 +122,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         dropdownColor: Colors.black,
                         icon: const Icon(Icons.language, color: Colors.white),
                         underline: const SizedBox(),
-                        items: _supportedLocales.map((locale) {
-                          return DropdownMenuItem(
-                            value: locale,
-                            child: Text(
-                              locale.languageCode.toUpperCase(),
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          );
-                        }).toList(),
+                        items:
+                            _supportedLocales.map((locale) {
+                              return DropdownMenuItem(
+                                value: locale,
+                                child: Text(
+                                  locale.languageCode.toUpperCase(),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              );
+                            }).toList(),
                         onChanged: (Locale? newLocale) {
                           if (newLocale != null) {
                             MyApp.setLocale(context, newLocale);
@@ -138,7 +142,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     const Spacer(),
                     Center(
-                      child: TextUtil(text: loc.register, weight: true, size: 30),
+                      child: TextUtil(
+                        text: loc.register,
+                        weight: true,
+                        size: 30,
+                      ),
                     ),
                     const Spacer(),
 
@@ -200,9 +208,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           borderRadius: BorderRadius.circular(30),
                         ),
                         alignment: Alignment.center,
-                        child: _isLoading
-                            ? const CircularProgressIndicator()
-                            : TextUtil(text: loc.register, color: Colors.black),
+                        child:
+                            _isLoading
+                                ? const CircularProgressIndicator()
+                                : TextUtil(
+                                  text: loc.register,
+                                  color: Colors.black,
+                                ),
                       ),
                     ),
 
@@ -213,7 +225,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onTap: () {
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginScreen(selectedIndex: selectedIndex,)),
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    LoginScreen(selectedIndex: selectedIndex),
+                          ),
                         );
                       },
                       child: Center(
@@ -256,30 +272,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: const TextStyle(color: Colors.grey),
-          suffixIcon: isPassword || isConfirmPassword
-              ? IconButton(
-                  icon: Icon(
-                    obscureText ? Icons.visibility_off : Icons.visibility,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      if (isConfirmPassword) {
-                        _obscureConfirmPassword = !_obscureConfirmPassword;
-                      } else {
-                        _obscurePassword = !_obscurePassword;
-                      }
-                    });
-                  },
-                )
-              : Icon(icon, color: Colors.white),
+          suffixIcon:
+              isPassword || isConfirmPassword
+                  ? IconButton(
+                    icon: Icon(
+                      obscureText ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        if (isConfirmPassword) {
+                          _obscureConfirmPassword = !_obscureConfirmPassword;
+                        } else {
+                          _obscurePassword = !_obscurePassword;
+                        }
+                      });
+                    },
+                  )
+                  : Icon(icon, color: Colors.white),
           fillColor: Colors.white,
           border: InputBorder.none,
         ),
       ),
     );
   }
-  
+
   Widget _buildThemeSwitcher() {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
@@ -288,35 +305,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: Row(
         children: [
           Expanded(
-            child: showOption
-                ? ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: bgList.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedIndex = index;
-                          });
-                        },
-                        child: CircleAvatar(
-                          radius: 30,
-                          backgroundColor: selectedIndex == index
-                              ? Colors.white
-                              : Colors.transparent,
-                          child: Padding(
-                            padding: const EdgeInsets.all(1),
-                            child: CircleAvatar(
-                              radius: 30,
-                              backgroundImage: AssetImage(bgList[index]),
+            child:
+                showOption
+                    ? ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: bgList.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedIndex = index;
+                            });
+                          },
+                          child: CircleAvatar(
+                            radius: 30,
+                            backgroundColor:
+                                selectedIndex == index
+                                    ? Colors.white
+                                    : Colors.transparent,
+                            child: Padding(
+                              padding: const EdgeInsets.all(1),
+                              child: CircleAvatar(
+                                radius: 30,
+                                backgroundImage: AssetImage(bgList[index]),
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  )
-                : const SizedBox(),
+                        );
+                      },
+                    )
+                    : const SizedBox(),
           ),
           const SizedBox(width: 20),
           GestureDetector(
@@ -340,5 +359,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-  
 }

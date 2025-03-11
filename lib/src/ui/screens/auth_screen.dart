@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
 import 'package:aps/src/ui/screens/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -34,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    selectedIndex = widget.selectedIndex; // Используем переданное значение
+    selectedIndex = widget.selectedIndex;
   }
 
   Future<void> _login() async {
@@ -45,18 +46,25 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       Dio dio = Dio();
       Response response = await dio.post(
-        "http://127.0.0.1:8000/login/", // Исправленный путь
+        "http://127.0.0.1:8000/login/",
         data: {
           "phone": _phoneController.text,
           "password": _passwordController.text,
         },
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response.data["message"])),
-      );
+      if (response.data["status"] == "ok") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response.data["message"])),
+        );
+      }
     } catch (e) {
-      print("Ошибка входа: $e"); // Вывод ошибки в терминал
+      print("Ошибка входа: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Ошибка входа")),
       );
