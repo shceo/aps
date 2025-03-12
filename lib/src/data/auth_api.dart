@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 class ApiService {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: "http://127.0.0.1:8000/",
+      baseUrl: "https://khaledo.pythonanywhere.com/",
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 5),
     ),
@@ -21,7 +21,7 @@ class ApiService {
 
       return response.data;
     } catch (e) {
-      print("Ошибка входа: $e"); // Вывод ошибки в терминал
+      print("Ошибка входа: $e");
       return {
         "status": "error",
         "message": "Ошибка входа",

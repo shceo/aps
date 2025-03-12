@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       Dio dio = Dio();
       Response response = await dio.post(
-        "http://127.0.0.1:8000/login/",
+        "https://khaledo.pythonanywhere.com/login/",
         data: {
           "phone": _phoneController.text,
           "password": _passwordController.text,
@@ -77,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context)!;
+    final loc = AppLocalizations.of(context);
 
     return Scaffold(
       floatingActionButton: _buildThemeSwitcher(),
