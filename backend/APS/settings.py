@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 
     # extra django apps
     'jazzmin',
-      'corsheaders',
+    'corsheaders',
 
     # apps
     'aps_app',

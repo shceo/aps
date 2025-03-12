@@ -15,7 +15,7 @@ class Branch(models.Model):
 
 
 class Receiver(models.Model):
-    receiver = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='User')
+    receiver = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='User')
     phone = models.CharField(max_length=20, null=True, blank=True, verbose_name='Телефон')
 
     class Meta:
@@ -24,4 +24,4 @@ class Receiver(models.Model):
         ordering = ['receiver']
 
     def __str__(self):
-        return f"{self.receiver.username if self.user else 'No User'}"
+        return f"{self.receiver.username if self.receiver else 'No User'}"
