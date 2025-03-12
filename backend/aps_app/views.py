@@ -110,8 +110,8 @@ def registration_view(request):
             data = json.loads(request.body)
             first_name = data.get('first_name')
             phone = data.get('phone')
-            password1 = data.get('pass1')
-            password2 = data.get('pass2')
+            password1 = data.get('password')
+            password2 = data.get('password_confirm')
 
             if not first_name or not phone or not password1 or not password2:
                 return JsonResponse({'message': 'Please enter all required fields', 'status': 'error'}, status=400)
@@ -142,6 +142,46 @@ def registration_view(request):
     return JsonResponse({'message': 'Only POST requests are allowed', 'status': 'error'}, status=405)
 
 
+@csrf_exempt
+def admin_registration_view(request):
+    if request.user.is_authenticated:
+        return JsonResponse({'message': f'You are already authenticated as {request.user.username}'}, status=200)
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            first_name = data.get('first_name')
+            phone = data.get('phone')
+            password1 = data.get('password')
+            password2 = data.get('password_confirm')
+
+            if not first_name or not phone or not password1 or not password2:
+                return JsonResponse({'message': 'Please enter all required fields', 'status': 'error'}, status=400)
+
+            if password1 != password2:
+                return JsonResponse({'message': 'Passwords do not match', 'status': 'error'}, status=400)
+
+            if Receiver.objects.filter(phone=phone).exists():
+                return JsonResponse({'message': 'Phone number is already registered', 'status': 'error'}, status=400)
+
+            try:
+                user = User.objects.create_user(username=phone, password=password1, first_name=first_name)
+                receiver = Branch.objects.create(receiver=user, phone=phone)
+
+                user = authenticate(username=phone, password=password1)
+                if user:
+                    login(request, user)
+                    return JsonResponse({'message': 'Registration successful', 'status': 'success'}, status=201)
+
+                return JsonResponse({'message': 'Authentication failed after registration', 'status': 'error'}, status=500)
+
+            except Exception as e:
+                return JsonResponse({'message': f'Error occurred while saving to the database: {str(e)}', 'status': 'error'}, status=500)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'message': 'Invalid JSON format', 'status': 'error'}, status=400)
+
+    return JsonResponse({'message': 'Only POST requests are allowed', 'status': 'error'}, status=405)
 
 
 
