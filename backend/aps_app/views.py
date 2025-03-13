@@ -184,13 +184,42 @@ def admin_registration_view(request):
     return JsonResponse({'message': 'Only POST requests are allowed', 'status': 'error'}, status=405)
 
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import UserDevice
+from django.contrib.auth.models import User
+
+@csrf_exempt
+def register_fcm_token(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        user_id = data.get("user_id")
+        fcm_token = data.get("fcm_token")
+
+        if not user_id or not fcm_token:
+            return JsonResponse({"error": "Missing user_id or fcm_token"}, status=400)
+
+        try:
+            user = User.objects.get(id=user_id)
+            device, created = UserDevice.objects.update_or_create(user=user, defaults={"fcm_token": fcm_token})
+            return JsonResponse({"message": "FCM Token registered successfully"})
+        except User.DoesNotExist:
+            return JsonResponse({"error": "User not found"}, status=404)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
 
+from .firebase_helper import send_push_notification
 
-
-
-
-
+def send_user_notification(request, user_id):
+    try:
+        device = UserDevice.objects.get(user_id=user_id)
+        token = device.fcm_token
+        response = send_push_notification(token, "Hello!", "This is a test notification.")
+        return JsonResponse({"message": "Notification sent", "response": response})
+    except UserDevice.DoesNotExist:
+        return JsonResponse({"error": "User not found or no device registered"}, status=404)
 
 
 

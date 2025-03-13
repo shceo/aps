@@ -14,3 +14,10 @@ class ReceiverAdmin(admin.ModelAdmin):
     list_display = ('receiver', 'phone')
     search_fields = ('receiver__username', 'phone')
     ordering = ('receiver',)
+
+@admin.register(UserDevice)
+class UserDeviceAdmin(admin.ModelAdmin):
+    list_display = ('user', 'fcm_token')
+    search_fields = ('user_username',)
+    ordering = ('user',)
+
