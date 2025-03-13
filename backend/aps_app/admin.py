@@ -5,12 +5,12 @@ from .models import *
 
 @admin.register(Branch)
 class BranchAdmin(admin.ModelAdmin):
-    list_display = ('seller', 'email', 'phone')
-    search_fields = ('seller__username', 'email', 'phone')
+    list_display = ('seller', 'phone')
+    search_fields = ('seller__username', 'phone')
     ordering = ('seller',)
 
 @admin.register(Receiver)
 class ReceiverAdmin(admin.ModelAdmin):
-    list_display = ('receiver', 'email', 'phone')
-    search_fields = ('receiver__username', 'email', 'phone')
+    list_display = ('receiver', 'phone')
+    search_fields = ('receiver__username', 'phone')
     ordering = ('receiver',)
