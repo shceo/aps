@@ -1,6 +1,8 @@
+import 'package:aps/src/ui/screens/admin_panel/admin_screen.dart';
 import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
-import 'package:aps/src/ui/screens/auth_screen.dart'; // Предполагается, что LoginScreen здесь
-import 'package:aps/src/ui/screens/admin_screen.dart';
+import 'package:aps/src/ui/screens/after_screen/notfoundscreen.dart';
+import 'package:aps/src/ui/screens/auth_screen.dart';
+import 'package:aps/src/ui/screens/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:aps/l10n/app_localizations.dart';
@@ -14,35 +16,46 @@ void main() async {
   runApp(MyApp(isLoggedIn: isLoggedIn, savedLocale: Locale(savedLocale)));
 }
 
-/// Модель маршрута приложения
 class AppRoutePath {
   final bool isUnknown;
   final bool isAdmin;
   final bool isLogin;
   final bool isHome;
+  final bool isRegister;
 
   AppRoutePath.home()
     : isHome = true,
       isLogin = false,
       isAdmin = false,
+      isRegister = false,
       isUnknown = false;
 
   AppRoutePath.login()
     : isHome = false,
       isLogin = true,
       isAdmin = false,
+      isRegister = false,
       isUnknown = false;
 
   AppRoutePath.admin()
     : isHome = false,
       isLogin = false,
       isAdmin = true,
+      isRegister = false,
+      isUnknown = false;
+
+  AppRoutePath.register()
+    : isHome = false,
+      isLogin = false,
+      isAdmin = false,
+      isRegister = true,
       isUnknown = false;
 
   AppRoutePath.unknown()
     : isHome = false,
       isLogin = false,
       isAdmin = false,
+      isRegister = false,
       isUnknown = true;
 }
 
@@ -52,74 +65,102 @@ class AppRouteInformationParser extends RouteInformationParser<AppRoutePath> {
   Future<AppRoutePath> parseRouteInformation(
     RouteInformation routeInformation,
   ) async {
-    final uri = Uri.parse(routeInformation.location);
-    if (uri.pathSegments.isEmpty) {
-      return AppRoutePath.home();
-    }
+    final uri = Uri.parse(routeInformation.location ?? '/');
+    if (uri.pathSegments.isEmpty) return AppRoutePath.home();
+
     if (uri.pathSegments.length == 1) {
       final path = uri.pathSegments.first;
-      if (path == '/aps-admins') {
-        return AppRoutePath.admin();
-      }
-      if (path == '/login') {
-        return AppRoutePath.login();
-      }
+      if (path == 'aps-admins') return AppRoutePath.admin();
+      if (path == 'login') return AppRoutePath.login();
+      if (path == 'register') return AppRoutePath.register();
     }
     return AppRoutePath.unknown();
   }
 
   @override
   RouteInformation restoreRouteInformation(AppRoutePath configuration) {
-    if (configuration.isHome) {
-      return const RouteInformation(location: '/');
-    }
-    if (configuration.isAdmin) {
+    if (configuration.isHome) return const RouteInformation(location: '/');
+    if (configuration.isAdmin)
       return const RouteInformation(location: '/aps-admins');
-    }
-    if (configuration.isLogin) {
+    if (configuration.isLogin)
       return const RouteInformation(location: '/login');
-    }
+    if (configuration.isRegister)
+      return const RouteInformation(location: '/register');
     return const RouteInformation(location: '/404');
   }
 }
 
-/// RouterDelegate для управления навигационным стеком.
+/// RouterDelegate для управления навигацией.
 class AppRouterDelegate extends RouterDelegate<AppRoutePath>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<AppRoutePath> {
-  final GlobalKey<NavigatorState> navigatorKey;
-  // Флаги для управления стеком.
-  bool showAdmin = true;
-  bool showUnknown = false;
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-  // Логика авторизации передаётся извне.
+  bool showAdmin = false;
+  bool showRegister = false;
+
   final bool isLoggedIn;
-  // Используется для передачи параметра в LoginScreen.
   final int selectedIndex;
+  final VoidCallback onLoginSuccess;
+  bool isUserLoggedIn = false;
 
-  AppRouterDelegate({required this.isLoggedIn, required this.selectedIndex})
-    : navigatorKey = GlobalKey<NavigatorState>();
+  AppRouterDelegate({
+    required this.isLoggedIn,
+    required this.selectedIndex,
+    required this.onLoginSuccess,
+  });
 
   @override
   AppRoutePath get currentConfiguration {
-    if (showUnknown) return AppRoutePath.unknown();
-    if (showAdmin && isLoggedIn) return AppRoutePath.admin();
-    return isLoggedIn ? AppRoutePath.home() : AppRoutePath.login();
+    if (!isUserLoggedIn && !showRegister) return AppRoutePath.login();
+    if (!isUserLoggedIn && showRegister) return AppRoutePath.register();
+    if (showAdmin && isUserLoggedIn) return AppRoutePath.admin();
+    return AppRoutePath.home(); // ✅ Теперь MainScreen показывается
   }
 
   @override
   Widget build(BuildContext context) {
     List<Page> pages = [];
-    if (!isLoggedIn) {
+
+    if (!isUserLoggedIn) {
       pages.add(
         MaterialPage(
           key: const ValueKey('LoginScreen'),
           child: LoginScreen(
             selectedIndex: selectedIndex,
-            onLoginSuccess: () {},
-            onRegisterTapped: () {},
+            onLoginSuccess: () async {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              await prefs.setBool("isLoggedIn", true);
+              isUserLoggedIn = true;
+              notifyListeners();
+            },
+            onRegisterTapped: () {
+              showRegister = true;
+              notifyListeners();
+            },
           ),
         ),
       );
+      if (showRegister) {
+        pages.add(
+          MaterialPage(
+            key: const ValueKey('RegisterScreen'),
+            child: RegisterScreen(
+              selectedIndex: selectedIndex,
+              onRegisterSuccess: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs.setBool("isLoggedIn", true);
+                isUserLoggedIn = true; // ✅ Теперь флаг обновляется
+                notifyListeners(); // ✅ Обновляем навигацию
+              },
+
+              onSwitchToLogin: () {
+                showRegister = false;
+                notifyListeners();
+              },
+            ),
+          ),
+        );
+      }
     } else {
       pages.add(
         MaterialPage(key: const ValueKey('MainScreen'), child: MainScreen()),
@@ -133,25 +174,13 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
         );
       }
     }
-    if (showUnknown) {
-      pages.add(
-        MaterialPage(
-          key: const ValueKey('UnknownScreen'),
-          child: UnknownScreen(),
-        ),
-      );
-    }
+
     return Navigator(
       key: navigatorKey,
       pages: pages,
       onPopPage: (route, result) {
         if (!route.didPop(result)) return false;
-        if (showAdmin) {
-          showAdmin = false;
-        }
-        if (showUnknown) {
-          showUnknown = false;
-        }
+        if (showRegister) showRegister = false;
         notifyListeners();
         return true;
       },
@@ -160,28 +189,30 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
 
   @override
   Future<void> setNewRoutePath(AppRoutePath configuration) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    isUserLoggedIn =
+        prefs.getBool("isLoggedIn") ?? false; // ✅ Теперь проверяет логин
+
     if (configuration.isUnknown) {
-      showUnknown = true;
-      showAdmin = true;
-      return;
-    }
-    if (configuration.isAdmin) {
-      if (isLoggedIn) {
-        showAdmin = true;
-        showUnknown = false;
-      } else {
-        showAdmin = false;
-        showUnknown = false;
-      }
-      return;
-    }
-    if (configuration.isLogin) {
       showAdmin = false;
-      showUnknown = false;
-      return;
+      showRegister = false;
+    } else if (configuration.isRegister) {
+      showRegister = true;
+      showAdmin = false;
+    } else if (configuration.isAdmin) {
+      if (isUserLoggedIn) {
+        showAdmin = true;
+        showRegister = false;
+      } else {
+        showRegister = false;
+        showAdmin = false;
+      }
+    } else {
+      showAdmin = false;
+      showRegister = false;
     }
-    showAdmin = false;
-    showUnknown = false;
+
+    notifyListeners(); // ✅ Теперь обновляет UI
   }
 }
 
@@ -214,18 +245,26 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late Locale _locale;
+  late AppRouterDelegate _routerDelegate;
   int selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _locale = widget.savedLocale;
-  }
-
-  void setLocale(Locale newLocale) {
-    setState(() {
-      _locale = newLocale;
-    });
+    _routerDelegate = AppRouterDelegate(
+      isLoggedIn: widget.isLoggedIn,
+      selectedIndex: selectedIndex,
+      onLoginSuccess: () async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool("isLoggedIn", true);
+        setState(() {
+          _routerDelegate.isUserLoggedIn = true;
+        });
+        _routerDelegate.notifyListeners(); // ✅ Обновляет UI после логина
+      },
+    );
+    loadSelectedIndex();
   }
 
   Future<void> loadSelectedIndex() async {
@@ -235,18 +274,19 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  /// ✅ Добавлен метод для смены языка
+  void setLocale(Locale newLocale) {
+    setState(() {
+      _locale = newLocale;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final routerDelegate = AppRouterDelegate(
-      isLoggedIn: widget.isLoggedIn,
-      selectedIndex: selectedIndex,
-    );
-    final routeInformationParser = AppRouteInformationParser();
-
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      routerDelegate: routerDelegate,
-      routeInformationParser: routeInformationParser,
+      routerDelegate: _routerDelegate,
+      routeInformationParser: AppRouteInformationParser(),
       locale: _locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [

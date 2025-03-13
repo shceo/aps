@@ -1,21 +1,19 @@
 import 'dart:ui';
-import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
 import 'package:aps/src/ui/screens/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:aps/l10n/app_localizations.dart';
-import 'package:aps/main.dart' as main_app;
 import 'package:aps/src/ui/components/text_u.dart';
 import 'package:aps/src/ui/constants/back_images.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:aps/main.dart';
+import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({
     super.key,
     required this.selectedIndex,
-    // Callback, вызываемый при успешной регистрации, чтобы перейти на MainScreen.
     required this.onRegisterSuccess,
-    // Callback, вызываемый для перехода на LoginScreen ("Уже есть аккаунт? Войти")
     required this.onSwitchToLogin,
   });
 
@@ -55,9 +53,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _register() async {
     if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Пароли не совпадают")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Пароли не совпадают")));
       return;
     }
 
@@ -79,24 +77,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-              Text(response.data["message"] ?? "Регистрация успешна"),
+          content: Text(response.data["message"] ?? "Регистрация успешна"),
         ),
       );
 
       if (response.statusCode == 201) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setBool("isLoggedIn", true);
+        await prefs.setBool("isUserLoggedIn", true);
         await prefs.setString("userPhone", _phoneController.text);
 
-        // Вместо императивного перехода вызываем callback
+        // ✅ Правильный вызов функции
         widget.onRegisterSuccess();
       }
     } catch (e) {
       print("Ошибка регистрации: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Ошибка регистрации")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Ошибка регистрации")));
     }
 
     setState(() {
@@ -121,7 +119,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         alignment: Alignment.center,
         child: Container(
-          height: 500,
+          height: 580,
           width: double.infinity,
           margin: const EdgeInsets.symmetric(horizontal: 30),
           decoration: BoxDecoration(
@@ -145,18 +143,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         dropdownColor: Colors.black,
                         icon: const Icon(Icons.language, color: Colors.white),
                         underline: const SizedBox(),
-                        items: _supportedLocales.map((locale) {
-                          return DropdownMenuItem(
-                            value: locale,
-                            child: Text(
-                              locale.languageCode.toUpperCase(),
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          );
-                        }).toList(),
+                        items:
+                            _supportedLocales.map((locale) {
+                              return DropdownMenuItem(
+                                value: locale,
+                                child: Text(
+                                  locale.languageCode.toUpperCase(),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              );
+                            }).toList(),
                         onChanged: (Locale? newLocale) {
                           if (newLocale != null) {
-                            main_app.MyApp.setLocale(context, newLocale);
+                            MyApp.setLocale(context, newLocale);
                           }
                         },
                       ),
@@ -169,72 +168,63 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         size: 30,
                       ),
                     ),
-                    const Spacer(),
-                    // Поле "Имя"
-                    TextUtil(text: loc.name),
+                    // const Spacer(),
+                    // Поля ввода
                     _buildTextField(
-                      controller: _nameController,
-                      icon: Icons.person,
-                      hintText: loc.name_hint,
-                      obscureText: false,
+                      loc.name,
+                      _nameController,
+                      Icons.person,
+                      loc.name_hint,
+                      false,
                     ),
-                    const Spacer(),
-                    // Поле "Телефон"
-                    TextUtil(text: loc.phone),
                     _buildTextField(
-                      controller: _phoneController,
-                      icon: Icons.phone,
-                      hintText: loc.phone_hint,
-                      obscureText: false,
+                      loc.phone,
+                      _phoneController,
+                      Icons.phone,
+                      loc.phone_hint,
+                      false,
                     ),
-                    const Spacer(),
-                    // Поле "Пароль"
-                    TextUtil(text: loc.password),
                     _buildTextField(
-                      controller: _passwordController,
-                      icon: Icons.lock,
-                      hintText: loc.password_hint,
-                      obscureText: _obscurePassword,
+                      loc.password,
+                      _passwordController,
+                      Icons.lock,
+                      loc.password_hint,
+                      _obscurePassword,
                       isPassword: true,
                     ),
-                    const Spacer(),
-                    // Поле "Подтвердите пароль"
-                    TextUtil(text: loc.confirm_password),
                     _buildTextField(
-                      controller: _confirmPasswordController,
-                      icon: Icons.lock,
-                      hintText: loc.confirm_password_hint,
-                      obscureText: _obscureConfirmPassword,
+                      loc.confirm_password,
+                      _confirmPasswordController,
+                      Icons.lock,
+                      loc.confirm_password_hint,
+                      _obscureConfirmPassword,
                       isPassword: true,
                       isConfirmPassword: true,
                     ),
                     const Spacer(),
-                    // Кнопка регистрации
+
                     GestureDetector(
                       onTap: _isLoading ? null : _register,
                       child: Container(
-                        height: 40,
+                        height: 35,
                         width: double.infinity,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(30),
                         ),
                         alignment: Alignment.center,
-                        child: _isLoading
-                            ? const CircularProgressIndicator()
-                            : TextUtil(
-                                text: loc.register,
-                                color: Colors.black,
-                              ),
+                        child:
+                            _isLoading
+                                ? const CircularProgressIndicator()
+                                : TextUtil(
+                                  text: loc.register,
+                                  color: Colors.black,
+                                ),
                       ),
                     ),
                     const Spacer(),
-                    // Кнопка "Уже есть аккаунт? Войти"
                     GestureDetector(
-                      onTap: () {
-                        // Вместо Navigator.pushReplacement вызываем callback для перехода на LoginScreen.
-                        widget.onSwitchToLogin();
-                      },
+                      onTap: widget.onSwitchToLogin,
                       child: Center(
                         child: TextUtil(
                           text: loc.already_have_account,
@@ -254,46 +244,56 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required IconData icon,
-    required String hintText,
-    required bool obscureText,
+  Widget _buildTextField(
+    String label,
+    TextEditingController controller,
+    IconData icon,
+    String hintText,
+    bool obscureText, {
     bool isPassword = false,
     bool isConfirmPassword = false,
   }) {
-    return Container(
-      height: 45,
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white)),
-      ),
-      child: TextFormField(
-        controller: controller,
-        obscureText: obscureText,
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: const TextStyle(color: Colors.grey),
-          suffixIcon: isPassword || isConfirmPassword
-              ? IconButton(
-                  icon: Icon(
-                    obscureText ? Icons.visibility_off : Icons.visibility,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      if (isConfirmPassword) {
-                        _obscureConfirmPassword = !_obscureConfirmPassword;
-                      } else {
-                        _obscurePassword = !_obscurePassword;
-                      }
-                    });
-                  },
-                )
-              : Icon(icon, color: Colors.white),
-          border: InputBorder.none,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextUtil(text: label),
+        Container(
+          height: 50,
+          decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: Colors.white)),
+          ),
+          child: TextFormField(
+            controller: controller,
+            obscureText: obscureText,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: hintText,
+              hintStyle: const TextStyle(color: Colors.grey),
+              suffixIcon:
+                  isPassword || isConfirmPassword
+                      ? IconButton(
+                        icon: Icon(
+                          obscureText ? Icons.visibility_off : Icons.visibility,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if (isConfirmPassword) {
+                              _obscureConfirmPassword =
+                                  !_obscureConfirmPassword;
+                            } else {
+                              _obscurePassword = !_obscurePassword;
+                            }
+                          });
+                        },
+                      )
+                      : Icon(icon, color: Colors.white),
+              border: InputBorder.none,
+            ),
+          ),
         ),
-      ),
+        const SizedBox(height: 10),
+      ],
     );
   }
 
@@ -305,35 +305,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: Row(
         children: [
           Expanded(
-            child: showOption
-                ? ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: bgList.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedIndex = index;
-                          });
-                        },
-                        child: CircleAvatar(
-                          radius: 30,
-                          backgroundColor: selectedIndex == index
-                              ? Colors.white
-                              : Colors.transparent,
-                          child: Padding(
-                            padding: const EdgeInsets.all(1),
-                            child: CircleAvatar(
-                              radius: 30,
-                              backgroundImage: AssetImage(bgList[index]),
+            child:
+                showOption
+                    ? ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: bgList.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedIndex = index;
+                            });
+                          },
+                          child: CircleAvatar(
+                            radius: 30,
+                            backgroundColor:
+                                selectedIndex == index
+                                    ? Colors.white
+                                    : Colors.transparent,
+                            child: Padding(
+                              padding: const EdgeInsets.all(1),
+                              child: CircleAvatar(
+                                radius: 30,
+                                backgroundImage: AssetImage(bgList[index]),
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  )
-                : const SizedBox(),
+                        );
+                      },
+                    )
+                    : const SizedBox(),
           ),
           const SizedBox(width: 20),
           GestureDetector(

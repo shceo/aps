@@ -1,5 +1,7 @@
 import 'dart:ui';
-import 'package:aps/main.dart' show MyApp;
+import 'package:aps/main.dart' show AppRoutePath, AppRouterDelegate, MyApp;
+import 'package:aps/src/ui/routes/app_navigator.dart'
+    show AppRoutePath, AppRouterDelegate;
 import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
 import 'package:aps/src/ui/screens/register_page.dart';
 import 'package:flutter/material.dart';
@@ -50,9 +52,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
+    if (_isLoading) return; // ✅ Фикс двойного запроса
+
     setState(() {
       _isLoading = true;
     });
+
+    print("🔵 Начало процесса входа...");
+    print("📞 Введённый телефон: ${_phoneController.text}");
+    print("🔑 Введённый пароль: ${_passwordController.text}");
 
     try {
       Dio dio = Dio();
@@ -64,33 +72,43 @@ class _LoginScreenState extends State<LoginScreen> {
         },
       );
 
+      print("🟢 Ответ сервера: ${response.data}");
+
       if (response.data["status"] == "ok") {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setBool("isLoggedIn", true);
         await prefs.setString("userPhone", _phoneController.text);
 
-        // Вместо императивной навигации вызываем callback, чтобы изменить состояние логина.
-        widget.onLoginSuccess();
+        print("✅ Логин успешен, переходим в MainScreen...");
+
+        // ✅ Обновляем состояние в `AppRouterDelegate`
+        final routerDelegate =
+            Router.of(context).routerDelegate as AppRouterDelegate;
+        routerDelegate.isUserLoggedIn = true; // ✅ Фикс
+        routerDelegate.setNewRoutePath(AppRoutePath.home());
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response.data["message"])),
-        );
+        print("❌ Ошибка входа: ${response.data["message"]}");
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(response.data["message"])));
       }
     } catch (e) {
-      print("Ошибка входа: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Ошибка входа")),
-      );
+      print("🚨 Ошибка запроса: $e");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Ошибка входа")));
     }
 
     setState(() {
       _isLoading = false;
     });
+
+    print("🔴 Завершение процесса входа.");
   }
 
   @override
   Widget build(BuildContext context) {
-final loc = AppLocalizations.of(context);
+    final loc = AppLocalizations.of(context);
 
     return Scaffold(
       floatingActionButton: _buildThemeSwitcher(),
@@ -125,32 +143,34 @@ final loc = AppLocalizations.of(context);
                     Align(
                       alignment: Alignment.centerRight,
                       child: DropdownButton<Locale>(
-                      value: Localizations.localeOf(context) ?? const Locale('ru'),
-
+                        value: Localizations.localeOf(context),
                         dropdownColor: Colors.black,
                         icon: const Icon(Icons.language, color: Colors.white),
                         underline: const SizedBox(),
-                        items: _supportedLocales.map((locale) {
-                          return DropdownMenuItem(
-                            value: locale,
-                            child: Text(
-                              locale.languageCode.toUpperCase(),
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          );
-                        }).toList(),
+                        items:
+                            _supportedLocales.map((locale) {
+                              return DropdownMenuItem(
+                                value: locale,
+                                child: Text(
+                                  locale.languageCode.toUpperCase(),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              );
+                            }).toList(),
                         onChanged: (Locale? newLocale) {
                           if (newLocale != null) {
                             // Вызываем статический метод для смены локали.
-                            MyApp.setLocale(context, newLocale);
+                            MyApp.setLocale(
+                              context,
+                              newLocale,
+                            ); //MyApp is from main.dart
                           }
                         },
                       ),
                     ),
                     const Spacer(),
                     Center(
-                      child:
-                          TextUtil(text: loc.login, weight: true, size: 30),
+                      child: TextUtil(text: loc.login, weight: true, size: 30),
                     ),
                     const Spacer(),
                     TextUtil(text: loc.phone),
@@ -180,19 +200,25 @@ final loc = AppLocalizations.of(context);
                           borderRadius: BorderRadius.circular(30),
                         ),
                         alignment: Alignment.center,
-                        child: _isLoading
-                            ? const CircularProgressIndicator()
-                            : TextUtil(
-                                text: loc.log_in,
-                                color: Colors.black,
-                              ),
+                        child:
+                            _isLoading
+                                ? const CircularProgressIndicator()
+                                : TextUtil(
+                                  text: loc.log_in,
+                                  color: Colors.black,
+                                ),
                       ),
                     ),
                     const Spacer(),
                     GestureDetector(
                       onTap: () {
-                        // Вызываем callback для перехода на RegisterScreen через Navigator 2.0.
-                        widget.onRegisterTapped();
+                        print(
+                          "🔄 Переход на RegisterScreen...",
+                        ); // Лог в терминале
+                        final routerDelegate =
+                            Router.of(context).routerDelegate
+                                as AppRouterDelegate;
+                        routerDelegate.setNewRoutePath(AppRoutePath.register());
                       },
                       child: Center(
                         child: TextUtil(
@@ -202,6 +228,7 @@ final loc = AppLocalizations.of(context);
                         ),
                       ),
                     ),
+
                     const Spacer(),
                   ],
                 ),
@@ -232,19 +259,20 @@ final loc = AppLocalizations.of(context);
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: const TextStyle(color: Colors.grey),
-          suffixIcon: isPassword
-              ? IconButton(
-                  icon: Icon(
-                    obscureText ? Icons.visibility_off : Icons.visibility,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
-                )
-              : Icon(icon, color: Colors.white),
+          suffixIcon:
+              isPassword
+                  ? IconButton(
+                    icon: Icon(
+                      obscureText ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  )
+                  : Icon(icon, color: Colors.white),
           fillColor: Colors.white,
           border: InputBorder.none,
         ),
@@ -260,35 +288,37 @@ final loc = AppLocalizations.of(context);
       child: Row(
         children: [
           Expanded(
-            child: showOption
-                ? ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: bgList.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedIndex = index;
-                          });
-                        },
-                        child: CircleAvatar(
-                          radius: 30,
-                          backgroundColor: selectedIndex == index
-                              ? Colors.white
-                              : Colors.transparent,
-                          child: Padding(
-                            padding: const EdgeInsets.all(1),
-                            child: CircleAvatar(
-                              radius: 30,
-                              backgroundImage: AssetImage(bgList[index]),
+            child:
+                showOption
+                    ? ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: bgList.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedIndex = index;
+                            });
+                          },
+                          child: CircleAvatar(
+                            radius: 30,
+                            backgroundColor:
+                                selectedIndex == index
+                                    ? Colors.white
+                                    : Colors.transparent,
+                            child: Padding(
+                              padding: const EdgeInsets.all(1),
+                              child: CircleAvatar(
+                                radius: 30,
+                                backgroundImage: AssetImage(bgList[index]),
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  )
-                : const SizedBox(),
+                        );
+                      },
+                    )
+                    : const SizedBox(),
           ),
           const SizedBox(width: 20),
           GestureDetector(
