@@ -184,6 +184,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter your name'**
   String get name_hint;
+
+  /// No description provided for @cargo_system.
+  ///
+  /// In en, this message translates to:
+  /// **'Cargo System'**
+  String get cargo_system;
+
+  /// No description provided for @cargo.
+  ///
+  /// In en, this message translates to:
+  /// **'Cargo'**
+  String get cargo;
+
+  /// No description provided for @contractors.
+  ///
+  /// In en, this message translates to:
+  /// **'Contractors'**
+  String get contractors;
+
+  /// No description provided for @accounting.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounting'**
+  String get accounting;
+
+  /// No description provided for @reports.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get reports;
+
+  /// No description provided for @setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Info & Setup'**
+  String get setup;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @flights.
+  ///
+  /// In en, this message translates to:
+  /// **'Flights'**
+  String get flights;
+
+  /// No description provided for @flight_plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight Plan'**
+  String get flight_plan;
+
+  /// No description provided for @plane_layout.
+  ///
+  /// In en, this message translates to:
+  /// **'Plane Layout'**
+  String get plane_layout;
+
+  /// No description provided for @payload_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Payload Info'**
+  String get payload_info;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -1,4 +1,5 @@
 {
+  "@@locale": "uz",
   "login": "Kirish",
   "register": "Ro'yxatdan o'tish",
   "phone": "Telefon",
@@ -8,9 +9,20 @@
   "log_in": "Kirish",
   "sign_up": "Ro'yxatdan o'tish",
   "already_have_account": "Allaqachon hisobingiz bormi? Kirish",
-  "dont_have_account": "Hisobingiz yo'qmi? Ro'yxatdan o'ting",
+  "dont_have_account": "Hisobingiz yo'qmi? Ro'yxatdan o'tish",
   "phone_hint": "Telefon raqamingizni kiriting",
   "password_hint": "Parolni kiriting",
-  "confirm_password_hint": "Parolni takrorlang",
-  "name_hint": "Ismingizni kiriting"
+  "confirm_password_hint": "Parolni qayta kiriting",
+  "name_hint": "Ismingizni kiriting",
+  "cargo_system": "Yuk Tizimi",
+  "cargo": "Yuk",
+  "contractors": "Kontraktorlar",
+  "accounting": "Buxgalteriya",
+  "reports": "Hisobotlar",
+  "setup": "Ma'lumot va sozlamalar",
+  "settings": "Sozlamalar",
+  "flights": "Parvozlar",
+  "flight_plan": "Parvoz rejasi",
+  "plane_layout": "Samolyot sxemasi",
+  "payload_info": "Yuk ma'lumotlari"
 }

@@ -9,7 +9,7 @@ class ApiService {
     ),
   );
 
-  Future<Map<String, dynamic>> login(String  phone, String password) async {
+  Future<Map<String, dynamic>> login(String phone, String password) async {
     try {
       Response response = await _dio.post(
         "login/", 
@@ -25,6 +25,29 @@ class ApiService {
       return {
         "status": "error",
         "message": "Ошибка входа",
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> register(
+      String username, String phone, String password, String passwordConfirm) async {
+    try {
+      Response response = await _dio.post(
+        "reg/", 
+        data: {
+          "first_name": username,
+          "phone": phone,
+          "password": password,
+          "password_confirm": passwordConfirm,
+        },
+      );
+
+      return response.data;
+    } catch (e) {
+      print("Ошибка регистрации: $e");
+      return {
+        "status": "error",
+        "message": "Ошибка регистрации",
       };
     }
   }

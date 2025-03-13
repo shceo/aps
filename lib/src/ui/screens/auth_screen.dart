@@ -7,6 +7,7 @@ import 'package:aps/l10n/app_localizations.dart';
 import 'package:aps/main.dart';
 import 'package:aps/src/ui/components/text_u.dart';
 import 'package:aps/src/ui/constants/back_images.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   final int selectedIndex;
@@ -54,20 +55,24 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (response.data["status"] == "ok") {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool("isLoggedIn", true);
+        await prefs.setString("userPhone", _phoneController.text);
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const MainScreen()),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response.data["message"])),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(response.data["message"])));
       }
     } catch (e) {
       print("Ошибка входа: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Ошибка входа")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Ошибка входа")));
     }
 
     setState(() {
@@ -116,15 +121,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         dropdownColor: Colors.black,
                         icon: const Icon(Icons.language, color: Colors.white),
                         underline: const SizedBox(),
-                        items: _supportedLocales.map((locale) {
-                          return DropdownMenuItem(
-                            value: locale,
-                            child: Text(
-                              locale.languageCode.toUpperCase(),
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          );
-                        }).toList(),
+                        items:
+                            _supportedLocales.map((locale) {
+                              return DropdownMenuItem(
+                                value: locale,
+                                child: Text(
+                                  locale.languageCode.toUpperCase(),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              );
+                            }).toList(),
                         onChanged: (Locale? newLocale) {
                           if (newLocale != null) {
                             MyApp.setLocale(context, newLocale);
@@ -164,9 +170,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(30),
                         ),
                         alignment: Alignment.center,
-                        child: _isLoading
-                            ? const CircularProgressIndicator()
-                            : TextUtil(text: loc.log_in, color: Colors.black),
+                        child:
+                            _isLoading
+                                ? const CircularProgressIndicator()
+                                : TextUtil(
+                                  text: loc.log_in,
+                                  color: Colors.black,
+                                ),
                       ),
                     ),
                     const Spacer(),
@@ -175,9 +185,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => RegisterScreen(
-                              selectedIndex: selectedIndex,
-                            ),
+                            builder:
+                                (context) => RegisterScreen(
+                                  selectedIndex: selectedIndex,
+                                ),
                           ),
                         );
                       },
@@ -219,19 +230,20 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: const TextStyle(color: Colors.grey),
-          suffixIcon: isPassword
-              ? IconButton(
-                  icon: Icon(
-                    obscureText ? Icons.visibility_off : Icons.visibility,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
-                )
-              : Icon(icon, color: Colors.white),
+          suffixIcon:
+              isPassword
+                  ? IconButton(
+                    icon: Icon(
+                      obscureText ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  )
+                  : Icon(icon, color: Colors.white),
           fillColor: Colors.white,
           border: InputBorder.none,
         ),
@@ -247,35 +259,37 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Row(
         children: [
           Expanded(
-            child: showOption
-                ? ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: bgList.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedIndex = index;
-                          });
-                        },
-                        child: CircleAvatar(
-                          radius: 30,
-                          backgroundColor: selectedIndex == index
-                              ? Colors.white
-                              : Colors.transparent,
-                          child: Padding(
-                            padding: const EdgeInsets.all(1),
-                            child: CircleAvatar(
-                              radius: 30,
-                              backgroundImage: AssetImage(bgList[index]),
+            child:
+                showOption
+                    ? ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: bgList.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedIndex = index;
+                            });
+                          },
+                          child: CircleAvatar(
+                            radius: 30,
+                            backgroundColor:
+                                selectedIndex == index
+                                    ? Colors.white
+                                    : Colors.transparent,
+                            child: Padding(
+                              padding: const EdgeInsets.all(1),
+                              child: CircleAvatar(
+                                radius: 30,
+                                backgroundImage: AssetImage(bgList[index]),
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  )
-                : const SizedBox(),
+                        );
+                      },
+                    )
+                    : const SizedBox(),
           ),
           const SizedBox(width: 20),
           GestureDetector(

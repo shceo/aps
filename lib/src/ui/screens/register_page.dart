@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
 import 'package:aps/src/ui/screens/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -6,6 +7,7 @@ import 'package:aps/l10n/app_localizations.dart';
 import 'package:aps/main.dart';
 import 'package:aps/src/ui/components/text_u.dart';
 import 'package:aps/src/ui/constants/back_images.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key, required int selectedIndex});
@@ -34,55 +36,63 @@ class _RegisterScreenState extends State<RegisterScreen> {
     Locale('tr'),
   ];
 
-  Future<void> _register() async {
-    if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Пароли не совпадают")));
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      Dio dio = Dio();
-      Response response = await dio.post(
-        "http://127.0.0.1:8000/api/register/",
-        data: {
-          "name": _nameController.text,
-          "phone": _phoneController.text,
-          "password": _passwordController.text,
-        },
-      );
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(response.data["message"])));
-
-      if (response.statusCode == 201) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => LoginScreen(selectedIndex: selectedIndex),
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Ошибка регистрации")));
-    }
-
-    setState(() {
-      _isLoading = false;
-    });
+Future<void> _register() async {
+  if (_passwordController.text != _confirmPasswordController.text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Пароли не совпадают")),
+    );
+    return;
   }
+
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    Dio dio = Dio();
+    Response response = await dio.post(
+      "https://khaledo.pythonanywhere.com/reg/",
+      data: {
+        "first_name": _nameController.text,
+        "phone": _phoneController.text,
+        "password": _passwordController.text,
+        "password_confirm": _confirmPasswordController.text,
+      },
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(response.data["message"] ?? "Регистрация успешна"),
+      ),
+    );
+
+    if (response.statusCode == 201) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool("isLoggedIn", true);
+      await prefs.setString("userPhone", _phoneController.text);
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const MainScreen()),
+        (route) => false, // Удаляет все предыдущие экраны
+      );
+    }
+  } catch (e) {
+    print("Ошибка регистрации: $e"); // Логируем ошибку
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Ошибка регистрации")),
+    );
+  }
+
+  setState(() {
+    _isLoading = false;
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context)!;
+    final loc = AppLocalizations.of(context);
 
     return Scaffold(
       floatingActionButton: _buildThemeSwitcher(),
@@ -114,7 +124,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Переключатель языка
                     Align(
                       alignment: Alignment.centerRight,
                       child: DropdownButton<Locale>(
@@ -139,7 +148,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                       ),
                     ),
-
                     const Spacer(),
                     Center(
                       child: TextUtil(
@@ -290,7 +298,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                   )
                   : Icon(icon, color: Colors.white),
-          fillColor: Colors.white,
           border: InputBorder.none,
         ),
       ),
@@ -298,65 +305,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildThemeSwitcher() {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      height: 49,
-      width: double.infinity,
-      child: Row(
-        children: [
-          Expanded(
-            child:
-                showOption
-                    ? ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: bgList.length,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedIndex = index;
-                            });
-                          },
-                          child: CircleAvatar(
-                            radius: 30,
-                            backgroundColor:
-                                selectedIndex == index
-                                    ? Colors.white
-                                    : Colors.transparent,
-                            child: Padding(
-                              padding: const EdgeInsets.all(1),
-                              child: CircleAvatar(
-                                radius: 30,
-                                backgroundImage: AssetImage(bgList[index]),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    )
-                    : const SizedBox(),
-          ),
-          const SizedBox(width: 20),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                showOption = !showOption;
-              });
-            },
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.all(1),
-                child: CircleAvatar(
-                  radius: 30,
-                  backgroundImage: AssetImage(bgList[selectedIndex]),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    return const SizedBox(); // Оставляем заглушку для переключателя темы
   }
 }

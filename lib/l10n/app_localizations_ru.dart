@@ -36,7 +36,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get already_have_account => 'Уже есть аккаунт? Войти';
 
   @override
-  String get dont_have_account => 'Нет аккаунта? Зарегистрируйтесь';
+  String get dont_have_account => 'Нет аккаунта? Зарегистрироваться';
 
   @override
   String get phone_hint => 'Введите номер телефона';
@@ -49,4 +49,37 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get name_hint => 'Введите ваше имя';
+
+  @override
+  String get cargo_system => 'Грузовая система';
+
+  @override
+  String get cargo => 'Груз';
+
+  @override
+  String get contractors => 'Подрядчики';
+
+  @override
+  String get accounting => 'Бухгалтерия';
+
+  @override
+  String get reports => 'Отчеты';
+
+  @override
+  String get setup => 'Настройки и информация';
+
+  @override
+  String get settings => 'Настройки';
+
+  @override
+  String get flights => 'Рейсы';
+
+  @override
+  String get flight_plan => 'План полета';
+
+  @override
+  String get plane_layout => 'Схема самолета';
+
+  @override
+  String get payload_info => 'Информация о грузе';
 }

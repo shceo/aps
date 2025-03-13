@@ -1,4 +1,5 @@
 {
+  "@@locale": "ru",
   "login": "Вход",
   "register": "Регистрация",
   "phone": "Телефон",
@@ -8,9 +9,20 @@
   "log_in": "Войти",
   "sign_up": "Зарегистрироваться",
   "already_have_account": "Уже есть аккаунт? Войти",
-  "dont_have_account": "Нет аккаунта? Зарегистрируйтесь",
+  "dont_have_account": "Нет аккаунта? Зарегистрироваться",
   "phone_hint": "Введите номер телефона",
   "password_hint": "Введите пароль",
   "confirm_password_hint": "Повторите пароль",
-  "name_hint": "Введите ваше имя"
+  "name_hint": "Введите ваше имя",
+  "cargo_system": "Грузовая система",
+  "cargo": "Груз",
+  "contractors": "Подрядчики",
+  "accounting": "Бухгалтерия",
+  "reports": "Отчеты",
+  "setup": "Настройки и информация",
+  "settings": "Настройки",
+  "flights": "Рейсы",
+  "flight_plan": "План полета",
+  "plane_layout": "Схема самолета",
+  "payload_info": "Информация о грузе"
 }

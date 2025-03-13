@@ -1,4 +1,5 @@
 {
+  "@@locale": "zh",
   "login": "登录",
   "register": "注册",
   "phone": "电话",
@@ -7,10 +8,21 @@
   "name": "姓名",
   "log_in": "登录",
   "sign_up": "注册",
-  "already_have_account": "已有账户？登录",
-  "dont_have_account": "没有账户？注册",
+  "already_have_account": "已有账户？ 登录",
+  "dont_have_account": "没有账户？ 注册",
   "phone_hint": "输入电话号码",
   "password_hint": "输入密码",
-  "confirm_password_hint": "重复密码",
-  "name_hint": "输入您的姓名"
+  "confirm_password_hint": "重复输入密码",
+  "name_hint": "输入您的姓名",
+  "cargo_system": "货运系统",
+  "cargo": "货物",
+  "contractors": "承包商",
+  "accounting": "会计",
+  "reports": "报告",
+  "setup": "信息和设置",
+  "settings": "设置",
+  "flights": "航班",
+  "flight_plan": "飞行计划",
+  "plane_layout": "飞机布局",
+  "payload_info": "货物信息"
 }

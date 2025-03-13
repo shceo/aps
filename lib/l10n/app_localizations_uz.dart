@@ -36,7 +36,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get already_have_account => 'Allaqachon hisobingiz bormi? Kirish';
 
   @override
-  String get dont_have_account => 'Hisobingiz yo\'qmi? Ro\'yxatdan o\'ting';
+  String get dont_have_account => 'Hisobingiz yo\'qmi? Ro\'yxatdan o\'tish';
 
   @override
   String get phone_hint => 'Telefon raqamingizni kiriting';
@@ -45,8 +45,41 @@ class AppLocalizationsUz extends AppLocalizations {
   String get password_hint => 'Parolni kiriting';
 
   @override
-  String get confirm_password_hint => 'Parolni takrorlang';
+  String get confirm_password_hint => 'Parolni qayta kiriting';
 
   @override
   String get name_hint => 'Ismingizni kiriting';
+
+  @override
+  String get cargo_system => 'Yuk Tizimi';
+
+  @override
+  String get cargo => 'Yuk';
+
+  @override
+  String get contractors => 'Kontraktorlar';
+
+  @override
+  String get accounting => 'Buxgalteriya';
+
+  @override
+  String get reports => 'Hisobotlar';
+
+  @override
+  String get setup => 'Ma\'lumot va sozlamalar';
+
+  @override
+  String get settings => 'Sozlamalar';
+
+  @override
+  String get flights => 'Parvozlar';
+
+  @override
+  String get flight_plan => 'Parvoz rejasi';
+
+  @override
+  String get plane_layout => 'Samolyot sxemasi';
+
+  @override
+  String get payload_info => 'Yuk ma\'lumotlari';
 }

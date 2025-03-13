@@ -49,4 +49,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get name_hint => 'Enter your name';
+
+  @override
+  String get cargo_system => 'Cargo System';
+
+  @override
+  String get cargo => 'Cargo';
+
+  @override
+  String get contractors => 'Contractors';
+
+  @override
+  String get accounting => 'Accounting';
+
+  @override
+  String get reports => 'Reports';
+
+  @override
+  String get setup => 'Info & Setup';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get flights => 'Flights';
+
+  @override
+  String get flight_plan => 'Flight Plan';
+
+  @override
+  String get plane_layout => 'Plane Layout';
+
+  @override
+  String get payload_info => 'Payload Info';
 }

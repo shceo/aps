@@ -1,4 +1,5 @@
 {
+  "@@locale": "en",
   "login": "Login",
   "register": "Sign Up",
   "phone": "Phone",
@@ -12,5 +13,16 @@
   "phone_hint": "Enter phone number",
   "password_hint": "Enter password",
   "confirm_password_hint": "Repeat password",
-  "name_hint": "Enter your name"
+  "name_hint": "Enter your name",
+  "cargo_system": "Cargo System",
+  "cargo": "Cargo",
+  "contractors": "Contractors",
+  "accounting": "Accounting",
+  "reports": "Reports",
+  "setup": "Info & Setup",
+  "settings": "Settings",
+  "flights": "Flights",
+  "flight_plan": "Flight Plan",
+  "plane_layout": "Plane Layout",
+  "payload_info": "Payload Info"
 }
