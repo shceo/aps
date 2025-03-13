@@ -1,10 +1,52 @@
 import 'package:aps/l10n/app_localizations.dart';
+import 'package:aps/src/ui/screens/auth_screen.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
 
   static const double webBreakpoint = 900;
+  
+ Future<void> _logout(BuildContext context) async {
+  try {
+    print("⏳ Отправка запроса на logout...");
+    Dio dio = Dio();
+    final response = await dio.get("https://khaledo.pythonanywhere.com/logout");
+
+    print("📩 Ответ от сервера: ${response.statusCode}"); // Лог ответа сервера
+
+    if (response.statusCode == 200) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.clear(); // Очищаем сохраненные данные
+      print("✅ Выход выполнен, данные очищены."); // Лог успешного выхода
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginScreen(
+            selectedIndex: 0,
+            onLoginSuccess: () {},
+            onRegisterTapped: () {},
+          ),
+        ),
+      ); // Возвращаем на экран входа
+      print("🔄 Переход на экран входа..."); // Лог перехода на LoginScreen
+    } else {
+      print("⚠ Ошибка выхода: статус ${response.statusCode}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Ошибка выхода, попробуйте снова")),
+      );
+    }
+  } catch (e) {
+    print("❌ Ошибка выхода: $e"); // Лог ошибки
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Ошибка выхода: $e")),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -73,10 +115,7 @@ class MainScreen extends StatelessWidget {
   }
 
   Widget _topBarButton(String text) {
-    return TextButton(
-      onPressed: () {},
-      child: Text(text),
-    );
+    return TextButton(onPressed: () {}, child: Text(text));
   }
 
   // ---------------------------------------------------------------------------
@@ -95,7 +134,8 @@ class MainScreen extends StatelessWidget {
         ),
         centerTitle: false,
         iconTheme: const IconThemeData(color: Colors.black87),
-        actions: [ // Перенёс бургер в `actions`
+        actions: [
+          // Перенёс бургер в `actions`
           Builder(
             builder: (context) {
               return IconButton(
@@ -108,40 +148,41 @@ class MainScreen extends StatelessWidget {
           ),
         ],
       ),
-      endDrawer: _buildDrawer(loc), // Бургер-меню теперь справа
+      endDrawer: _buildDrawer(loc, context), // Бургер-меню теперь справа
       body: _buildMainContent(loc),
       bottomNavigationBar: _buildBottomNavBar(loc), // Вернул нижний навбар
     );
   }
 
-  Widget _buildDrawer(AppLocalizations loc) {
-    return Drawer(
-      child: ListView(
-        children: [
-          DrawerHeader(
-            decoration: BoxDecoration(color: Colors.blueAccent),
-            child: Text(
-              loc.cargo_system,
-              style: const TextStyle(color: Colors.white, fontSize: 20),
-            ),
+  Widget _buildDrawer(AppLocalizations loc, BuildContext context) {
+  return Drawer(
+    child: ListView(
+      children: [
+        DrawerHeader(
+          decoration: BoxDecoration(color: Colors.blueAccent),
+          child: Text(
+            loc.cargo_system,
+            style: const TextStyle(color: Colors.white, fontSize: 20),
           ),
-          _drawerItem(loc.cargo, Icons.business_center),
-          _drawerItem(loc.contractors, Icons.people),
-          _drawerItem(loc.accounting, Icons.attach_money),
-          _drawerItem(loc.reports, Icons.insert_chart),
-          _drawerItem(loc.setup, Icons.info),
-          _drawerItem(loc.settings, Icons.settings),
-        ],
-      ),
-    );
-  }
+        ),
+        _drawerItem(loc.cargo, Icons.business_center),
+        InkWell(
+          onTap: () => _logout(context), 
+          child: _drawerItem(loc.contractors, Icons.people),
+        ),
+        _drawerItem(loc.accounting, Icons.attach_money),
+        _drawerItem(loc.reports, Icons.insert_chart),
+        _drawerItem(loc.setup, Icons.info),
+        _drawerItem(loc.settings, Icons.settings),
+      ],
+    ),
+  );
+}
+
+
 
   Widget _drawerItem(String title, IconData icon) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
-      onTap: () {},
-    );
+    return ListTile(leading: Icon(icon), title: Text(title), onTap: () {});
   }
 
   // ---------------------------------------------------------------------------
@@ -160,11 +201,7 @@ class MainScreen extends StatelessWidget {
   }
 
   Widget _sideBarItem(String title, IconData icon) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
-      onTap: () {},
-    );
+    return ListTile(leading: Icon(icon), title: Text(title), onTap: () {});
   }
 
   // ---------------------------------------------------------------------------
@@ -227,10 +264,7 @@ class MainScreen extends StatelessWidget {
   }
 
   Widget _infoChip(String label) {
-    return Chip(
-      label: Text(label),
-      backgroundColor: Colors.blueGrey[50],
-    );
+    return Chip(label: Text(label), backgroundColor: Colors.blueGrey[50]);
   }
 
   Widget _buildPlaneLayout(AppLocalizations loc) {
@@ -241,10 +275,7 @@ class MainScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       alignment: Alignment.center,
-      child: Text(
-        loc.plane_layout,
-        textAlign: TextAlign.center,
-      ),
+      child: Text(loc.plane_layout, textAlign: TextAlign.center),
     );
   }
 
@@ -275,12 +306,7 @@ class MainScreen extends StatelessWidget {
   Widget _payloadItem(String id, String weight) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Expanded(child: Text(id)),
-          Text(weight),
-        ],
-      ),
+      child: Row(children: [Expanded(child: Text(id)), Text(weight)]),
     );
   }
 
@@ -292,9 +318,18 @@ class MainScreen extends StatelessWidget {
       selectedItemColor: Colors.blueAccent,
       unselectedItemColor: Colors.grey,
       items: [
-        BottomNavigationBarItem(icon: const Icon(Icons.flight_takeoff), label: loc.flights),
-        BottomNavigationBarItem(icon: const Icon(Icons.business_center), label: loc.cargo),
-        BottomNavigationBarItem(icon: const Icon(Icons.attach_money), label: loc.accounting),
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.flight_takeoff),
+          label: loc.flights,
+        ),
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.business_center),
+          label: loc.cargo,
+        ),
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.attach_money),
+          label: loc.accounting,
+        ),
         BottomNavigationBarItem(icon: const Icon(Icons.info), label: loc.setup),
       ],
     );

@@ -4,20 +4,31 @@ import 'package:aps/src/ui/screens/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:aps/l10n/app_localizations.dart';
-import 'package:aps/main.dart';
+import 'package:aps/main.dart' as main_app;
 import 'package:aps/src/ui/components/text_u.dart';
 import 'package:aps/src/ui/constants/back_images.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key, required int selectedIndex});
+  const RegisterScreen({
+    super.key,
+    required this.selectedIndex,
+    // Callback, вызываемый при успешной регистрации, чтобы перейти на MainScreen.
+    required this.onRegisterSuccess,
+    // Callback, вызываемый для перехода на LoginScreen ("Уже есть аккаунт? Войти")
+    required this.onSwitchToLogin,
+  });
+
+  final int selectedIndex;
+  final VoidCallback onRegisterSuccess;
+  final VoidCallback onSwitchToLogin;
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  int selectedIndex = 0;
+  late int selectedIndex;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   final TextEditingController _nameController = TextEditingController();
@@ -36,59 +47,62 @@ class _RegisterScreenState extends State<RegisterScreen> {
     Locale('tr'),
   ];
 
-Future<void> _register() async {
-  if (_passwordController.text != _confirmPasswordController.text) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Пароли не совпадают")),
-    );
-    return;
+  @override
+  void initState() {
+    super.initState();
+    selectedIndex = widget.selectedIndex;
   }
 
-  setState(() {
-    _isLoading = true;
-  });
+  Future<void> _register() async {
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Пароли не совпадают")),
+      );
+      return;
+    }
 
-  try {
-    Dio dio = Dio();
-    Response response = await dio.post(
-      "https://khaledo.pythonanywhere.com/reg/",
-      data: {
-        "first_name": _nameController.text,
-        "phone": _phoneController.text,
-        "password": _passwordController.text,
-        "password_confirm": _confirmPasswordController.text,
-      },
-    );
+    setState(() {
+      _isLoading = true;
+    });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(response.data["message"] ?? "Регистрация успешна"),
-      ),
-    );
+    try {
+      Dio dio = Dio();
+      Response response = await dio.post(
+        "https://khaledo.pythonanywhere.com/reg/",
+        data: {
+          "first_name": _nameController.text,
+          "phone": _phoneController.text,
+          "password": _passwordController.text,
+          "password_confirm": _confirmPasswordController.text,
+        },
+      );
 
-    if (response.statusCode == 201) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool("isLoggedIn", true);
-      await prefs.setString("userPhone", _phoneController.text);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text(response.data["message"] ?? "Регистрация успешна"),
+        ),
+      );
 
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const MainScreen()),
-        (route) => false, // Удаляет все предыдущие экраны
+      if (response.statusCode == 201) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool("isLoggedIn", true);
+        await prefs.setString("userPhone", _phoneController.text);
+
+        // Вместо императивного перехода вызываем callback
+        widget.onRegisterSuccess();
+      }
+    } catch (e) {
+      print("Ошибка регистрации: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Ошибка регистрации")),
       );
     }
-  } catch (e) {
-    print("Ошибка регистрации: $e"); // Логируем ошибку
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Ошибка регистрации")),
-    );
+
+    setState(() {
+      _isLoading = false;
+    });
   }
-
-  setState(() {
-    _isLoading = false;
-  });
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -131,19 +145,18 @@ Future<void> _register() async {
                         dropdownColor: Colors.black,
                         icon: const Icon(Icons.language, color: Colors.white),
                         underline: const SizedBox(),
-                        items:
-                            _supportedLocales.map((locale) {
-                              return DropdownMenuItem(
-                                value: locale,
-                                child: Text(
-                                  locale.languageCode.toUpperCase(),
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              );
-                            }).toList(),
+                        items: _supportedLocales.map((locale) {
+                          return DropdownMenuItem(
+                            value: locale,
+                            child: Text(
+                              locale.languageCode.toUpperCase(),
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          );
+                        }).toList(),
                         onChanged: (Locale? newLocale) {
                           if (newLocale != null) {
-                            MyApp.setLocale(context, newLocale);
+                            main_app.MyApp.setLocale(context, newLocale);
                           }
                         },
                       ),
@@ -157,7 +170,6 @@ Future<void> _register() async {
                       ),
                     ),
                     const Spacer(),
-
                     // Поле "Имя"
                     TextUtil(text: loc.name),
                     _buildTextField(
@@ -166,9 +178,7 @@ Future<void> _register() async {
                       hintText: loc.name_hint,
                       obscureText: false,
                     ),
-
                     const Spacer(),
-
                     // Поле "Телефон"
                     TextUtil(text: loc.phone),
                     _buildTextField(
@@ -177,9 +187,7 @@ Future<void> _register() async {
                       hintText: loc.phone_hint,
                       obscureText: false,
                     ),
-
                     const Spacer(),
-
                     // Поле "Пароль"
                     TextUtil(text: loc.password),
                     _buildTextField(
@@ -189,9 +197,7 @@ Future<void> _register() async {
                       obscureText: _obscurePassword,
                       isPassword: true,
                     ),
-
                     const Spacer(),
-
                     // Поле "Подтвердите пароль"
                     TextUtil(text: loc.confirm_password),
                     _buildTextField(
@@ -202,9 +208,7 @@ Future<void> _register() async {
                       isPassword: true,
                       isConfirmPassword: true,
                     ),
-
                     const Spacer(),
-
                     // Кнопка регистрации
                     GestureDetector(
                       onTap: _isLoading ? null : _register,
@@ -216,29 +220,20 @@ Future<void> _register() async {
                           borderRadius: BorderRadius.circular(30),
                         ),
                         alignment: Alignment.center,
-                        child:
-                            _isLoading
-                                ? const CircularProgressIndicator()
-                                : TextUtil(
-                                  text: loc.register,
-                                  color: Colors.black,
-                                ),
+                        child: _isLoading
+                            ? const CircularProgressIndicator()
+                            : TextUtil(
+                                text: loc.register,
+                                color: Colors.black,
+                              ),
                       ),
                     ),
-
                     const Spacer(),
-
                     // Кнопка "Уже есть аккаунт? Войти"
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) =>
-                                    LoginScreen(selectedIndex: selectedIndex),
-                          ),
-                        );
+                        // Вместо Navigator.pushReplacement вызываем callback для перехода на LoginScreen.
+                        widget.onSwitchToLogin();
                       },
                       child: Center(
                         child: TextUtil(
@@ -248,7 +243,6 @@ Future<void> _register() async {
                         ),
                       ),
                     ),
-
                     const Spacer(),
                   ],
                 ),
@@ -280,24 +274,23 @@ Future<void> _register() async {
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: const TextStyle(color: Colors.grey),
-          suffixIcon:
-              isPassword || isConfirmPassword
-                  ? IconButton(
-                    icon: Icon(
-                      obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        if (isConfirmPassword) {
-                          _obscureConfirmPassword = !_obscureConfirmPassword;
-                        } else {
-                          _obscurePassword = !_obscurePassword;
-                        }
-                      });
-                    },
-                  )
-                  : Icon(icon, color: Colors.white),
+          suffixIcon: isPassword || isConfirmPassword
+              ? IconButton(
+                  icon: Icon(
+                    obscureText ? Icons.visibility_off : Icons.visibility,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      if (isConfirmPassword) {
+                        _obscureConfirmPassword = !_obscureConfirmPassword;
+                      } else {
+                        _obscurePassword = !_obscurePassword;
+                      }
+                    });
+                  },
+                )
+              : Icon(icon, color: Colors.white),
           border: InputBorder.none,
         ),
       ),
@@ -305,6 +298,63 @@ Future<void> _register() async {
   }
 
   Widget _buildThemeSwitcher() {
-    return const SizedBox(); // Оставляем заглушку для переключателя темы
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      height: 49,
+      width: double.infinity,
+      child: Row(
+        children: [
+          Expanded(
+            child: showOption
+                ? ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: bgList.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedIndex = index;
+                          });
+                        },
+                        child: CircleAvatar(
+                          radius: 30,
+                          backgroundColor: selectedIndex == index
+                              ? Colors.white
+                              : Colors.transparent,
+                          child: Padding(
+                            padding: const EdgeInsets.all(1),
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundImage: AssetImage(bgList[index]),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : const SizedBox(),
+          ),
+          const SizedBox(width: 20),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                showOption = !showOption;
+              });
+            },
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(1),
+                child: CircleAvatar(
+                  radius: 30,
+                  backgroundImage: AssetImage(bgList[selectedIndex]),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

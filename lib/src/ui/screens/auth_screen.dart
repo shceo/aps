@@ -1,17 +1,27 @@
 import 'dart:ui';
+import 'package:aps/main.dart' show MyApp;
 import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
 import 'package:aps/src/ui/screens/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:aps/l10n/app_localizations.dart';
-import 'package:aps/main.dart';
 import 'package:aps/src/ui/components/text_u.dart';
 import 'package:aps/src/ui/constants/back_images.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   final int selectedIndex;
-  const LoginScreen({super.key, required this.selectedIndex});
+  // Callback, вызываемый при успешном логине, чтобы изменить состояние навигации.
+  final VoidCallback onLoginSuccess;
+  // Callback, вызываемый при переходе на RegisterScreen.
+  final VoidCallback onRegisterTapped;
+
+  const LoginScreen({
+    super.key,
+    required this.selectedIndex,
+    required this.onLoginSuccess,
+    required this.onRegisterTapped,
+  });
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -47,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       Dio dio = Dio();
       Response response = await dio.post(
-        "https://khaledo.pythonanywhere.com/login/", //
+        "https://khaledo.pythonanywhere.com/login/",
         data: {
           "phone": _phoneController.text,
           "password": _passwordController.text,
@@ -59,20 +69,18 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setBool("isLoggedIn", true);
         await prefs.setString("userPhone", _phoneController.text);
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainScreen()),
-        );
+        // Вместо императивной навигации вызываем callback, чтобы изменить состояние логина.
+        widget.onLoginSuccess();
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(response.data["message"])));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response.data["message"])),
+        );
       }
     } catch (e) {
       print("Ошибка входа: $e");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Ошибка входа")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Ошибка входа")),
+      );
     }
 
     setState(() {
@@ -82,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context);
+final loc = AppLocalizations.of(context);
 
     return Scaffold(
       floatingActionButton: _buildThemeSwitcher(),
@@ -117,22 +125,23 @@ class _LoginScreenState extends State<LoginScreen> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: DropdownButton<Locale>(
-                        value: Localizations.localeOf(context),
+                      value: Localizations.localeOf(context) ?? const Locale('ru'),
+
                         dropdownColor: Colors.black,
                         icon: const Icon(Icons.language, color: Colors.white),
                         underline: const SizedBox(),
-                        items:
-                            _supportedLocales.map((locale) {
-                              return DropdownMenuItem(
-                                value: locale,
-                                child: Text(
-                                  locale.languageCode.toUpperCase(),
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              );
-                            }).toList(),
+                        items: _supportedLocales.map((locale) {
+                          return DropdownMenuItem(
+                            value: locale,
+                            child: Text(
+                              locale.languageCode.toUpperCase(),
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          );
+                        }).toList(),
                         onChanged: (Locale? newLocale) {
                           if (newLocale != null) {
+                            // Вызываем статический метод для смены локали.
                             MyApp.setLocale(context, newLocale);
                           }
                         },
@@ -140,7 +149,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const Spacer(),
                     Center(
-                      child: TextUtil(text: loc.login, weight: true, size: 30),
+                      child:
+                          TextUtil(text: loc.login, weight: true, size: 30),
                     ),
                     const Spacer(),
                     TextUtil(text: loc.phone),
@@ -170,27 +180,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(30),
                         ),
                         alignment: Alignment.center,
-                        child:
-                            _isLoading
-                                ? const CircularProgressIndicator()
-                                : TextUtil(
-                                  text: loc.log_in,
-                                  color: Colors.black,
-                                ),
+                        child: _isLoading
+                            ? const CircularProgressIndicator()
+                            : TextUtil(
+                                text: loc.log_in,
+                                color: Colors.black,
+                              ),
                       ),
                     ),
                     const Spacer(),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) => RegisterScreen(
-                                  selectedIndex: selectedIndex,
-                                ),
-                          ),
-                        );
+                        // Вызываем callback для перехода на RegisterScreen через Navigator 2.0.
+                        widget.onRegisterTapped();
                       },
                       child: Center(
                         child: TextUtil(
@@ -230,20 +232,19 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: const TextStyle(color: Colors.grey),
-          suffixIcon:
-              isPassword
-                  ? IconButton(
-                    icon: Icon(
-                      obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
-                  )
-                  : Icon(icon, color: Colors.white),
+          suffixIcon: isPassword
+              ? IconButton(
+                  icon: Icon(
+                    obscureText ? Icons.visibility_off : Icons.visibility,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                )
+              : Icon(icon, color: Colors.white),
           fillColor: Colors.white,
           border: InputBorder.none,
         ),
@@ -259,37 +260,35 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Row(
         children: [
           Expanded(
-            child:
-                showOption
-                    ? ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: bgList.length,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedIndex = index;
-                            });
-                          },
-                          child: CircleAvatar(
-                            radius: 30,
-                            backgroundColor:
-                                selectedIndex == index
-                                    ? Colors.white
-                                    : Colors.transparent,
-                            child: Padding(
-                              padding: const EdgeInsets.all(1),
-                              child: CircleAvatar(
-                                radius: 30,
-                                backgroundImage: AssetImage(bgList[index]),
-                              ),
+            child: showOption
+                ? ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: bgList.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedIndex = index;
+                          });
+                        },
+                        child: CircleAvatar(
+                          radius: 30,
+                          backgroundColor: selectedIndex == index
+                              ? Colors.white
+                              : Colors.transparent,
+                          child: Padding(
+                            padding: const EdgeInsets.all(1),
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundImage: AssetImage(bgList[index]),
                             ),
                           ),
-                        );
-                      },
-                    )
-                    : const SizedBox(),
+                        ),
+                      );
+                    },
+                  )
+                : const SizedBox(),
           ),
           const SizedBox(width: 20),
           GestureDetector(
