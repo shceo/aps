@@ -25,47 +25,44 @@ class AppRoutePath {
   final bool isRegister;
 
   AppRoutePath.home()
-    : isHome = true,
-      isLogin = false,
-      isAdmin = false,
-      isRegister = false,
-      isUnknown = false;
+      : isHome = true,
+        isLogin = false,
+        isAdmin = false,
+        isRegister = false,
+        isUnknown = false;
 
   AppRoutePath.login()
-    : isHome = false,
-      isLogin = true,
-      isAdmin = false,
-      isRegister = false,
-      isUnknown = false;
+      : isHome = false,
+        isLogin = true,
+        isAdmin = false,
+        isRegister = false,
+        isUnknown = false;
 
   AppRoutePath.admin()
-    : isHome = false,
-      isLogin = false,
-      isAdmin = true,
-      isRegister = false,
-      isUnknown = false;
+      : isHome = false,
+        isLogin = false,
+        isAdmin = true,
+        isRegister = false,
+        isUnknown = false;
 
   AppRoutePath.register()
-    : isHome = false,
-      isLogin = false,
-      isAdmin = false,
-      isRegister = true,
-      isUnknown = false;
+      : isHome = false,
+        isLogin = false,
+        isAdmin = false,
+        isRegister = true,
+        isUnknown = false;
 
   AppRoutePath.unknown()
-    : isHome = false,
-      isLogin = false,
-      isAdmin = false,
-      isRegister = false,
-      isUnknown = true;
+      : isHome = false,
+        isLogin = false,
+        isAdmin = false,
+        isRegister = false,
+        isUnknown = true;
 }
 
-/// Преобразователь URL в объект AppRoutePath и обратно.
 class AppRouteInformationParser extends RouteInformationParser<AppRoutePath> {
   @override
-  Future<AppRoutePath> parseRouteInformation(
-    RouteInformation routeInformation,
-  ) async {
+  Future<AppRoutePath> parseRouteInformation(RouteInformation routeInformation) async {
     final uri = Uri.parse(routeInformation.location ?? '/');
     if (uri.pathSegments.isEmpty) return AppRoutePath.home();
 
@@ -91,15 +88,13 @@ class AppRouteInformationParser extends RouteInformationParser<AppRoutePath> {
   }
 }
 
-/// RouterDelegate для управления навигацией.
 class AppRouterDelegate extends RouterDelegate<AppRoutePath>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<AppRoutePath> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   bool showAdmin = false;
   bool showRegister = false;
-
- bool isAdminLoggedIn = false;
+  bool isAdminLoggedIn = false;
 
   final bool isLoggedIn;
   final int selectedIndex;
@@ -117,7 +112,7 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
     if (!isUserLoggedIn && !showRegister) return AppRoutePath.login();
     if (!isUserLoggedIn && showRegister) return AppRoutePath.register();
     if (showAdmin && isUserLoggedIn) return AppRoutePath.admin();
-    return AppRoutePath.home(); // ✅ Теперь MainScreen показывается
+    return AppRoutePath.home();
   }
 
   @override
@@ -152,10 +147,9 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
               onRegisterSuccess: () async {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 await prefs.setBool("isLoggedIn", true);
-                isUserLoggedIn = true; // ✅ Теперь флаг обновляется
-                notifyListeners(); // ✅ Обновляем навигацию
+                isUserLoggedIn = true;
+                notifyListeners();
               },
-
               onSwitchToLogin: () {
                 showRegister = false;
                 notifyListeners();
@@ -169,28 +163,27 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
         MaterialPage(key: const ValueKey('MainScreen'), child: MainScreen()),
       );
       if (showAdmin) {
-  if (!isAdminLoggedIn) {
-    pages.add(
-      MaterialPage(
-        key: const ValueKey('LoginAdminScreen'),
-        child: LoginAdminScreen(
-          onAdminLoginSuccess: () async {
-            isAdminLoggedIn = true;
-            notifyListeners();
-          },
-        ),
-      ),
-    );
-  } else {
-    pages.add(
-      MaterialPage(
-        key: const ValueKey('AdminScreen'),
-        child: AdminScreen(),
-      ),
-    );
-  }
-}
-
+        if (!isAdminLoggedIn) {
+          pages.add(
+            MaterialPage(
+              key: const ValueKey('LoginAdminScreen'),
+              child: LoginAdminScreen(
+                onAdminLoginSuccess: () async {
+                  isAdminLoggedIn = true;
+                  notifyListeners();
+                },
+              ),
+            ),
+          );
+        } else {
+          pages.add(
+            MaterialPage(
+              key: const ValueKey('AdminScreen'),
+              child: AdminScreen(),
+            ),
+          );
+        }
+      }
     }
 
     return Navigator(
@@ -208,8 +201,7 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   @override
   Future<void> setNewRoutePath(AppRoutePath configuration) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    isUserLoggedIn =
-        prefs.getBool("isLoggedIn") ?? false; // ✅ Теперь проверяет логин
+    isUserLoggedIn = prefs.getBool("isLoggedIn") ?? false;
 
     if (configuration.isUnknown) {
       showAdmin = false;
@@ -222,15 +214,14 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
         showAdmin = true;
         showRegister = false;
       } else {
-        showRegister = false;
         showAdmin = false;
+        showRegister = false;
       }
     } else {
       showAdmin = false;
       showRegister = false;
     }
-
-    notifyListeners(); // ✅ Теперь обновляет UI
+    notifyListeners();
   }
 }
 
@@ -279,7 +270,7 @@ class _MyAppState extends State<MyApp> {
         setState(() {
           _routerDelegate.isUserLoggedIn = true;
         });
-        _routerDelegate.notifyListeners(); // ✅ Обновляет UI после логина
+        _routerDelegate.notifyListeners();
       },
     );
     loadSelectedIndex();
@@ -292,7 +283,6 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  /// ✅ Добавлен метод для смены языка
   void setLocale(Locale newLocale) {
     setState(() {
       _locale = newLocale;
@@ -314,6 +304,85 @@ class _MyAppState extends State<MyApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       title: 'Aps Express',
+    );
+  }
+}
+
+// Пример placeholder‑страниц для маршрутов:
+
+class FlightsPage extends StatelessWidget {
+  const FlightsPage({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Рейсы")),
+      body: const Center(child: Text("Страница Рейсы")),
+    );
+  }
+}
+
+class CargoPage extends StatelessWidget {
+  const CargoPage({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Груз")),
+      body: const Center(child: Text("Страница Груз")),
+    );
+  }
+}
+
+class ContractorsPage extends StatelessWidget {
+  const ContractorsPage({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Подрядчики")),
+      body: const Center(child: Text("Страница Подрядчики")),
+    );
+  }
+}
+
+class AccountingPage extends StatelessWidget {
+  const AccountingPage({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Бухгалтерия")),
+      body: const Center(child: Text("Страница Бухгалтерия")),
+    );
+  }
+}
+
+class ReportsPage extends StatelessWidget {
+  const ReportsPage({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Отчёты")),
+      body: const Center(child: Text("Страница Отчёты")),
+    );
+  }
+}
+
+class SetupPage extends StatelessWidget {
+  const SetupPage({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Настройка")),
+      body: const Center(child: Text("Страница Настройка")),
+    );
+  }
+}
+
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Параметры")),
+      body: const Center(child: Text("Страница Параметры")),
     );
   }
 }

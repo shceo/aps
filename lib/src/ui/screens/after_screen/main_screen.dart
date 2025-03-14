@@ -1,8 +1,6 @@
 import 'package:aps/l10n/app_localizations.dart';
-import 'package:aps/src/ui/screens/auth_screen.dart';
-import 'package:dio/dio.dart';
+import 'package:aps/main.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -17,49 +15,13 @@ class _MainScreenState extends State<MainScreen> {
 
   static const double webBreakpoint = 900;
 
-  Future<void> _logout(BuildContext context) async {
-    try {
-      print("⏳ Отправка запроса на logout...");
-      Dio dio = Dio();
-      final response = await dio.get(
-        "https://khaledo.pythonanywhere.com/logout",
-      );
-
-      print("📩 Ответ от сервера: ${response.statusCode}");
-
-      if (response.statusCode == 200) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.clear();
-        print("✅ Выход выполнен, данные очищены.");
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder:
-                (context) => LoginScreen(
-                  selectedIndex: 0,
-                  onLoginSuccess: () {},
-                  onRegisterTapped: () {},
-                ),
-          ),
-        );
-        print("🔄 Переход на экран входа...");
-      } else {
-        print("⚠ Ошибка выхода: статус ${response.statusCode}");
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Ошибка выхода, попробуйте снова")),
-        );
-      }
-    } catch (e) {
-      print("❌ Ошибка выхода: $e");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Ошибка выхода: $e")));
-    }
+  /// Метод для перехода на новую страницу.
+  void _navigateTo(Widget page) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => page),
+    );
   }
 
-  // Возвращает виджет с логотипом из ассетов.
-  // Если isWeb==true, оборачиваем в InkWell для перехода на MainScreen.
   Widget _buildAppBarTitle(bool isWeb) {
     Widget logo = Image.asset('assets/icons/logo.png', height: 30);
     if (isWeb) {
@@ -77,7 +39,6 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  // Если код заказа не подтверждён, показываем поле ввода кода. Иначе – основной контент.
   Widget _buildContent(AppLocalizations loc) {
     if (!_isOrderCodeVerified) {
       return Center(
@@ -201,6 +162,7 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  // Обновлённый Drawer с кликабельными элементами
   Widget _buildDrawer(AppLocalizations loc, BuildContext context) {
     return Drawer(
       child: ListView(
@@ -212,41 +174,104 @@ class _MainScreenState extends State<MainScreen> {
               style: const TextStyle(color: Colors.white, fontSize: 20),
             ),
           ),
-          _drawerItem(loc.cargo, Icons.business_center),
-          InkWell(
-            onTap: () => _logout(context),
-            child: _drawerItem(loc.contractors, Icons.people),
+          _drawerItem(
+            loc.cargo,
+            Icons.business_center,
+            onTap: () {
+              Navigator.of(context).pop();
+              _navigateTo(const CargoPage());
+            },
           ),
-          _drawerItem(loc.accounting, Icons.attach_money),
-          _drawerItem(loc.reports, Icons.insert_chart),
-          _drawerItem(loc.setup, Icons.info),
-          _drawerItem(loc.settings, Icons.settings),
+          _drawerItem(
+            loc.contractors,
+            Icons.people,
+            onTap: () {
+              Navigator.of(context).pop();
+              _navigateTo(const ContractorsPage());
+            },
+          ),
+          _drawerItem(
+            loc.accounting,
+            Icons.attach_money,
+            onTap: () {
+              Navigator.of(context).pop();
+              _navigateTo(const AccountingPage());
+            },
+          ),
+          _drawerItem(
+            loc.reports,
+            Icons.insert_chart,
+            onTap: () {
+              Navigator.of(context).pop();
+              _navigateTo(const ReportsPage());
+            },
+          ),
+          _drawerItem(
+            loc.setup,
+            Icons.info,
+            onTap: () {
+              Navigator.of(context).pop();
+              _navigateTo(const SetupPage());
+            },
+          ),
+          _drawerItem(
+            loc.settings,
+            Icons.settings,
+            onTap: () {
+              Navigator.of(context).pop();
+              _navigateTo(const SettingsPage());
+            },
+          ),
         ],
       ),
     );
   }
 
-  Widget _drawerItem(String title, IconData icon) {
-    return ListTile(leading: Icon(icon), title: Text(title), onTap: () {});
+  // Переопределённый метод для создания элемента Drawer с возможностью передать onTap
+  Widget _drawerItem(String title, IconData icon, {VoidCallback? onTap}) {
+    return ListTile(leading: Icon(icon), title: Text(title), onTap: onTap);
   }
 
-  // ---------------------------------------------------------------------------
-  // САЙДБАР ДЛЯ ВЕБА
-  // ---------------------------------------------------------------------------
+  // Обновлённый сайдбар для WEB-версии с кликабельными элементами
   Widget _buildSideBar(AppLocalizations loc) {
     return Column(
       children: [
         const SizedBox(height: 16),
-        _sideBarItem(loc.flights, Icons.flight_takeoff),
-        _sideBarItem(loc.cargo, Icons.business_center),
-        _sideBarItem(loc.accounting, Icons.attach_money),
-        _sideBarItem(loc.setup, Icons.info),
+        _sideBarItem(
+          loc.flights,
+          Icons.flight_takeoff,
+          onTap: () {
+            _navigateTo(const FlightsPage());
+          },
+        ),
+        _sideBarItem(
+          loc.cargo,
+          Icons.business_center,
+          onTap: () {
+            _navigateTo(const CargoPage());
+          },
+        ),
+        _sideBarItem(
+          loc.accounting,
+          Icons.attach_money,
+          onTap: () {
+            _navigateTo(const AccountingPage());
+          },
+        ),
+        _sideBarItem(
+          loc.setup,
+          Icons.info,
+          onTap: () {
+            _navigateTo(const SetupPage());
+          },
+        ),
       ],
     );
   }
 
-  Widget _sideBarItem(String title, IconData icon) {
-    return ListTile(leading: Icon(icon), title: Text(title), onTap: () {});
+  // Переопределённый метод для создания элемента сайдбара с возможностью передать onTap
+  Widget _sideBarItem(String title, IconData icon, {VoidCallback? onTap}) {
+    return ListTile(leading: Icon(icon), title: Text(title), onTap: onTap);
   }
 
   // ---------------------------------------------------------------------------
@@ -355,10 +380,28 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  // Обновлённая нижняя навигационная панель с onTap-обработчиком
   Widget _buildBottomNavBar(AppLocalizations loc) {
     return BottomNavigationBar(
       selectedItemColor: Colors.blueAccent,
       unselectedItemColor: Colors.grey,
+      currentIndex: 0, // можно реализовать сохранение индекса, если требуется
+      onTap: (index) {
+        switch (index) {
+          case 0:
+            _navigateTo(const FlightsPage());
+            break;
+          case 1:
+            _navigateTo(const CargoPage());
+            break;
+          case 2:
+            _navigateTo(const AccountingPage());
+            break;
+          case 3:
+            _navigateTo(const SetupPage());
+            break;
+        }
+      },
       items: [
         BottomNavigationBarItem(
           icon: const Icon(Icons.flight_takeoff),
@@ -372,7 +415,10 @@ class _MainScreenState extends State<MainScreen> {
           icon: const Icon(Icons.attach_money),
           label: loc.accounting,
         ),
-        BottomNavigationBarItem(icon: const Icon(Icons.info), label: loc.setup),
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.info),
+          label: loc.setup,
+        ),
       ],
     );
   }
