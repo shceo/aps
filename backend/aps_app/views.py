@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
-from .models import Branch, Receiver
+from .models import *
 
 @csrf_exempt
 def login_view(request):
@@ -88,7 +88,7 @@ def login_view_admin(request):
     return JsonResponse({'message': 'Only POST requests are allowed', 'status': 'error'}, status=405)
 
 
-@csrf_exempt  # Add CSRF exemption for logout
+@csrf_exempt
 def logout_view(request):
     if not request.user.is_authenticated:
         return JsonResponse(
@@ -182,13 +182,6 @@ def admin_registration_view(request):
             return JsonResponse({'message': 'Invalid JSON format', 'status': 'error'}, status=400)
 
     return JsonResponse({'message': 'Only POST requests are allowed', 'status': 'error'}, status=405)
-
-
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from .models import UserDevice
-from django.contrib.auth.models import User
 
 @csrf_exempt
 def register_fcm_token(request):
