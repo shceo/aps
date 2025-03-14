@@ -25,3 +25,10 @@ class Receiver(models.Model):
 
     def __str__(self):
         return f"{self.receiver.username if self.receiver else 'No User'}"
+
+
+# =============================  For Notifications ===================================
+
+class UserDevice(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    fcm_token = models.CharField(max_length=255, unique=True)
