@@ -4,58 +4,141 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
-  static const double webBreakpoint = 900;
-  
- Future<void> _logout(BuildContext context) async {
-  try {
-    print("⏳ Отправка запроса на logout...");
-    Dio dio = Dio();
-    final response = await dio.get("https://khaledo.pythonanywhere.com/logout");
-
-    print("📩 Ответ от сервера: ${response.statusCode}"); // Лог ответа сервера
-
-    if (response.statusCode == 200) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.clear(); // Очищаем сохраненные данные
-      print("✅ Выход выполнен, данные очищены."); // Лог успешного выхода
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LoginScreen(
-            selectedIndex: 0,
-            onLoginSuccess: () {},
-            onRegisterTapped: () {},
-          ),
-        ),
-      ); // Возвращаем на экран входа
-      print("🔄 Переход на экран входа..."); // Лог перехода на LoginScreen
-    } else {
-      print("⚠ Ошибка выхода: статус ${response.statusCode}");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Ошибка выхода, попробуйте снова")),
-      );
-    }
-  } catch (e) {
-    print("❌ Ошибка выхода: $e"); // Лог ошибки
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Ошибка выхода: $e")),
-    );
-  }
+  @override
+  State<MainScreen> createState() => _MainScreenState();
 }
 
+class _MainScreenState extends State<MainScreen> {
+  bool _isOrderCodeVerified = false;
+  final TextEditingController _orderCodeController = TextEditingController();
+
+  static const double webBreakpoint = 900;
+
+  Future<void> _logout(BuildContext context) async {
+    try {
+      print("⏳ Отправка запроса на logout...");
+      Dio dio = Dio();
+      final response = await dio.get(
+        "https://khaledo.pythonanywhere.com/logout",
+      );
+
+      print("📩 Ответ от сервера: ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.clear();
+        print("✅ Выход выполнен, данные очищены.");
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => LoginScreen(
+                  selectedIndex: 0,
+                  onLoginSuccess: () {},
+                  onRegisterTapped: () {},
+                ),
+          ),
+        );
+        print("🔄 Переход на экран входа...");
+      } else {
+        print("⚠ Ошибка выхода: статус ${response.statusCode}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Ошибка выхода, попробуйте снова")),
+        );
+      }
+    } catch (e) {
+      print("❌ Ошибка выхода: $e");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Ошибка выхода: $e")));
+    }
+  }
+
+  // Возвращает виджет с логотипом из ассетов.
+  // Если isWeb==true, оборачиваем в InkWell для перехода на MainScreen.
+  Widget _buildAppBarTitle(bool isWeb) {
+    Widget logo = Image.asset('assets/icons/logo.png', height: 30);
+    if (isWeb) {
+      return InkWell(
+        onTap: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const MainScreen()),
+          );
+        },
+        child: logo,
+      );
+    } else {
+      return logo;
+    }
+  }
+
+  // Если код заказа не подтверждён, показываем поле ввода кода. Иначе – основной контент.
+  Widget _buildContent(AppLocalizations loc) {
+    if (!_isOrderCodeVerified) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Введите код заказа",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _orderCodeController,
+                decoration: InputDecoration(
+                  hintText: "Например, 1234",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                ),
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 18),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  if (_orderCodeController.text == "1234") {
+                    setState(() {
+                      _isOrderCodeVerified = true;
+                    });
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Неверный код заказа")),
+                    );
+                  }
+                },
+                child: const Text("Подтвердить"),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return _buildMainContent(loc);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth >= webBreakpoint) {
-          return _buildWebLayout(context);
+          return _buildWebLayout(context, loc);
         } else {
-          return _buildMobileLayout(context);
+          return _buildMobileLayout(context, loc);
         }
       },
     );
@@ -64,14 +147,12 @@ class MainScreen extends StatelessWidget {
   // ---------------------------------------------------------------------------
   // WEB-ВЕРСТКА
   // ---------------------------------------------------------------------------
-  Widget _buildWebLayout(BuildContext context) {
-    final loc = AppLocalizations.of(context);
-
+  Widget _buildWebLayout(BuildContext context, AppLocalizations loc) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 2,
-        title: _buildTopBarWeb(loc),
+        title: _buildAppBarTitle(true),
         centerTitle: false,
         automaticallyImplyLeading: false,
       ),
@@ -83,59 +164,25 @@ class MainScreen extends StatelessWidget {
             child: _buildSideBar(loc),
           ),
           Expanded(
-            child: Container(
-              color: Colors.white,
-              child: _buildMainContent(loc),
-            ),
+            child: Container(color: Colors.white, child: _buildContent(loc)),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTopBarWeb(AppLocalizations loc) {
-    return Row(
-      children: [
-        Text(
-          loc.cargo_system,
-          style: const TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(width: 40),
-        _topBarButton(loc.cargo),
-        _topBarButton(loc.contractors),
-        _topBarButton(loc.accounting),
-        _topBarButton(loc.reports),
-        _topBarButton(loc.setup),
-        _topBarButton(loc.settings),
-      ],
-    );
-  }
-
-  Widget _topBarButton(String text) {
-    return TextButton(onPressed: () {}, child: Text(text));
-  }
-
   // ---------------------------------------------------------------------------
   // МОБИЛЬНАЯ ВЕРСТКА
   // ---------------------------------------------------------------------------
-  Widget _buildMobileLayout(BuildContext context) {
-    final loc = AppLocalizations.of(context);
-
+  Widget _buildMobileLayout(BuildContext context, AppLocalizations loc) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 2,
-        title: Text(
-          loc.cargo_system,
-          style: const TextStyle(color: Colors.black87),
-        ),
+        title: _buildAppBarTitle(false),
         centerTitle: false,
         iconTheme: const IconThemeData(color: Colors.black87),
         actions: [
-          // Перенёс бургер в `actions`
           Builder(
             builder: (context) {
               return IconButton(
@@ -148,38 +195,36 @@ class MainScreen extends StatelessWidget {
           ),
         ],
       ),
-      endDrawer: _buildDrawer(loc, context), // Бургер-меню теперь справа
-      body: _buildMainContent(loc),
-      bottomNavigationBar: _buildBottomNavBar(loc), // Вернул нижний навбар
+      endDrawer: _buildDrawer(loc, context),
+      body: _buildContent(loc),
+      bottomNavigationBar: _buildBottomNavBar(loc),
     );
   }
 
   Widget _buildDrawer(AppLocalizations loc, BuildContext context) {
-  return Drawer(
-    child: ListView(
-      children: [
-        DrawerHeader(
-          decoration: BoxDecoration(color: Colors.blueAccent),
-          child: Text(
-            loc.cargo_system,
-            style: const TextStyle(color: Colors.white, fontSize: 20),
+    return Drawer(
+      child: ListView(
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(color: Colors.blueAccent),
+            child: Text(
+              loc.cargo_system,
+              style: const TextStyle(color: Colors.white, fontSize: 20),
+            ),
           ),
-        ),
-        _drawerItem(loc.cargo, Icons.business_center),
-        InkWell(
-          onTap: () => _logout(context), 
-          child: _drawerItem(loc.contractors, Icons.people),
-        ),
-        _drawerItem(loc.accounting, Icons.attach_money),
-        _drawerItem(loc.reports, Icons.insert_chart),
-        _drawerItem(loc.setup, Icons.info),
-        _drawerItem(loc.settings, Icons.settings),
-      ],
-    ),
-  );
-}
-
-
+          _drawerItem(loc.cargo, Icons.business_center),
+          InkWell(
+            onTap: () => _logout(context),
+            child: _drawerItem(loc.contractors, Icons.people),
+          ),
+          _drawerItem(loc.accounting, Icons.attach_money),
+          _drawerItem(loc.reports, Icons.insert_chart),
+          _drawerItem(loc.setup, Icons.info),
+          _drawerItem(loc.settings, Icons.settings),
+        ],
+      ),
+    );
+  }
 
   Widget _drawerItem(String title, IconData icon) {
     return ListTile(leading: Icon(icon), title: Text(title), onTap: () {});
@@ -205,7 +250,7 @@ class MainScreen extends StatelessWidget {
   }
 
   // ---------------------------------------------------------------------------
-  // ОСНОВНОЙ КОНТЕНТ
+  // ОСНОВНОЙ КОНТЕНТ (после подтверждения кода)
   // ---------------------------------------------------------------------------
   Widget _buildMainContent(AppLocalizations loc) {
     return SingleChildScrollView(
@@ -310,9 +355,6 @@ class MainScreen extends StatelessWidget {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // НИЖНИЙ НАВБАР ДЛЯ МОБИЛЬНОЙ ВЕРСИИ
-  // ---------------------------------------------------------------------------
   Widget _buildBottomNavBar(AppLocalizations loc) {
     return BottomNavigationBar(
       selectedItemColor: Colors.blueAccent,

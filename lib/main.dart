@@ -1,4 +1,5 @@
 import 'package:aps/src/ui/screens/admin_panel/admin_screen.dart';
+import 'package:aps/src/ui/screens/admin_panel/login_admin_screen.dart';
 import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
 import 'package:aps/src/ui/screens/after_screen/notfoundscreen.dart';
 import 'package:aps/src/ui/screens/auth_screen.dart';
@@ -98,6 +99,8 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   bool showAdmin = false;
   bool showRegister = false;
 
+ bool isAdminLoggedIn = false;
+
   final bool isLoggedIn;
   final int selectedIndex;
   final VoidCallback onLoginSuccess;
@@ -166,13 +169,28 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
         MaterialPage(key: const ValueKey('MainScreen'), child: MainScreen()),
       );
       if (showAdmin) {
-        pages.add(
-          MaterialPage(
-            key: const ValueKey('AdminScreen'),
-            child: AdminScreen(),
-          ),
-        );
-      }
+  if (!isAdminLoggedIn) {
+    pages.add(
+      MaterialPage(
+        key: const ValueKey('LoginAdminScreen'),
+        child: LoginAdminScreen(
+          onAdminLoginSuccess: () async {
+            isAdminLoggedIn = true;
+            notifyListeners();
+          },
+        ),
+      ),
+    );
+  } else {
+    pages.add(
+      MaterialPage(
+        key: const ValueKey('AdminScreen'),
+        child: AdminScreen(),
+      ),
+    );
+  }
+}
+
     }
 
     return Navigator(
