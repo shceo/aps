@@ -10,5 +10,8 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ]
+  ],
+  "scripts": {
+    "build": "flutter build web --release"
+  }
 }
