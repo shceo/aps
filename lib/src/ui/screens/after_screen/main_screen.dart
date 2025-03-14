@@ -16,14 +16,30 @@ class _MainScreenState extends State<MainScreen> {
   final TextEditingController _orderCodeController = TextEditingController();
   static const double webBreakpoint = 900;
 
-  // Новый индекс для навигации
+  // Индекс для табовой навигации (IndexedStack)
   int _currentIndex = 0;
 
-  /// Метод для перехода на новую страницу (используется только для бургер-меню)
-  void _navigateTo(Widget page) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => page),
-    );
+  // Список дополнительных страниц для Navigator 2.0
+  final List<Page> _childPages = [];
+
+  /// Добавляет новую страницу в стек Navigator (Navigator 2.0)
+  void _pushPage(Widget page) {
+    setState(() {
+      _childPages.add(
+        MaterialPage(
+          key: ValueKey(page.runtimeType.toString() +
+              DateTime.now().millisecondsSinceEpoch.toString()),
+          child: page,
+        ),
+      );
+    });
+  }
+
+  /// Сбрасывает вложенную навигацию (возвращает на главный экран)
+  void _popToMain() {
+    setState(() {
+      _childPages.clear();
+    });
   }
 
   Widget _buildAppBarTitle(bool isWeb) {
@@ -31,10 +47,8 @@ class _MainScreenState extends State<MainScreen> {
     if (isWeb) {
       return InkWell(
         onTap: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const MainScreen()),
-          );
+          // При нажатии возвращаемся к главной странице (сбрасываем вложенные страницы)
+          _popToMain();
         },
         child: logo,
       );
@@ -43,60 +57,65 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  /// В зависимости от состояния верификации кода отображаем либо проверку, либо основной контент с переключением страниц
-  Widget _buildContent(AppLocalizations loc) {
-    if (!_isOrderCodeVerified) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "Введите код заказа",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _orderCodeController,
-                decoration: InputDecoration(
-                  hintText: "Например, 1234",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+  /// Форма верификации кода заказа
+  Widget _buildOrderCodeVerification() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Введите код заказа",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _orderCodeController,
+              decoration: InputDecoration(
+                hintText: "Например, 1234",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
               ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  if (_orderCodeController.text == "1234") {
-                    setState(() {
-                      _isOrderCodeVerified = true;
-                    });
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Неверный код заказа")),
-                    );
-                  }
-                },
-                child: const Text("Подтвердить"),
-              ),
-            ],
-          ),
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                if (_orderCodeController.text == "1234") {
+                  setState(() {
+                    _isOrderCodeVerified = true;
+                  });
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Неверный код заказа")),
+                  );
+                }
+              },
+              child: const Text("Подтвердить"),
+            ),
+          ],
         ),
-      );
+      ),
+    );
+  }
+
+  /// Отображение контента в зависимости от состояния верификации
+  Widget _buildContent(AppLocalizations loc) {
+    if ((_currentIndex == 0 || _currentIndex == 1) && !_isOrderCodeVerified) {
+      return _buildOrderCodeVerification();
     } else {
       return _buildPageContent(loc);
     }
   }
 
-  /// IndexedStack для постоянного навбара – контент меняется в зависимости от _currentIndex
+  /// IndexedStack для смены контента по табам
   Widget _buildPageContent(AppLocalizations loc) {
     return IndexedStack(
       index: _currentIndex,
@@ -109,9 +128,8 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context);
+  /// В зависимости от ширины экрана выбирается веб- или мобильная вёрстка
+  Widget _buildMainPage(AppLocalizations loc) {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth >= webBreakpoint) {
@@ -119,6 +137,25 @@ class _MainScreenState extends State<MainScreen> {
         } else {
           return _buildMobileLayout(context, loc);
         }
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    return Navigator(
+      // Первой страницей всегда является основная (главный Scaffold)
+      pages: [
+        MaterialPage(key: const ValueKey("MainScreen"), child: _buildMainPage(loc)),
+        ..._childPages,
+      ],
+      onPopPage: (route, result) {
+        if (!route.didPop(result)) return false;
+        setState(() {
+          _childPages.removeLast();
+        });
+        return true;
       },
     );
   }
@@ -134,6 +171,32 @@ class _MainScreenState extends State<MainScreen> {
         title: _buildAppBarTitle(true),
         centerTitle: false,
         automaticallyImplyLeading: false,
+        actions: [
+          TextButton(
+            onPressed: () => _pushPage(const CargoPage()),
+            child: const Text("Груз", style: TextStyle(color: Colors.black)),
+          ),
+          TextButton(
+            onPressed: () => _pushPage(const ContractorsPage()),
+            child: const Text("Контрагенты", style: TextStyle(color: Colors.black)),
+          ),
+          TextButton(
+            onPressed: () => _pushPage(const AccountingPage()),
+            child: const Text("Бухгалтерия", style: TextStyle(color: Colors.black)),
+          ),
+          TextButton(
+            onPressed: () => _pushPage(const ReportsPage()),
+            child: const Text("Отчеты", style: TextStyle(color: Colors.black)),
+          ),
+          TextButton(
+            onPressed: () => _pushPage(const SetupPage()),
+            child: const Text("Настройка", style: TextStyle(color: Colors.black)),
+          ),
+          TextButton(
+            onPressed: () => _pushPage(const SettingsPage()),
+            child: const Text("Настройки", style: TextStyle(color: Colors.black)),
+          ),
+        ],
       ),
       body: Row(
         children: [
@@ -150,7 +213,10 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
           Expanded(
-            child: Container(color: Colors.white, child: _buildContent(loc)),
+            child: Container(
+              color: Colors.white,
+              child: _buildContent(loc),
+            ),
           ),
         ],
       ),
@@ -184,28 +250,28 @@ class _MainScreenState extends State<MainScreen> {
       endDrawer: CustomBurgerMenu(
         loc: loc,
         onCargoTap: () {
-          Navigator.of(context).pop();
-          _navigateTo(const CargoPage());
+          Navigator.of(context).pop(); // закрываем Drawer
+          _pushPage(const CargoPage());
         },
         onContractorsTap: () {
           Navigator.of(context).pop();
-          _navigateTo(const ContractorsPage());
+          _pushPage(const ContractorsPage());
         },
         onAccountingTap: () {
           Navigator.of(context).pop();
-          _navigateTo(const AccountingPage());
+          _pushPage(const AccountingPage());
         },
         onReportsTap: () {
           Navigator.of(context).pop();
-          _navigateTo(const ReportsPage());
+          _pushPage(const ReportsPage());
         },
         onSetupTap: () {
           Navigator.of(context).pop();
-          _navigateTo(const SetupPage());
+          _pushPage(const SetupPage());
         },
         onSettingsTap: () {
           Navigator.of(context).pop();
-          _navigateTo(const SettingsPage());
+          _pushPage(const SettingsPage());
         },
       ),
       body: _buildContent(loc),
