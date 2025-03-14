@@ -1,5 +1,7 @@
 import 'package:aps/l10n/app_localizations.dart';
 import 'package:aps/main.dart';
+import 'package:aps/src/ui/components/custom_burger.dart';
+import 'package:aps/src/ui/components/nav_bar.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -12,10 +14,12 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   bool _isOrderCodeVerified = false;
   final TextEditingController _orderCodeController = TextEditingController();
-
   static const double webBreakpoint = 900;
 
-  /// Метод для перехода на новую страницу.
+  // Новый индекс для навигации
+  int _currentIndex = 0;
+
+  /// Метод для перехода на новую страницу (используется только для бургер-меню)
   void _navigateTo(Widget page) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => page),
@@ -39,6 +43,7 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+  /// В зависимости от состояния верификации кода отображаем либо проверку, либо основной контент с переключением страниц
   Widget _buildContent(AppLocalizations loc) {
     if (!_isOrderCodeVerified) {
       return Center(
@@ -87,8 +92,21 @@ class _MainScreenState extends State<MainScreen> {
         ),
       );
     } else {
-      return _buildMainContent(loc);
+      return _buildPageContent(loc);
     }
+  }
+
+  /// IndexedStack для постоянного навбара – контент меняется в зависимости от _currentIndex
+  Widget _buildPageContent(AppLocalizations loc) {
+    return IndexedStack(
+      index: _currentIndex,
+      children: [
+        _buildMainContent(loc),
+        Center(child: Text("Подробнее", style: TextStyle(fontSize: 24))),
+        Center(child: Text("Магазин", style: TextStyle(fontSize: 24))),
+        Center(child: Text("Профиль", style: TextStyle(fontSize: 24))),
+      ],
+    );
   }
 
   @override
@@ -122,7 +140,14 @@ class _MainScreenState extends State<MainScreen> {
           Container(
             width: 200,
             color: Colors.grey[200],
-            child: _buildSideBar(loc),
+            child: CustomSideBar(
+              currentIndex: _currentIndex,
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+            ),
           ),
           Expanded(
             child: Container(color: Colors.white, child: _buildContent(loc)),
@@ -156,126 +181,47 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
-      endDrawer: _buildDrawer(loc, context),
+      endDrawer: CustomBurgerMenu(
+        loc: loc,
+        onCargoTap: () {
+          Navigator.of(context).pop();
+          _navigateTo(const CargoPage());
+        },
+        onContractorsTap: () {
+          Navigator.of(context).pop();
+          _navigateTo(const ContractorsPage());
+        },
+        onAccountingTap: () {
+          Navigator.of(context).pop();
+          _navigateTo(const AccountingPage());
+        },
+        onReportsTap: () {
+          Navigator.of(context).pop();
+          _navigateTo(const ReportsPage());
+        },
+        onSetupTap: () {
+          Navigator.of(context).pop();
+          _navigateTo(const SetupPage());
+        },
+        onSettingsTap: () {
+          Navigator.of(context).pop();
+          _navigateTo(const SettingsPage());
+        },
+      ),
       body: _buildContent(loc),
-      bottomNavigationBar: _buildBottomNavBar(loc),
-    );
-  }
-
-  // Обновлённый Drawer с кликабельными элементами
-  Widget _buildDrawer(AppLocalizations loc, BuildContext context) {
-    return Drawer(
-      child: ListView(
-        children: [
-          DrawerHeader(
-            decoration: BoxDecoration(color: Colors.blueAccent),
-            child: Text(
-              loc.cargo_system,
-              style: const TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          ),
-          _drawerItem(
-            loc.cargo,
-            Icons.business_center,
-            onTap: () {
-              Navigator.of(context).pop();
-              _navigateTo(const CargoPage());
-            },
-          ),
-          _drawerItem(
-            loc.contractors,
-            Icons.people,
-            onTap: () {
-              Navigator.of(context).pop();
-              _navigateTo(const ContractorsPage());
-            },
-          ),
-          _drawerItem(
-            loc.accounting,
-            Icons.attach_money,
-            onTap: () {
-              Navigator.of(context).pop();
-              _navigateTo(const AccountingPage());
-            },
-          ),
-          _drawerItem(
-            loc.reports,
-            Icons.insert_chart,
-            onTap: () {
-              Navigator.of(context).pop();
-              _navigateTo(const ReportsPage());
-            },
-          ),
-          _drawerItem(
-            loc.setup,
-            Icons.info,
-            onTap: () {
-              Navigator.of(context).pop();
-              _navigateTo(const SetupPage());
-            },
-          ),
-          _drawerItem(
-            loc.settings,
-            Icons.settings,
-            onTap: () {
-              Navigator.of(context).pop();
-              _navigateTo(const SettingsPage());
-            },
-          ),
-        ],
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
       ),
     );
   }
 
-  // Переопределённый метод для создания элемента Drawer с возможностью передать onTap
-  Widget _drawerItem(String title, IconData icon, {VoidCallback? onTap}) {
-    return ListTile(leading: Icon(icon), title: Text(title), onTap: onTap);
-  }
-
-  // Обновлённый сайдбар для WEB-версии с кликабельными элементами
-  Widget _buildSideBar(AppLocalizations loc) {
-    return Column(
-      children: [
-        const SizedBox(height: 16),
-        _sideBarItem(
-          loc.flights,
-          Icons.flight_takeoff,
-          onTap: () {
-            _navigateTo(const FlightsPage());
-          },
-        ),
-        _sideBarItem(
-          loc.cargo,
-          Icons.business_center,
-          onTap: () {
-            _navigateTo(const CargoPage());
-          },
-        ),
-        _sideBarItem(
-          loc.accounting,
-          Icons.attach_money,
-          onTap: () {
-            _navigateTo(const AccountingPage());
-          },
-        ),
-        _sideBarItem(
-          loc.setup,
-          Icons.info,
-          onTap: () {
-            _navigateTo(const SetupPage());
-          },
-        ),
-      ],
-    );
-  }
-
-  // Переопределённый метод для создания элемента сайдбара с возможностью передать onTap
-  Widget _sideBarItem(String title, IconData icon, {VoidCallback? onTap}) {
-    return ListTile(leading: Icon(icon), title: Text(title), onTap: onTap);
-  }
-
   // ---------------------------------------------------------------------------
-  // ОСНОВНОЙ КОНТЕНТ (после подтверждения кода)
+  // ОСНОВНОЙ КОНТЕНТ (для индекса 0)
   // ---------------------------------------------------------------------------
   Widget _buildMainContent(AppLocalizations loc) {
     return SingleChildScrollView(
@@ -334,7 +280,10 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _infoChip(String label) {
-    return Chip(label: Text(label), backgroundColor: Colors.blueGrey[50]);
+    return Chip(
+      label: Text(label),
+      backgroundColor: Colors.blueGrey[50],
+    );
   }
 
   Widget _buildPlaneLayout(AppLocalizations loc) {
@@ -345,7 +294,10 @@ class _MainScreenState extends State<MainScreen> {
         borderRadius: BorderRadius.circular(8),
       ),
       alignment: Alignment.center,
-      child: Text(loc.plane_layout, textAlign: TextAlign.center),
+      child: Text(
+        loc.plane_layout,
+        textAlign: TextAlign.center,
+      ),
     );
   }
 
@@ -376,50 +328,12 @@ class _MainScreenState extends State<MainScreen> {
   Widget _payloadItem(String id, String weight) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(children: [Expanded(child: Text(id)), Text(weight)]),
-    );
-  }
-
-  // Обновлённая нижняя навигационная панель с onTap-обработчиком
-  Widget _buildBottomNavBar(AppLocalizations loc) {
-    return BottomNavigationBar(
-      selectedItemColor: Colors.blueAccent,
-      unselectedItemColor: Colors.grey,
-      currentIndex: 0, // можно реализовать сохранение индекса, если требуется
-      onTap: (index) {
-        switch (index) {
-          case 0:
-            _navigateTo(const FlightsPage());
-            break;
-          case 1:
-            _navigateTo(const CargoPage());
-            break;
-          case 2:
-            _navigateTo(const AccountingPage());
-            break;
-          case 3:
-            _navigateTo(const SetupPage());
-            break;
-        }
-      },
-      items: [
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.flight_takeoff),
-          label: loc.flights,
-        ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.business_center),
-          label: loc.cargo,
-        ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.attach_money),
-          label: loc.accounting,
-        ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.info),
-          label: loc.setup,
-        ),
-      ],
+      child: Row(
+        children: [
+          Expanded(child: Text(id)),
+          Text(weight),
+        ],
+      ),
     );
   }
 }
