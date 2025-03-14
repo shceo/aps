@@ -1,14 +1,14 @@
 {
     "builds": [
       {
-        "src": "build/web/**",
-        "use": "@vercel/static-build"
+        "src": "build/web/**/*",
+        "use": "@vercel/static"
       }
     ],
     "routes": [
       {
         "src": "/(.*)",
-        "dest": "/index.html"
+        "dest": "/build/web/index.html"
       }
     ]
   }
