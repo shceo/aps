@@ -82,4 +82,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get payload_info => '货物信息';
+
+  @override
+  String get enter_order_code => '请输入订单代码';
+
+  @override
+  String get order_code_hint => '例如，1234';
+
+  @override
+  String get confirm_order_code => '确认';
+
+  @override
+  String get invalid_order_code => '订单代码错误';
+
+  @override
+  String get details => '详情';
+
+  @override
+  String get shop => '商店';
+
+  @override
+  String get profile => '个人资料';
 }

@@ -2,6 +2,7 @@ import 'package:aps/l10n/app_localizations.dart';
 import 'package:aps/main.dart';
 import 'package:aps/src/ui/components/custom_burger.dart';
 import 'package:aps/src/ui/components/nav_bar.dart';
+import 'package:aps/src/ui/screens/after_screen/main_screen_content.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -58,22 +59,22 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   /// Форма верификации кода заказа
-  Widget _buildOrderCodeVerification() {
+  Widget _buildOrderCodeVerification(AppLocalizations loc) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              "Введите код заказа",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              loc.enter_order_code,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _orderCodeController,
               decoration: InputDecoration(
-                hintText: "Например, 1234",
+                hintText: loc.order_code_hint,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -94,11 +95,11 @@ class _MainScreenState extends State<MainScreen> {
                   });
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Неверный код заказа")),
+                    SnackBar(content: Text(loc.invalid_order_code)),
                   );
                 }
               },
-              child: const Text("Подтвердить"),
+              child: Text(loc.confirm_order_code),
             ),
           ],
         ),
@@ -109,21 +110,20 @@ class _MainScreenState extends State<MainScreen> {
   /// Отображение контента в зависимости от состояния верификации
   Widget _buildContent(AppLocalizations loc) {
     if ((_currentIndex == 0 || _currentIndex == 1) && !_isOrderCodeVerified) {
-      return _buildOrderCodeVerification();
+      return _buildOrderCodeVerification(loc);
     } else {
       return _buildPageContent(loc);
     }
   }
 
-  /// IndexedStack для смены контента по табам
   Widget _buildPageContent(AppLocalizations loc) {
     return IndexedStack(
       index: _currentIndex,
       children: [
         _buildMainContent(loc),
-        Center(child: Text("Подробнее", style: TextStyle(fontSize: 24))),
-        Center(child: Text("Магазин", style: TextStyle(fontSize: 24))),
-        Center(child: Text("Профиль", style: TextStyle(fontSize: 24))),
+        Center(child: Text(loc.details, style: const TextStyle(fontSize: 24))),
+        Center(child: Text(loc.shop, style: const TextStyle(fontSize: 24))),
+        Center(child: Text(loc.profile, style: const TextStyle(fontSize: 24))),
       ],
     );
   }
@@ -147,7 +147,8 @@ class _MainScreenState extends State<MainScreen> {
     return Navigator(
       // Первой страницей всегда является основная (главный Scaffold)
       pages: [
-        MaterialPage(key: const ValueKey("MainScreen"), child: _buildMainPage(loc)),
+        MaterialPage(
+            key: const ValueKey("MainScreen"), child: _buildMainPage(loc)),
         ..._childPages,
       ],
       onPopPage: (route, result) {
@@ -174,27 +175,29 @@ class _MainScreenState extends State<MainScreen> {
         actions: [
           TextButton(
             onPressed: () => _pushPage(const CargoPage()),
-            child: const Text("Груз", style: TextStyle(color: Colors.black)),
+            child: Text(loc.cargo, style: const TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () => _pushPage(const ContractorsPage()),
-            child: const Text("Контрагенты", style: TextStyle(color: Colors.black)),
+            child:
+                Text(loc.contractors, style: const TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () => _pushPage(const AccountingPage()),
-            child: const Text("Бухгалтерия", style: TextStyle(color: Colors.black)),
+            child:
+                Text(loc.accounting, style: const TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () => _pushPage(const ReportsPage()),
-            child: const Text("Отчеты", style: TextStyle(color: Colors.black)),
+            child: Text(loc.reports, style: const TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () => _pushPage(const SetupPage()),
-            child: const Text("Настройка", style: TextStyle(color: Colors.black)),
+            child: Text(loc.setup, style: const TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () => _pushPage(const SettingsPage()),
-            child: const Text("Настройки", style: TextStyle(color: Colors.black)),
+            child: Text(loc.settings, style: const TextStyle(color: Colors.black)),
           ),
         ],
       ),
@@ -290,116 +293,6 @@ class _MainScreenState extends State<MainScreen> {
   // ОСНОВНОЙ КОНТЕНТ (для индекса 0)
   // ---------------------------------------------------------------------------
   Widget _buildMainContent(AppLocalizations loc) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          _buildFlightInfoBar(loc),
-          const SizedBox(height: 16),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              bool isWide = constraints.maxWidth > 600;
-              if (isWide) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: _buildPlaneLayout(loc)),
-                    const SizedBox(width: 16),
-                    SizedBox(width: 300, child: _buildPayloadInfo(loc)),
-                  ],
-                );
-              } else {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildPlaneLayout(loc),
-                    const SizedBox(height: 16),
-                    _buildPayloadInfo(loc),
-                  ],
-                );
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFlightInfoBar(AppLocalizations loc) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Wrap(
-        spacing: 16,
-        runSpacing: 8,
-        children: [
-          _infoChip(loc.flights),
-          _infoChip("EDDF → LSGG"),
-          _infoChip(loc.flight_plan),
-          _infoChip("Airbus A330-600"),
-        ],
-      ),
-    );
-  }
-
-  Widget _infoChip(String label) {
-    return Chip(
-      label: Text(label),
-      backgroundColor: Colors.blueGrey[50],
-    );
-  }
-
-  Widget _buildPlaneLayout(AppLocalizations loc) {
-    return Container(
-      height: 400,
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        loc.plane_layout,
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-
-  Widget _buildPayloadInfo(AppLocalizations loc) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            loc.payload_info,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const Divider(),
-          _payloadItem("FLB-001", "2500 kg"),
-          _payloadItem("FLB-002", "3200 kg"),
-          _payloadItem("FLB-003", "1800 kg"),
-          _payloadItem("FLB-004", "4000 kg"),
-        ],
-      ),
-    );
-  }
-
-  Widget _payloadItem(String id, String weight) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Expanded(child: Text(id)),
-          Text(weight),
-        ],
-      ),
-    );
+    return MainContent(loc: loc);
   }
 }

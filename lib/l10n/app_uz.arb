@@ -24,5 +24,12 @@
   "flights": "Parvozlar",
   "flight_plan": "Parvoz rejasi",
   "plane_layout": "Samolyot sxemasi",
-  "payload_info": "Yuk ma'lumotlari"
+  "payload_info": "Yuk ma'lumotlari",
+  "enter_order_code": "Buyurtma kodini kiriting",
+  "order_code_hint": "Masalan, 1234",
+  "confirm_order_code": "Tasdiqlash",
+  "invalid_order_code": "Noto'g'ri buyurtma kodi",
+  "details": "Batafsil",
+  "shop": "Do'kon",
+  "profile": "Profil"
 }

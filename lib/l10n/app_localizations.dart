@@ -250,6 +250,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payload Info'**
   String get payload_info;
+
+  /// No description provided for @enter_order_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Order Code'**
+  String get enter_order_code;
+
+  /// No description provided for @order_code_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'For example, 1234'**
+  String get order_code_hint;
+
+  /// No description provided for @confirm_order_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm_order_code;
+
+  /// No description provided for @invalid_order_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid order code'**
+  String get invalid_order_code;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @shop.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop'**
+  String get shop;
+
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

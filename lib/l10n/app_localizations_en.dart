@@ -82,4 +82,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get payload_info => 'Payload Info';
+
+  @override
+  String get enter_order_code => 'Enter Order Code';
+
+  @override
+  String get order_code_hint => 'For example, 1234';
+
+  @override
+  String get confirm_order_code => 'Confirm';
+
+  @override
+  String get invalid_order_code => 'Invalid order code';
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get shop => 'Shop';
+
+  @override
+  String get profile => 'Profile';
 }

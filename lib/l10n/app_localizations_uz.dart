@@ -82,4 +82,25 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get payload_info => 'Yuk ma\'lumotlari';
+
+  @override
+  String get enter_order_code => 'Buyurtma kodini kiriting';
+
+  @override
+  String get order_code_hint => 'Masalan, 1234';
+
+  @override
+  String get confirm_order_code => 'Tasdiqlash';
+
+  @override
+  String get invalid_order_code => 'Noto\'g\'ri buyurtma kodi';
+
+  @override
+  String get details => 'Batafsil';
+
+  @override
+  String get shop => 'Do\'kon';
+
+  @override
+  String get profile => 'Profil';
 }

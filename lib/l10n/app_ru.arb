@@ -24,5 +24,12 @@
   "flights": "Рейсы",
   "flight_plan": "План полета",
   "plane_layout": "Схема самолета",
-  "payload_info": "Информация о грузе"
+  "payload_info": "Информация о грузе",
+  "enter_order_code": "Введите код заказа",
+  "order_code_hint": "Например, 1234",
+  "confirm_order_code": "Подтвердить",
+  "invalid_order_code": "Неверный код заказа",
+  "details": "Подробнее",
+  "shop": "Магазин",
+  "profile": "Профиль"
 }

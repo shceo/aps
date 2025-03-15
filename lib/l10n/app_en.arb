@@ -24,5 +24,12 @@
   "flights": "Flights",
   "flight_plan": "Flight Plan",
   "plane_layout": "Plane Layout",
-  "payload_info": "Payload Info"
+  "payload_info": "Payload Info",
+  "enter_order_code": "Enter Order Code",
+  "order_code_hint": "For example, 1234",
+  "confirm_order_code": "Confirm",
+  "invalid_order_code": "Invalid order code",
+  "details": "Details",
+  "shop": "Shop",
+  "profile": "Profile"
 }

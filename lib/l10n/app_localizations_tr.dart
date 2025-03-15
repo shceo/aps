@@ -82,4 +82,25 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get payload_info => 'Yük Bilgileri';
+
+  @override
+  String get enter_order_code => 'Sipariş Kodunu Girin';
+
+  @override
+  String get order_code_hint => 'Örneğin, 1234';
+
+  @override
+  String get confirm_order_code => 'Onayla';
+
+  @override
+  String get invalid_order_code => 'Geçersiz sipariş kodu';
+
+  @override
+  String get details => 'Detaylar';
+
+  @override
+  String get shop => 'Mağaza';
+
+  @override
+  String get profile => 'Profil';
 }

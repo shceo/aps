@@ -24,5 +24,12 @@
   "flights": "航班",
   "flight_plan": "飞行计划",
   "plane_layout": "飞机布局",
-  "payload_info": "货物信息"
+  "payload_info": "货物信息",
+  "enter_order_code": "请输入订单代码",
+  "order_code_hint": "例如，1234",
+  "confirm_order_code": "确认",
+  "invalid_order_code": "订单代码错误",
+  "details": "详情",
+  "shop": "商店",
+  "profile": "个人资料"
 }

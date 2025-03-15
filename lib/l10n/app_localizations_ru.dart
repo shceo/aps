@@ -82,4 +82,25 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get payload_info => 'Информация о грузе';
+
+  @override
+  String get enter_order_code => 'Введите код заказа';
+
+  @override
+  String get order_code_hint => 'Например, 1234';
+
+  @override
+  String get confirm_order_code => 'Подтвердить';
+
+  @override
+  String get invalid_order_code => 'Неверный код заказа';
+
+  @override
+  String get details => 'Подробнее';
+
+  @override
+  String get shop => 'Магазин';
+
+  @override
+  String get profile => 'Профиль';
 }

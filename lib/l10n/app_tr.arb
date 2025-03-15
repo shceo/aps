@@ -24,5 +24,12 @@
   "flights": "Uçuşlar",
   "flight_plan": "Uçuş Planı",
   "plane_layout": "Uçak Düzeni",
-  "payload_info": "Yük Bilgileri"
+  "payload_info": "Yük Bilgileri",
+  "enter_order_code": "Sipariş Kodunu Girin",
+  "order_code_hint": "Örneğin, 1234",
+  "confirm_order_code": "Onayla",
+  "invalid_order_code": "Geçersiz sipariş kodu",
+  "details": "Detaylar",
+  "shop": "Mağaza",
+  "profile": "Profil"
 }
