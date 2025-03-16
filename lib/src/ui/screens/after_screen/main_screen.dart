@@ -6,6 +6,8 @@ import 'package:aps/src/ui/constants/app_colors.dart';
 import 'package:aps/src/ui/screens/after_screen/main_screen_content.dart';
 import 'package:aps/src/ui/screens/drawers_screens/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -21,17 +23,35 @@ class _MainScreenState extends State<MainScreen> {
 
   // Индекс для табовой навигации (IndexedStack)
   int _currentIndex = 0;
-
   // Список дополнительных страниц для Navigator 2.0
   final List<Page> _childPages = [];
 
-  /// Добавляет новую страницу в стек Navigator (Navigator 2.0)
+  @override
+  void initState() {
+    super.initState();
+    _checkOrderCode();
+  }
+
+  /// Проверяем, сохранён ли флаг в SharedPreferences
+  Future<void> _checkOrderCode() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool verified = prefs.getBool('isOrderCodeVerified') ?? false;
+    if (verified) {
+      setState(() {
+        _isOrderCodeVerified = true;
+      });
+    }
+  }
+
+  /// Добавляет новую страницу в стек Navigator               
   void _pushPage(Widget page) {
     setState(() {
       _childPages.add(
         MaterialPage(
-          key: ValueKey(page.runtimeType.toString() +
-              DateTime.now().millisecondsSinceEpoch.toString()),
+          key: ValueKey(
+            page.runtimeType.toString() +
+                DateTime.now().millisecondsSinceEpoch.toString(),
+          ),
           child: page,
         ),
       );
@@ -46,7 +66,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildAppBarTitle(bool isWeb) {
-    Widget logo = Image.asset('assets/icons/logo.png', height: 60, color: ApsColors.primary,);
+    Widget logo = Image.asset(
+      'assets/icons/logo.png',
+      height: 60,
+      color: ApsColors.primary,
+    );
     if (isWeb) {
       return InkWell(
         onTap: () {
@@ -92,8 +116,10 @@ class _MainScreenState extends State<MainScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: ApsColors.bwhite,
               ),
-              onPressed: () {
+              onPressed: () async {
                 if (_orderCodeController.text == "1234") {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setBool('isOrderCodeVerified', true);
                   setState(() {
                     _isOrderCodeVerified = true;
                   });
@@ -149,7 +175,6 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
     return Navigator(
-      // Первой страницей всегда является основная (главный Scaffold)
       pages: [
         MaterialPage(
           key: const ValueKey("MainScreen"),
@@ -174,34 +199,45 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ApsColors.bwhite,
-        // elevation: 2,
         title: _buildAppBarTitle(true),
         centerTitle: false,
         automaticallyImplyLeading: false,
         actions: [
           TextButton(
             onPressed: () => _pushPage(const CargoPage()),
-            child: Text(loc.cargo, style: const TextStyle(color: Colors.white)),
+            child: Text(loc.cargo, style: const TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () => _pushPage(const ContractorsPage()),
-            child: Text(loc.contractors, style: const TextStyle(color: Colors.white)),
+            child: Text(
+              loc.contractors,
+              style: const TextStyle(color: Colors.black),
+            ),
           ),
           TextButton(
             onPressed: () => _pushPage(const AccountingPage()),
-            child: Text(loc.accounting, style: const TextStyle(color: Colors.white)),
+            child: Text(
+              loc.accounting,
+              style: const TextStyle(color: Colors.black),
+            ),
           ),
           TextButton(
             onPressed: () => _pushPage(const ReportsPage()),
-            child: Text(loc.reports, style: const TextStyle(color: Colors.white)),
+            child: Text(
+              loc.reports,
+              style: const TextStyle(color: Colors.black),
+            ),
           ),
           TextButton(
             onPressed: () => _pushPage(const SetupPage()),
-            child: Text(loc.setup, style: const TextStyle(color: Colors.white)),
+            child: Text(loc.setup, style: const TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () => _pushPage(const SettingsPage()),
-            child: Text(loc.settings, style: const TextStyle(color: Colors.white)),
+            child: Text(
+              loc.settings,
+              style: const TextStyle(color: Colors.black),
+            ),
           ),
         ],
       ),
@@ -209,7 +245,17 @@ class _MainScreenState extends State<MainScreen> {
         children: [
           Container(
             width: 200,
-            color: ApsColors.bwhite,
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: ApsColors.bwhite,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  offset: const Offset(2, 0),
+                  blurRadius: 2,
+                ),
+              ],
+            ),
             child: CustomSideBar(
               currentIndex: _currentIndex,
               onTap: (index) {
@@ -235,11 +281,9 @@ class _MainScreenState extends State<MainScreen> {
   // ---------------------------------------------------------------------------
   Widget _buildMobileLayout(BuildContext context, AppLocalizations loc) {
     return Scaffold(
-          backgroundColor: ApsColors.bwhite,
+      backgroundColor: ApsColors.bwhite,
       appBar: AppBar(
         backgroundColor: ApsColors.bwhite,
-    
-        // elevation: 2,
         title: _buildAppBarTitle(false),
         centerTitle: false,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -247,7 +291,7 @@ class _MainScreenState extends State<MainScreen> {
           Builder(
             builder: (context) {
               return IconButton(
-                icon: const Icon(Icons.menu),
+                icon: const Icon(Icons.menu_rounded, color: ApsColors.primary),
                 onPressed: () {
                   Scaffold.of(context).openEndDrawer();
                 },
@@ -259,7 +303,7 @@ class _MainScreenState extends State<MainScreen> {
       endDrawer: CustomBurgerMenu(
         loc: loc,
         onCargoTap: () {
-          Navigator.of(context).pop(); // закрываем Drawer
+          Navigator.of(context).pop();
           _pushPage(const CargoPage());
         },
         onContractorsTap: () {

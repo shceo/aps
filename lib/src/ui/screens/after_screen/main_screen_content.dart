@@ -27,10 +27,7 @@ class MainContent extends StatelessWidget {
   }
 
   Widget _infoChip(String label) {
-    return Chip(
-      label: Text(label),
-      backgroundColor: Colors.blueGrey[50],
-    );
+    return Chip(label: Text(label), backgroundColor: Colors.blueGrey[50]);
   }
 
   Widget _buildPlaneLayout() {
@@ -41,10 +38,7 @@ class MainContent extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       alignment: Alignment.center,
-      child: Text(
-        loc.plane_layout,
-        textAlign: TextAlign.center,
-      ),
+      child: Text(loc.plane_layout, textAlign: TextAlign.center),
     );
   }
 
@@ -75,12 +69,7 @@ class MainContent extends StatelessWidget {
   Widget _payloadItem(String id, String weight) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Expanded(child: Text(id)),
-          Text(weight),
-        ],
-      ),
+      child: Row(children: [Expanded(child: Text(id)), Text(weight)]),
     );
   }
 
