@@ -32,5 +32,10 @@
   "home": "主页",
   "details": "详情",
   "shop": "商店",
-  "profile": "个人资料"
+  "profile": "个人资料",
+  "reset_order_code_title": "重置订单代码",
+  "reset_order_code_message": "您确定要重置订单代码吗？",
+  "reset_order_code_button": "重置订单代码",
+  "cancel": "取消",
+  "confirm": "确认"
 }

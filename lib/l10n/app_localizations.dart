@@ -298,6 +298,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile'**
   String get profile;
+
+  /// No description provided for @reset_order_code_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Order Code'**
+  String get reset_order_code_title;
+
+  /// No description provided for @reset_order_code_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to reset the order code?'**
+  String get reset_order_code_message;
+
+  /// No description provided for @reset_order_code_button.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Order Code'**
+  String get reset_order_code_button;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

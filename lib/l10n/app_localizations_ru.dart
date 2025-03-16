@@ -106,4 +106,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profile => 'Профиль';
+
+  @override
+  String get reset_order_code_title => 'Сбросить код заказа';
+
+  @override
+  String get reset_order_code_message => 'Вы уверены, что хотите сбросить код заказа?';
+
+  @override
+  String get reset_order_code_button => 'Сбросить код заказа';
+
+  @override
+  String get cancel => 'Отмена';
+
+  @override
+  String get confirm => 'Подтвердить';
 }

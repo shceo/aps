@@ -106,4 +106,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profile => 'Profile';
+
+  @override
+  String get reset_order_code_title => 'Reset Order Code';
+
+  @override
+  String get reset_order_code_message => 'Are you sure you want to reset the order code?';
+
+  @override
+  String get reset_order_code_button => 'Reset Order Code';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get confirm => 'Confirm';
 }

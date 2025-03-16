@@ -32,5 +32,10 @@
   "home": "Главное",
   "details": "Подробнее",
   "shop": "Магазин",
-  "profile": "Профиль"
+  "profile": "Профиль",
+  "reset_order_code_title": "Сбросить код заказа",
+  "reset_order_code_message": "Вы уверены, что хотите сбросить код заказа?",
+  "reset_order_code_button": "Сбросить код заказа",
+  "cancel": "Отмена",
+  "confirm": "Подтвердить"
 }

@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 
 class MainContent extends StatelessWidget {
   final AppLocalizations loc;
+  final VoidCallback? onReset; // Новый callback для сброса кода
 
-  const MainContent({Key? key, required this.loc}) : super(key: key);
+  const MainContent({super.key, required this.loc, this.onReset});
 
   Widget _buildFlightInfoBar() {
     return Container(
@@ -104,6 +105,40 @@ class MainContent extends StatelessWidget {
                 );
               }
             },
+          ),
+          const SizedBox(height: 32),
+          // Кнопка сброса кода с подтверждением
+          ElevatedButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (ctx) {
+                  return AlertDialog(
+                    title: Text(loc.reset_order_code_title ?? "Reset Order Code"),
+                    content: Text(loc.reset_order_code_message ??
+                        "Are you sure you want to reset the order code?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(ctx).pop();
+                        },
+                        child: Text(loc.cancel ?? "Cancel"),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          Navigator.of(ctx).pop();
+                          if (onReset != null) {
+                            onReset!();
+                          }
+                        },
+                        child: Text(loc.confirm ?? "Confirm"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: Text(loc.reset_order_code_button ?? "Reset Order Code"),
           ),
         ],
       ),

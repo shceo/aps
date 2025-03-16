@@ -32,5 +32,10 @@
   "home": "Ana Sayfa",
   "details": "Detaylar",
   "shop": "Mağaza",
-  "profile": "Profil"
+  "profile": "Profil",
+  "reset_order_code_title": "Sipariş Kodunu Sıfırla",
+  "reset_order_code_message": "Sipariş kodunu sıfırlamak istediğinizden emin misiniz?",
+  "reset_order_code_button": "Sipariş Kodunu Sıfırla",
+  "cancel": "İptal",
+  "confirm": "Onayla"
 }

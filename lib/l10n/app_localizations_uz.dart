@@ -106,4 +106,19 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get profile => 'Profil';
+
+  @override
+  String get reset_order_code_title => 'Buyurtma kodini qayta sozlash';
+
+  @override
+  String get reset_order_code_message => 'Buyurtma kodini qayta sozlashni xohlaysizmi?';
+
+  @override
+  String get reset_order_code_button => 'Buyurtma kodini qayta sozlash';
+
+  @override
+  String get cancel => 'Bekor qilish';
+
+  @override
+  String get confirm => 'Tasdiqlash';
 }

@@ -106,4 +106,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get profile => 'Profil';
+
+  @override
+  String get reset_order_code_title => 'Sipariş Kodunu Sıfırla';
+
+  @override
+  String get reset_order_code_message => 'Sipariş kodunu sıfırlamak istediğinizden emin misiniz?';
+
+  @override
+  String get reset_order_code_button => 'Sipariş Kodunu Sıfırla';
+
+  @override
+  String get cancel => 'İptal';
+
+  @override
+  String get confirm => 'Onayla';
 }

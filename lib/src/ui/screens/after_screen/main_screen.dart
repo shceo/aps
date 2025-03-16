@@ -43,7 +43,7 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  /// Добавляет новую страницу в стек Navigator               
+  /// Добавляет новую страницу в стек Navigator
   void _pushPage(Widget page) {
     setState(() {
       _childPages.add(
@@ -343,6 +343,16 @@ class _MainScreenState extends State<MainScreen> {
   // ОСНОВНОЙ КОНТЕНТ (для индекса 0)
   // ---------------------------------------------------------------------------
   Widget _buildMainContent(AppLocalizations loc) {
-    return MainContent(loc: loc);
+    return MainContent(
+      loc: loc,
+      onReset: () async {
+        // Сбрасываем флаг в SharedPreferences и обновляем состояние
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isOrderCodeVerified', false);
+        setState(() {
+          _isOrderCodeVerified = false;
+        });
+      },
+    );
   }
 }

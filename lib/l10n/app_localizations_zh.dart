@@ -106,4 +106,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get profile => '个人资料';
+
+  @override
+  String get reset_order_code_title => '重置订单代码';
+
+  @override
+  String get reset_order_code_message => '您确定要重置订单代码吗？';
+
+  @override
+  String get reset_order_code_button => '重置订单代码';
+
+  @override
+  String get cancel => '取消';
+
+  @override
+  String get confirm => '确认';
 }

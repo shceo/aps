@@ -32,5 +32,10 @@
   "home": "Bosh sahifa",
   "details": "Batafsil",
   "shop": "Do'kon",
-  "profile": "Profil"
+  "profile": "Profil",
+  "reset_order_code_title": "Buyurtma kodini qayta sozlash",
+  "reset_order_code_message": "Buyurtma kodini qayta sozlashni xohlaysizmi?",
+  "reset_order_code_button": "Buyurtma kodini qayta sozlash",
+  "cancel": "Bekor qilish",
+  "confirm": "Tasdiqlash"
 }

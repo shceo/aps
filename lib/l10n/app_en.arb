@@ -32,5 +32,10 @@
   "home": "Home",
   "details": "Details",
   "shop": "Shop",
-  "profile": "Profile"
+  "profile": "Profile",
+  "reset_order_code_title": "Reset Order Code",
+  "reset_order_code_message": "Are you sure you want to reset the order code?",
+  "reset_order_code_button": "Reset Order Code",
+  "cancel": "Cancel",
+  "confirm": "Confirm"
 }
