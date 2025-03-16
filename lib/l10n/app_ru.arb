@@ -29,6 +29,7 @@
   "order_code_hint": "Например, 1234",
   "confirm_order_code": "Подтвердить",
   "invalid_order_code": "Неверный код заказа",
+  "home": "Главное",
   "details": "Подробнее",
   "shop": "Магазин",
   "profile": "Профиль"

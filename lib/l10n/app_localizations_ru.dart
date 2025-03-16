@@ -96,6 +96,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get invalid_order_code => 'Неверный код заказа';
 
   @override
+  String get home => 'Главное';
+
+  @override
   String get details => 'Подробнее';
 
   @override

@@ -1,4 +1,6 @@
+import 'package:aps/src/ui/constants/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:aps/l10n/app_localizations.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -12,27 +14,28 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return BottomNavigationBar(
       currentIndex: currentIndex,
-      selectedItemColor: Colors.blueAccent,
+      selectedItemColor: ApsColors.primary,
       unselectedItemColor: Colors.grey,
       onTap: onTap,
-      items: const [
+      items: [
         BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: "Главное",
+          icon: const Icon(Icons.home),
+          label: loc.home,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.info_outline),
-          label: "Подробнее",
+          icon: const Icon(Icons.info_outline),
+          label: loc.details,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.store),
-          label: "Магазин",
+          icon: const Icon(Icons.store),
+          label: loc.shop,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: "Профиль",
+          icon: const Icon(Icons.person),
+          label: loc.profile,
         ),
       ],
     );
@@ -51,30 +54,31 @@ class CustomSideBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Column(
       children: [
         const SizedBox(height: 16),
         ListTile(
           leading: const Icon(Icons.home),
-          title: const Text("Главное"),
+          title: Text(loc.home),
           selected: currentIndex == 0,
           onTap: () => onTap(0),
         ),
         ListTile(
           leading: const Icon(Icons.info_outline),
-          title: const Text("Подробнее"),
+          title: Text(loc.details),
           selected: currentIndex == 1,
           onTap: () => onTap(1),
         ),
         ListTile(
           leading: const Icon(Icons.store),
-          title: const Text("Магазин"),
+          title: Text(loc.shop),
           selected: currentIndex == 2,
           onTap: () => onTap(2),
         ),
         ListTile(
           leading: const Icon(Icons.person),
-          title: const Text("Профиль"),
+          title: Text(loc.profile),
           selected: currentIndex == 3,
           onTap: () => onTap(3),
         ),

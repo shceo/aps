@@ -96,6 +96,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get invalid_order_code => '订单代码错误';
 
   @override
+  String get home => '主页';
+
+  @override
   String get details => '详情';
 
   @override

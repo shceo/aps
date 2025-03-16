@@ -29,6 +29,7 @@
   "order_code_hint": "Masalan, 1234",
   "confirm_order_code": "Tasdiqlash",
   "invalid_order_code": "Noto'g'ri buyurtma kodi",
+  "home": "Bosh sahifa",
   "details": "Batafsil",
   "shop": "Do'kon",
   "profile": "Profil"

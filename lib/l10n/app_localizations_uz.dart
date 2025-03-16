@@ -96,6 +96,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get invalid_order_code => 'Noto\'g\'ri buyurtma kodi';
 
   @override
+  String get home => 'Bosh sahifa';
+
+  @override
   String get details => 'Batafsil';
 
   @override

@@ -29,6 +29,7 @@
   "order_code_hint": "Örneğin, 1234",
   "confirm_order_code": "Onayla",
   "invalid_order_code": "Geçersiz sipariş kodu",
+  "home": "Ana Sayfa",
   "details": "Detaylar",
   "shop": "Mağaza",
   "profile": "Profil"

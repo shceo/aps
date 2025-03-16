@@ -275,6 +275,12 @@ abstract class AppLocalizations {
   /// **'Invalid order code'**
   String get invalid_order_code;
 
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
   /// No description provided for @details.
   ///
   /// In en, this message translates to:

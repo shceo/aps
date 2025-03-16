@@ -29,6 +29,7 @@
   "order_code_hint": "For example, 1234",
   "confirm_order_code": "Confirm",
   "invalid_order_code": "Invalid order code",
+  "home": "Home",
   "details": "Details",
   "shop": "Shop",
   "profile": "Profile"
