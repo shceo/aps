@@ -11,7 +11,7 @@ class BranchAdmin(admin.ModelAdmin):
 
 @admin.register(Receiver)
 class ReceiverAdmin(admin.ModelAdmin):
-    list_display = ('receiver', 'phone')
+    list_display = ('receiver', 'phone', 'passport_id')
     search_fields = ('receiver__username', 'phone')
     ordering = ('receiver',)
 
@@ -68,10 +68,56 @@ class ProductAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-@admin.register(ImageProduct)
-class ImageProductAdmin(admin.ModelAdmin):
-    list_display = ('product', 'image')
-    search_fields = ('product__title',)
-    list_filter = ('product',)
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'customer', 'created_at', 'is_completed', 'payment', 'shipping', 'get_order_total_price',
+                    'get_order_total_quantity')
+    list_filter = ('is_completed', 'payment', 'shipping', 'created_at')
+    search_fields = ('customer__user__username', 'customer__user__first_name', 'customer__user__last_name')
+    readonly_fields = ('created_at', 'get_order_total_price', 'get_order_total_quantity')
 
+    def get_order_total_price(self, obj):
+        return obj.get_order_total_price
+
+    get_order_total_price.short_description = "Общая сумма заказа"
+
+    def get_order_total_quantity(self, obj):
+        return obj.get_order_total_quantity
+
+    get_order_total_quantity.short_description = "Общее количество товаров"
+
+
+@admin.register(OrderProduct)
+class OrderProductAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'order', 'product', 'quantity', 'added_at', 'updated_at', 'get_total_price')
+    list_filter = ('order', 'product')
+    search_fields = ('order__pk', 'product__title')
+    readonly_fields = ('added_at', 'updated_at', 'get_total_price')
+
+    def get_total_price(self, obj):
+        return obj.get_total_price
+
+    get_total_price.short_description = "Стоимость товара в заказе"
+
+
+@admin.register(ShippingAddress)
+class ShippingAddressAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'customer', 'order', 'address', 'phone', 'region', 'city', 'created_at')
+    list_filter = ('region', 'city')
+    search_fields = (
+    'customer__user__username', 'customer__user__first_name', 'customer__user__last_name', 'address', 'phone')
+    readonly_fields = ('created_at',)
+
+
+@admin.register(Region)
+class RegionAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'title')
+    search_fields = ('title',)
+
+
+@admin.register(City)
+class CityAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'title', 'region')
+    search_fields = ('title', 'region__title')
+    list_filter = ('region',)
 

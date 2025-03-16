@@ -1,6 +1,7 @@
 import json
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from .models import *
@@ -213,6 +214,79 @@ def send_user_notification(request, user_id):
         return JsonResponse({"message": "Notification sent", "response": response})
     except UserDevice.DoesNotExist:
         return JsonResponse({"error": "User not found or no device registered"}, status=404)
+
+
+# ============================ Products and Orders ==================================
+
+def get_all_products(request):
+    products = Product.objects.all()
+
+    products_data = []
+    for product in products:
+        products_data.append({
+            'id': product.id,
+            'title': product.title,
+            'description': product.description,
+            'price': float(product.price),
+            'quantity': product.quantity,
+            'size': product.size,
+            'category': product.category.title,
+            'slug': product.slug,
+            'model': product.model.title if product.model else None,
+            'discount': product.discount,
+            'created_at': product.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': product.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'image': product.get_first_photo(),
+        })
+
+    return JsonResponse({'products': products_data}, safe=False)
+
+# ✅ Get a single product by ID
+def get_single_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    product_data = {
+        'id': product.id,
+        'title': product.title,
+        'description': product.description,
+        'price': float(product.price),
+        'quantity': product.quantity,
+        'size': product.size,
+        'category': product.category.title,
+        'slug': product.slug,
+        'model': product.model.title if product.model else None,
+        'discount': product.discount,
+        'created_at': product.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        'updated_at': product.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+        'image': product.get_first_photo(),
+    }
+
+    return JsonResponse({'product': product_data}, safe=False)
+
+# ✅ Get products by category
+def get_product_by_category(request, slug):
+    category = get_object_or_404(Category, slug=slug)
+    products = Product.objects.filter(category=category)
+
+    products_data = []
+    for product in products:
+        products_data.append({
+            'id': product.id,
+            'title': product.title,
+            'description': product.description,
+            'price': float(product.price),
+            'quantity': product.quantity,
+            'size': product.size,
+            'category': product.category.title,
+            'slug': product.slug,
+            'model': product.model.title if product.model else None,
+            'discount': product.discount,
+            'created_at': product.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': product.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'image': product.get_first_photo(),
+        })
+
+    return JsonResponse({'category': category.title, 'products': products_data}, safe=False)
 
 
 
