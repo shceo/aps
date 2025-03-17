@@ -85,7 +85,7 @@ class Product(models.Model):
     title = models.CharField(max_length=200, verbose_name='Название товара')
     description = models.TextField(verbose_name='Описание товара')
     price = models.FloatField(verbose_name='Цена товара')
-    quantity = models.IntegerField(default=0, verbose_name='Количество')
+    quantity = models.PositiveIntegerField(default=0, verbose_name='Количество')
     size = models.CharField(max_length=10, blank=True, null=True, verbose_name='Размер')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория товара')
     slug = models.SlugField(unique=True, blank=True, null=True, verbose_name='Слаг товара')
