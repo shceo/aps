@@ -96,13 +96,13 @@ class _AdminScreenState extends State<AdminScreen> {
 
 // Класс для представления продукта (или другого элемента таблицы)
 // Добавлен новый параметр weight для хранения данных "Кг"
-class Product {
+class Product1 {
   String name;
   String quantity;
   String price;
   String weight;
 
-  Product({
+  Product1({
     this.name = "",
     this.quantity = "",
     this.price = "",
@@ -119,18 +119,18 @@ class ManualTableScreen extends StatefulWidget {
 }
 
 class _ManualTableScreenState extends State<ManualTableScreen> {
-  List<Product> products = [];
+  List<Product1> products = [];
 
   @override
   void initState() {
     super.initState();
     // Добавляем одну пустую строку по умолчанию
-    products.add(Product());
+    products.add(Product1());
   }
 
   void _addRow() {
     setState(() {
-      products.add(Product());
+      products.add(Product1());
     });
   }
 

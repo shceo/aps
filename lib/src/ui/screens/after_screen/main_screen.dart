@@ -2,11 +2,10 @@ import 'package:aps/l10n/app_localizations.dart';
 import 'package:aps/main.dart';
 import 'package:aps/src/ui/components/custom_burger.dart';
 import 'package:aps/src/ui/components/nav_bar.dart';
+import 'package:aps/src/ui/components/order_code_verification.dart';
 import 'package:aps/src/ui/constants/app_colors.dart';
-import 'package:aps/src/ui/screens/after_screen/main_screen_content.dart';
-import 'package:aps/src/ui/screens/drawers_screens/settings.dart';
+import 'package:aps/src/ui/constants/screen_exports.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {
@@ -83,119 +82,13 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  /// Форма верификации кода заказа
   Widget _buildOrderCodeVerification(AppLocalizations loc) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              loc.enter_order_code,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _orderCodeController,
-              decoration: InputDecoration(
-                hintText: loc.order_code_hint,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-              ),
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ApsColors.bwhite,
-              ),
-              onPressed: () async {
-                if (_orderCodeController.text == "1234") {
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.setBool('isOrderCodeVerified', true);
-                  setState(() {
-                    _isOrderCodeVerified = true;
-                  });
-                } else {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        backgroundColor: const Color(
-                          0xFFFFF8E1,
-                        ), // молочный фон
-                        content: Container(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.error,
-                                color: Colors.red,
-                                size: 48,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                loc.invalid_order_code,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        actions: [
-                          Center(
-                            child: Container(
-                              margin: const EdgeInsets.only(bottom: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.deepPurple,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                    vertical: 12,
-                                  ),
-                                  child: Text(
-                                    "OK",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                        actionsPadding: EdgeInsets.zero,
-                      );
-                    },
-                  );
-                }
-              },
-              child: Text(loc.confirm_order_code),
-            ),
-          ],
-        ),
-      ),
+    return OrderCodeVerification(
+      onVerified: (bool verified) {
+        setState(() {
+          _isOrderCodeVerified = verified;
+        });
+      },
     );
   }
 
@@ -214,7 +107,7 @@ class _MainScreenState extends State<MainScreen> {
       children: [
         _buildMainContent(loc),
         Center(child: Text(loc.details, style: const TextStyle(fontSize: 24))),
-        Center(child: Text(loc.shop, style: const TextStyle(fontSize: 24))),
+        MarketScreen(),
         Center(child: Text(loc.profile, style: const TextStyle(fontSize: 24))),
       ],
     );

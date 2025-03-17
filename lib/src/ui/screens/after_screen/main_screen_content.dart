@@ -1,9 +1,10 @@
 import 'package:aps/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
+
 class MainContent extends StatelessWidget {
   final AppLocalizations loc;
-  final VoidCallback? onReset; // Новый callback для сброса кода
+  final VoidCallback? onReset;
 
   const MainContent({super.key, required this.loc, this.onReset});
 
@@ -42,7 +43,6 @@ class MainContent extends StatelessWidget {
       child: Text(loc.plane_layout, textAlign: TextAlign.center),
     );
   }
-
   Widget _buildPayloadInfo() {
     return Container(
       padding: const EdgeInsets.all(8),
@@ -107,22 +107,20 @@ class MainContent extends StatelessWidget {
             },
           ),
           const SizedBox(height: 32),
-          // Кнопка сброса кода с подтверждением
           ElevatedButton(
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (ctx) {
                   return AlertDialog(
-                    title: Text(loc.reset_order_code_title ?? "Reset Order Code"),
-                    content: Text(loc.reset_order_code_message ??
-                        "Are you sure you want to reset the order code?"),
+                    title: Text(loc.reset_order_code_title),
+                    content: Text(loc.reset_order_code_message),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.of(ctx).pop();
                         },
-                        child: Text(loc.cancel ?? "Cancel"),
+                        child: Text(loc.cancel),
                       ),
                       TextButton(
                         onPressed: () async {
@@ -131,14 +129,14 @@ class MainContent extends StatelessWidget {
                             onReset!();
                           }
                         },
-                        child: Text(loc.confirm ?? "Confirm"),
+                        child: Text(loc.confirm),
                       ),
                     ],
                   );
                 },
               );
             },
-            child: Text(loc.reset_order_code_button ?? "Reset Order Code"),
+            child: Text(loc.reset_order_code_button),
           ),
         ],
       ),
