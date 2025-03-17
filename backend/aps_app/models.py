@@ -19,6 +19,8 @@ class Branch(models.Model):
 class Receiver(models.Model):
     receiver = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='User')
     phone = models.CharField(max_length=20, null=True, blank=True, verbose_name='Телефон')
+    passport_id = models.CharField(max_length=20, null=True, blank=True, verbose_name='Паспорт ID')
+
 
     class Meta:
         verbose_name = "Получатель"
@@ -49,12 +51,10 @@ from django.urls import reverse
 class Category(models.Model):
     title = models.CharField(max_length=100, verbose_name='Название категории')
     slug = models.SlugField(unique=True, blank=True, null=True, verbose_name='Слаг категории')
-    icon = models.ImageField(upload_to='icons/', verbose_name='Иконка категории', blank=True, null=True)
     parent = models.ForeignKey(
         'self', on_delete=models.SET_NULL, null=True, blank=True,
         related_name='subcategories', verbose_name='Категория'
     )
-    image = models.ImageField(upload_to='category_image/', verbose_name='Фото категории', blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse('category', kwargs={'slug': self.slug})
@@ -95,7 +95,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата Изменение')
 
     def get_absolute_url(self):
-        return reverse('product', kwargs={'slug': self.slug})
+        return reverse('product', kwargs={'pk': self.pk})
 
     def get_first_photo(self):
         first_image = self.images.first()
@@ -123,9 +123,104 @@ class ImageProduct(models.Model):
         verbose_name_plural = 'Изображения товаров'
 
 
+class Order(models.Model):
+    customer = models.ForeignKey(
+        Receiver, on_delete=models.SET_NULL, null=True, verbose_name='Покупатель', related_name='orders'
+    )
+    weight = models.FloatField(default=0, verbose_name='Вес заказа')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата заказа')
+    is_completed = models.BooleanField(default=False, verbose_name='Статус заказа')
+    payment = models.BooleanField(default=False, verbose_name='Статус оплаты')
+    shipping = models.BooleanField(default=True, verbose_name='Доставка')
+
+    def __str__(self):
+        return f'Номер заказа: {self.pk}, на имя: {self.customer.user.username}'
+
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказы'
+
+    @property
+    def get_order_total_price(self):
+        return sum(item.get_total_price for item in self.orderproduct_set.all())
+
+    @property
+    def get_order_total_quantity(self):
+        return sum(item.quantity for item in self.orderproduct_set.all())
 
 
+class OrderProduct(models.Model):
+    product = models.ForeignKey(
+        Product, on_delete=models.SET_NULL, null=True, verbose_name='Товар', related_name='order_products'
+    )
+    order = models.ForeignKey(
+        Order, on_delete=models.SET_NULL, null=True, verbose_name='Заказ', related_name='order_products'
+    )
+    quantity = models.IntegerField(default=0, verbose_name='В количестве')
+    added_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
 
+    def __str__(self):
+        return f'Товар {self.product.title} по заказу №: {self.order.pk}'
+
+    class Meta:
+        verbose_name = 'Заказанный товар'
+        verbose_name_plural = 'Заказанные товары'
+
+    @property
+    def get_total_price(self):
+        price = self.product.price
+        if self.product.discount:
+            discount_amount = (price * self.product.discount) / 100
+            price -= discount_amount
+        return price * self.quantity
+
+
+class ShippingAddress(models.Model):
+    customer = models.ForeignKey(
+        Receiver, on_delete=models.SET_NULL, null=True, verbose_name='Покупатель', related_name='shipping_addresses'
+    )
+    order = models.ForeignKey(
+        Order, on_delete=models.SET_NULL, null=True, verbose_name='Заказ', related_name='shipping_addresses'
+    )
+    address = models.CharField(max_length=150, verbose_name='Адрес доставки (улица, дом, кв)')
+    phone = models.CharField(max_length=30, verbose_name='Номер телефона')
+    comment = models.TextField(verbose_name='Комментарий к заказу', max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата оформления доставки')
+    region = models.ForeignKey('Region', on_delete=models.SET_NULL, null=True, verbose_name='Регион', related_name='addresses')
+    city = models.ForeignKey('City', on_delete=models.SET_NULL, null=True, verbose_name='Город', related_name='addresses')
+
+    def __str__(self):
+        return f'Доставка для {self.customer.user.first_name} на заказ №{self.order.pk}'
+
+    class Meta:
+        verbose_name = 'Адрес доставки'
+        verbose_name_plural = 'Адреса доставок'
+
+
+class Region(models.Model):
+    title = models.CharField(max_length=150, verbose_name='Регион')
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Регион'
+        verbose_name_plural = 'Регионы'
+
+
+class City(models.Model):
+    title = models.CharField(max_length=150, verbose_name='Город')
+    region = models.ForeignKey(
+        Region, on_delete=models.CASCADE, verbose_name='Регион', related_name='cities'
+    )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Город'
+        verbose_name_plural = 'Города'
 
 
 

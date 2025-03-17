@@ -7,6 +7,14 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('reg/', registration_view, name='reg'),
     path('reg/admin/', admin_registration_view, name='reg_admin'),
+
+    # ===== Notifications =============
     path("register_fcm_token/", register_fcm_token, name="register_fcm_token"),
     path("send_notification/<int:user_id>/", send_user_notification, name="send_notification"),
+
+    # ===== Products ===================
+
+    path('products/', get_all_products, name='get_all_products'),
+    path('products/<int:product_id>/', get_single_product, name='get_single_product'),
+    path("product_by_category/<slug:slug>/", get_product_by_category, name='product_by_category')
 ]
