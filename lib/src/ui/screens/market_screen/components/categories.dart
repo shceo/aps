@@ -33,11 +33,11 @@ class Categories extends StatelessWidget {
 
 class CategoryCard extends StatelessWidget {
   const CategoryCard({
-    Key? key,
+    super.key,
     required this.icon,
     required this.text,
     required this.press,
-  }) : super(key: key);
+  });
 
   final String icon, text;
   final GestureTapCallback press;

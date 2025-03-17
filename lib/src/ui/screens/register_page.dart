@@ -7,7 +7,6 @@ import 'package:aps/src/ui/components/text_u.dart';
 import 'package:aps/src/ui/constants/back_images.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:aps/main.dart';
-import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({

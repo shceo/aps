@@ -5,6 +5,9 @@ import 'package:aps/src/ui/components/nav_bar.dart';
 import 'package:aps/src/ui/components/order_code_verification.dart';
 import 'package:aps/src/ui/constants/app_colors.dart';
 import 'package:aps/src/ui/constants/screen_exports.dart';
+import 'package:aps/src/ui/screens/drawers_screens/about_screen.dart';
+import 'package:aps/src/ui/screens/drawers_screens/info_screen.dart';
+import 'package:aps/src/ui/screens/drawers_screens/location_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -159,34 +162,34 @@ class _MainScreenState extends State<MainScreen> {
         automaticallyImplyLeading: false,
         actions: [
           TextButton(
-            onPressed: () => _pushPage(const CargoPage()),
+            onPressed: () => _pushPage(const InfoScreen()),
             child: Text(loc.cargo, style: const TextStyle(color: Colors.black)),
           ),
           TextButton(
-            onPressed: () => _pushPage(const ContractorsPage()),
+            onPressed: () => _pushPage(const AboutScreen()),
             child: Text(
               loc.contractors,
               style: const TextStyle(color: Colors.black),
             ),
           ),
           TextButton(
-            onPressed: () => _pushPage(const AccountingPage()),
+            onPressed: () => _pushPage(const LocationScreen()),
             child: Text(
               loc.accounting,
               style: const TextStyle(color: Colors.black),
             ),
           ),
-          TextButton(
-            onPressed: () => _pushPage(const ReportsPage()),
-            child: Text(
-              loc.reports,
-              style: const TextStyle(color: Colors.black),
-            ),
-          ),
-          TextButton(
-            onPressed: () => _pushPage(const SetupPage()),
-            child: Text(loc.setup, style: const TextStyle(color: Colors.black)),
-          ),
+          // TextButton(
+          //   onPressed: () => _pushPage(const ReportsPage()),
+          //   child: Text(
+          //     loc.reports,
+          //     style: const TextStyle(color: Colors.black),
+          //   ),
+          // ),
+          // TextButton(
+          //   onPressed: () => _pushPage(const SetupPage()),
+          //   child: Text(loc.setup, style: const TextStyle(color: Colors.black)),
+          // ),
           TextButton(
             onPressed: () => _pushPage(const SettingsPage()),
             child: Text(
@@ -257,30 +260,30 @@ class _MainScreenState extends State<MainScreen> {
       ),
       endDrawer: CustomBurgerMenu(
         loc: loc,
+        onInfoTap: () {
+          Navigator.of(context).pop();
+          _pushPage(const InfoScreen());
+        },
+        onLocationTap: () {
+          Navigator.of(context).pop();
+          _pushPage(const AboutScreen());
+        },
+        // onAccountingTap: () {
+        //   Navigator.of(context).pop();
+        //   _pushPage(const AccountingPage());
+        // },
         onCargoTap: () {
           Navigator.of(context).pop();
-          _pushPage(const CargoPage());
-        },
-        onContractorsTap: () {
-          Navigator.of(context).pop();
-          _pushPage(const ContractorsPage());
-        },
-        onAccountingTap: () {
-          Navigator.of(context).pop();
-          _pushPage(const AccountingPage());
-        },
-        onReportsTap: () {
-          Navigator.of(context).pop();
-          _pushPage(const ReportsPage());
-        },
-        onSetupTap: () {
-          Navigator.of(context).pop();
-          _pushPage(const SetupPage());
+          _pushPage(const LocationScreen());
         },
         onSettingsTap: () {
           Navigator.of(context).pop();
           _pushPage(const SettingsPage());
         },
+        // onSettingsTap: () {
+        //   Navigator.of(context).pop();
+        //   _pushPage(const SettingsPage());
+        // },
       ),
       body: _buildContent(loc),
       bottomNavigationBar: CustomBottomNavBar(

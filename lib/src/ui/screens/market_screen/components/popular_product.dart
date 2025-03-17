@@ -1,8 +1,5 @@
 import 'package:aps/src/ui/screens/market_screen/components/section_title.dart';
 import 'package:aps/src/ui/screens/market_screen/models/demoproducts.dart';
-import 'package:aps/src/ui/screens/market_screen/models/demoproducts.dart' as market;
-
-
 import 'package:aps/src/ui/screens/market_screen/product_card.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +34,6 @@ class PopularProducts extends StatelessWidget {
                     ),
                   );
                 }
-
                 return const SizedBox.shrink();
               }),
               const SizedBox(width: 20),

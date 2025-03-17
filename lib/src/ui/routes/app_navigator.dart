@@ -1,16 +1,9 @@
+// import 'package:flutter/material.dart';
 // import 'package:aps/src/ui/screens/admin_panel/admin_screen.dart';
+// import 'package:aps/src/ui/screens/admin_panel/login_admin_screen.dart';
 // import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
 // import 'package:aps/src/ui/screens/auth_screen.dart';
 // import 'package:aps/src/ui/screens/register_page.dart';
-// import 'package:flutter/material.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   SharedPreferences prefs = await SharedPreferences.getInstance();
-//   bool isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
-//   runApp(MyApp(isLoggedIn: isLoggedIn));
-// }
 
 // class AppRoutePath {
 //   final bool isUnknown;
@@ -73,9 +66,12 @@
 //   @override
 //   RouteInformation restoreRouteInformation(AppRoutePath configuration) {
 //     if (configuration.isHome) return const RouteInformation(location: '/');
-//     if (configuration.isAdmin) return const RouteInformation(location: '/aps-admins');
-//     if (configuration.isLogin) return const RouteInformation(location: '/login');
-//     if (configuration.isRegister) return const RouteInformation(location: '/register');
+//     if (configuration.isAdmin)
+//       return const RouteInformation(location: '/aps-admins');
+//     if (configuration.isLogin)
+//       return const RouteInformation(location: '/login');
+//     if (configuration.isRegister)
+//       return const RouteInformation(location: '/register');
 //     return const RouteInformation(location: '/404');
 //   }
 // }
@@ -84,13 +80,20 @@
 //     with ChangeNotifier, PopNavigatorRouterDelegateMixin<AppRoutePath> {
 //   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-//   bool isUserLoggedIn = false;
-//   bool showRegister = false;
 //   bool showAdmin = false;
+//   bool showRegister = false;
+//   bool isAdminLoggedIn = false;
 
-//   AppRouterDelegate({required bool isLoggedIn, required Future<Null> Function() onLoginSuccess, required int selectedIndex}) {
-//     isUserLoggedIn = isLoggedIn;
-//   }
+//   final bool isLoggedIn;
+//   final int selectedIndex;
+//   final VoidCallback onLoginSuccess;
+//   bool isUserLoggedIn = false;
+
+//   AppRouterDelegate({
+//     required this.isLoggedIn,
+//     required this.selectedIndex,
+//     required this.onLoginSuccess,
+//   });
 
 //   @override
 //   AppRoutePath get currentConfiguration {
@@ -105,49 +108,67 @@
 //     List<Page> pages = [];
 
 //     if (!isUserLoggedIn) {
-//       pages.add(MaterialPage(
-//         key: const ValueKey('LoginScreen'),
-//         child: LoginScreen(
-//           onLoginSuccess: () async {
-//             SharedPreferences prefs = await SharedPreferences.getInstance();
-//             await prefs.setBool("isLoggedIn", true);
-//             isUserLoggedIn = true;
-//             notifyListeners();
-//           },
-//           onRegisterTapped: () {
-//             showRegister = true;
-//             notifyListeners();
-//           }, selectedIndex: 0,
-//         ),
-//       ));
-//       if (showRegister) {
-//         pages.add(MaterialPage(
-//           key: const ValueKey('RegisterScreen'),
-//           child: RegisterScreen(
-//             onRegisterSuccess: () async {
-//               SharedPreferences prefs = await SharedPreferences.getInstance();
-//               await prefs.setBool("isLoggedIn", true);
+//       pages.add(
+//         MaterialPage(
+//           key: const ValueKey('LoginScreen'),
+//           child: LoginScreen(
+//             selectedIndex: selectedIndex,
+//             onLoginSuccess: () async {
+//               // Пример сохранения состояния
+//               // После успешного входа, обновите состояние
 //               isUserLoggedIn = true;
-//               showRegister = false;
 //               notifyListeners();
 //             },
-//             onSwitchToLogin: () {
-//               showRegister = false;
+//             onRegisterTapped: () {
+//               showRegister = true;
 //               notifyListeners();
-//             }, selectedIndex: 0,
+//             },
 //           ),
-//         ));
+//         ),
+//       );
+//       if (showRegister) {
+//         pages.add(
+//           MaterialPage(
+//             key: const ValueKey('RegisterScreen'),
+//             child: RegisterScreen(
+//               selectedIndex: selectedIndex,
+//               onRegisterSuccess: () async {
+//                 isUserLoggedIn = true;
+//                 notifyListeners();
+//               },
+//               onSwitchToLogin: () {
+//                 showRegister = false;
+//                 notifyListeners();
+//               },
+//             ),
+//           ),
+//         );
 //       }
 //     } else {
-//       pages.add(MaterialPage(
-//         key: const ValueKey('MainScreen'),
-//         child: MainScreen(),
-//       ));
+//       pages.add(
+//         MaterialPage(key: const ValueKey('MainScreen'), child: MainScreen()),
+//       );
 //       if (showAdmin) {
-//         pages.add(MaterialPage(
-//           key: const ValueKey('AdminScreen'),
-//           child: AdminScreen(),
-//         ));
+//         if (!isAdminLoggedIn) {
+//           pages.add(
+//             MaterialPage(
+//               key: const ValueKey('LoginAdminScreen'),
+//               child: LoginAdminScreen(
+//                 onAdminLoginSuccess: () async {
+//                   isAdminLoggedIn = true;
+//                   notifyListeners();
+//                 },
+//               ),
+//             ),
+//           );
+//         } else {
+//           pages.add(
+//             MaterialPage(
+//               key: const ValueKey('AdminScreen'),
+//               child: AdminScreen(),
+//             ),
+//           );
+//         }
 //       }
 //     }
 
@@ -165,39 +186,17 @@
 
 //   @override
 //   Future<void> setNewRoutePath(AppRoutePath configuration) async {
-//     if (configuration.isUnknown) {
-//       showAdmin = false;
-//       showRegister = false;
-//     } else if (configuration.isRegister) {
-//       showRegister = true;
-//       showAdmin = false;
-//     } else if (configuration.isAdmin) {
-//       if (isUserLoggedIn) {
-//         showAdmin = true;
-//         showRegister = false;
-//       } else {
-//         showRegister = false;
-//         showAdmin = false;
-//       }
-//     } else if (configuration.isHome) {
-//       print("🏠 Переход на главный экран");
-//     }
+//     // Загрузка данных из SharedPreferences или другая логика
 //     notifyListeners();
 //   }
 // }
 
-// class MyApp extends StatelessWidget {
-//   final bool isLoggedIn;
-
-//   const MyApp({super.key, required this.isLoggedIn});
-
+// class UnknownScreen extends StatelessWidget {
 //   @override
 //   Widget build(BuildContext context) {
-//     return MaterialApp.router(
-//       debugShowCheckedModeBanner: false,
-//       routerDelegate: AppRouterDelegate(isLoggedIn: isLoggedIn, onLoginSuccess: () {  }, selectedIndex: 0),
-//       routeInformationParser: AppRouteInformationParser(),
-//       title: 'Aps Express',
+//     return Scaffold(
+//       appBar: AppBar(title: const Text("404")),
+//       body: const Center(child: Text("Страница не найдена")),
 //     );
 //   }
 // }

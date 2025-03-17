@@ -1,7 +1,6 @@
 import 'package:aps/src/ui/screens/admin_panel/admin_screen.dart';
 import 'package:aps/src/ui/screens/admin_panel/login_admin_screen.dart';
 import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
-import 'package:aps/src/ui/screens/after_screen/notfoundscreen.dart';
 import 'package:aps/src/ui/screens/auth_screen.dart';
 import 'package:aps/src/ui/screens/register_page.dart';
 import 'package:flutter/material.dart';
@@ -25,44 +24,46 @@ class AppRoutePath {
   final bool isRegister;
 
   AppRoutePath.home()
-      : isHome = true,
-        isLogin = false,
-        isAdmin = false,
-        isRegister = false,
-        isUnknown = false;
+    : isHome = true,
+      isLogin = false,
+      isAdmin = false,
+      isRegister = false,
+      isUnknown = false;
 
   AppRoutePath.login()
-      : isHome = false,
-        isLogin = true,
-        isAdmin = false,
-        isRegister = false,
-        isUnknown = false;
+    : isHome = false,
+      isLogin = true,
+      isAdmin = false,
+      isRegister = false,
+      isUnknown = false;
 
   AppRoutePath.admin()
-      : isHome = false,
-        isLogin = false,
-        isAdmin = true,
-        isRegister = false,
-        isUnknown = false;
+    : isHome = false,
+      isLogin = false,
+      isAdmin = true,
+      isRegister = false,
+      isUnknown = false;
 
   AppRoutePath.register()
-      : isHome = false,
-        isLogin = false,
-        isAdmin = false,
-        isRegister = true,
-        isUnknown = false;
+    : isHome = false,
+      isLogin = false,
+      isAdmin = false,
+      isRegister = true,
+      isUnknown = false;
 
   AppRoutePath.unknown()
-      : isHome = false,
-        isLogin = false,
-        isAdmin = false,
-        isRegister = false,
-        isUnknown = true;
+    : isHome = false,
+      isLogin = false,
+      isAdmin = false,
+      isRegister = false,
+      isUnknown = true;
 }
 
 class AppRouteInformationParser extends RouteInformationParser<AppRoutePath> {
   @override
-  Future<AppRoutePath> parseRouteInformation(RouteInformation routeInformation) async {
+  Future<AppRoutePath> parseRouteInformation(
+    RouteInformation routeInformation,
+  ) async {
     final uri = Uri.parse(routeInformation.location ?? '/');
     if (uri.pathSegments.isEmpty) return AppRoutePath.home();
 
@@ -78,18 +79,22 @@ class AppRouteInformationParser extends RouteInformationParser<AppRoutePath> {
   @override
   RouteInformation restoreRouteInformation(AppRoutePath configuration) {
     if (configuration.isHome) return const RouteInformation(location: '/');
+
     if (configuration.isAdmin)
       return const RouteInformation(location: '/aps-admins');
+
     if (configuration.isLogin)
       return const RouteInformation(location: '/login');
     if (configuration.isRegister)
       return const RouteInformation(location: '/register');
+
     return const RouteInformation(location: '/404');
   }
 }
 
 class AppRouterDelegate extends RouterDelegate<AppRoutePath>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<AppRoutePath> {
+  @override
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   bool showAdmin = false;
@@ -311,7 +316,7 @@ class _MyAppState extends State<MyApp> {
 // Пример placeholder‑страниц для маршрутов:
 
 class FlightsPage extends StatelessWidget {
-  const FlightsPage({Key? key}) : super(key: key);
+  const FlightsPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -322,7 +327,7 @@ class FlightsPage extends StatelessWidget {
 }
 
 class CargoPage extends StatelessWidget {
-  const CargoPage({Key? key}) : super(key: key);
+  const CargoPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -333,7 +338,7 @@ class CargoPage extends StatelessWidget {
 }
 
 class ContractorsPage extends StatelessWidget {
-  const ContractorsPage({Key? key}) : super(key: key);
+  const ContractorsPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -344,7 +349,7 @@ class ContractorsPage extends StatelessWidget {
 }
 
 class AccountingPage extends StatelessWidget {
-  const AccountingPage({Key? key}) : super(key: key);
+  const AccountingPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -355,7 +360,7 @@ class AccountingPage extends StatelessWidget {
 }
 
 class ReportsPage extends StatelessWidget {
-  const ReportsPage({Key? key}) : super(key: key);
+  const ReportsPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -366,7 +371,7 @@ class ReportsPage extends StatelessWidget {
 }
 
 class SetupPage extends StatelessWidget {
-  const SetupPage({Key? key}) : super(key: key);
+  const SetupPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -375,4 +380,3 @@ class SetupPage extends StatelessWidget {
     );
   }
 }
-

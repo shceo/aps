@@ -1,9 +1,6 @@
 import 'dart:ui';
 import 'package:aps/main.dart' show AppRoutePath, AppRouterDelegate, MyApp;
-import 'package:aps/src/ui/routes/app_navigator.dart'
-    show AppRoutePath, AppRouterDelegate;
-import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
-import 'package:aps/src/ui/screens/register_page.dart';
+import 'package:aps/src/ui/routes/app_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:aps/l10n/app_localizations.dart';

@@ -3,23 +3,29 @@ import 'package:flutter/material.dart';
 
 class CustomBurgerMenu extends StatelessWidget {
   final AppLocalizations loc;
-  final VoidCallback onCargoTap;
-  final VoidCallback onContractorsTap;
-  final VoidCallback onAccountingTap;
-  final VoidCallback onReportsTap;
-  final VoidCallback onSetupTap;
+  final VoidCallback onInfoTap;
+  final VoidCallback onLocationTap;
   final VoidCallback onSettingsTap;
+  final VoidCallback onCargoTap;
+  // final VoidCallback onContractorsTap;
+  // final VoidCallback onAccountingTap;
+  // final VoidCallback onReportsTap;
+  // final VoidCallback onSetupTap;
+  // final VoidCallback onSettingsTap;
 
   const CustomBurgerMenu({
-    Key? key,
+    super.key,
     required this.loc,
-    required this.onCargoTap,
-    required this.onContractorsTap,
-    required this.onAccountingTap,
-    required this.onReportsTap,
-    required this.onSetupTap,
+    required this.onInfoTap,
+    required this.onLocationTap,
     required this.onSettingsTap,
-  }) : super(key: key);
+    required this.onCargoTap,
+    // required this.onContractorsTap,
+    // required this.onAccountingTap,
+    // required this.onReportsTap,
+    // required this.onSetupTap,
+    // required this.onSettingsTap,
+  });
 
   Widget _drawerItem(String title, IconData icon, {VoidCallback? onTap}) {
     return ListTile(
@@ -41,12 +47,12 @@ class CustomBurgerMenu extends StatelessWidget {
               style: const TextStyle(color: Colors.white, fontSize: 20),
             ),
           ),
-          _drawerItem(loc.cargo, Icons.business_center, onTap: onCargoTap),
-          _drawerItem(loc.contractors, Icons.people, onTap: onContractorsTap),
-          _drawerItem(loc.accounting, Icons.attach_money, onTap: onAccountingTap),
-          _drawerItem(loc.reports, Icons.insert_chart, onTap: onReportsTap),
-          _drawerItem(loc.setup, Icons.info, onTap: onSetupTap),
-          _drawerItem(loc.settings, Icons.settings, onTap: onSettingsTap),
+          _drawerItem(loc.cargo, Icons.business_center, onTap: onInfoTap),
+          _drawerItem(loc.contractors, Icons.people, onTap: onLocationTap),
+          _drawerItem(loc.accounting, Icons.attach_money, onTap: onSettingsTap),
+          _drawerItem(loc.reports, Icons.insert_chart, onTap: onCargoTap),
+          // _drawerItem(loc.setup, Icons.info, onTap: onSetupTap),
+          // _drawerItem(loc.settings, Icons.settings, onTap: onSettingsTap),
         ],
       ),
     );
