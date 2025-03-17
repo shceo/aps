@@ -90,7 +90,7 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория товара')
     slug = models.SlugField(unique=True, blank=True, null=True, verbose_name='Слаг товара')
     model = models.ForeignKey(Brand, on_delete=models.CASCADE, blank=True, null=True, verbose_name='Модель')
-    discount = models.IntegerField(blank=True, null=True, verbose_name='Скидка')
+    discount = models.PositiveIntegerField(blank=True, null=True, verbose_name='Скидка')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавление')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата Изменение')
 
