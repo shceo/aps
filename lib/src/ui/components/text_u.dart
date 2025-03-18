@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// ignore: must_be_immutable
 class TextUtil extends StatelessWidget {
   String text;
   Color? color;

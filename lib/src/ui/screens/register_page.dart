@@ -167,8 +167,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         size: 30,
                       ),
                     ),
-                    // const Spacer(),
-                    // Поля ввода
                     _buildTextField(
                       loc.name,
                       _nameController,
@@ -242,7 +240,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-
   Widget _buildTextField(
     String label,
     TextEditingController controller,

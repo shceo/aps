@@ -1,5 +1,4 @@
 import 'package:aps/l10n/app_localizations.dart';
-import 'package:aps/main.dart';
 import 'package:aps/src/ui/components/custom_burger.dart';
 import 'package:aps/src/ui/components/nav_bar.dart';
 import 'package:aps/src/ui/components/order_code_verification.dart';
@@ -20,7 +19,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   bool _isOrderCodeVerified = false;
-  final TextEditingController _orderCodeController = TextEditingController();
   static const double webBreakpoint = 900;
 
   // Индекс для табовой навигации (IndexedStack)
