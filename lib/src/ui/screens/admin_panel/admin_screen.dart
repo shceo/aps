@@ -10,7 +10,7 @@ class AdminScreen extends StatefulWidget {
 
 class _AdminScreenState extends State<AdminScreen> {
   int _currentIndex = 1; // 0 – Панель, 1 – Таблица (инвойсы)
-  
+
   // Список инвойсов (используем числа как идентификаторы)
   List<int> invoices = [1];
 
@@ -26,25 +26,31 @@ class _AdminScreenState extends State<AdminScreen> {
   void _deleteInvoice(int index) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Подтверждение удаления"),
-        content: const Text("Вы уверены, что хотите удалить этот контейнер?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Отмена"),
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Подтверждение удаления"),
+            content: const Text(
+              "Вы уверены, что хотите удалить этот контейнер?",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Отмена"),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    invoices.removeAt(index);
+                  });
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  "Удалить",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                invoices.removeAt(index);
-              });
-              Navigator.pop(context);
-            },
-            child: const Text("Удалить", style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
     );
   }
 
@@ -52,12 +58,13 @@ class _AdminScreenState extends State<AdminScreen> {
   Widget _buildInvoiceCard(int index) {
     int invoiceId = invoices[index];
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => InvoiceFormScreen(invoiceId: invoiceId),
-        ),
-      ),
+      onTap:
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => InvoiceFormScreen(invoiceId: invoiceId),
+            ),
+          ),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(16),
