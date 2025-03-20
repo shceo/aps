@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "984799256139",
+    "project_id": "apss-22224",
+    "storage_bucket": "apss-22224.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984799256139:android:5e2f9e53a05ce2f45177ce",
+        "android_client_info": {
+          "package_name": "com.example.aps"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVahUeHXuXc2UTSecs-ypPeQbVN-EpEEw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

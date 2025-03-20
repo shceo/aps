@@ -1,8 +1,10 @@
+import 'package:aps/firebase_options.dart';
 import 'package:aps/src/ui/screens/admin_panel/admin_screen.dart';
 import 'package:aps/src/ui/screens/admin_panel/login_admin_screen.dart';
 import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
 import 'package:aps/src/ui/screens/auth_screen.dart';
 import 'package:aps/src/ui/screens/register_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:aps/l10n/app_localizations.dart';
@@ -10,6 +12,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
   String savedLocale = prefs.getString("locale") ?? 'ru';
@@ -171,9 +178,10 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
         if (!isAdminLoggedIn) {
           pages.add(
             MaterialPage(
-              key: const ValueKey('LoginAdminScreen'),
-              child: LoginAdminScreen(
-                onAdminLoginSuccess: () async {
+              key: const ValueKey('AdminAuthScreen'),
+              child: AdminAuthScreen(
+                onAdminAuthSuccess: () async {
+                  // После успешного входа/регистрации админа:
                   isAdminLoggedIn = true;
                   notifyListeners();
                 },

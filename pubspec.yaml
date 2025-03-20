@@ -18,6 +18,7 @@ dependencies:
   auto_size_text: ^3.0.0
   webview_flutter: ^4.10.0
   flutter_svg: ^2.0.17
+  cloud_firestore: ^5.6.5
 
 dev_dependencies:
   flutter_test:
