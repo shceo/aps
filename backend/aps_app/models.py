@@ -1,6 +1,11 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+from django.utils.timezone import now
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+import datetime
 from django.urls import reverse
+from django.core.validators import MinLengthValidator, MaxLengthValidator
 
 
 class Branch(models.Model):
@@ -45,7 +50,6 @@ class UserDevice(models.Model):
 
 # ================ Products ==========================
 
-from django.urls import reverse
 
 
 class Category(models.Model):
@@ -83,7 +87,15 @@ class Brand(models.Model):
 
 class Product(models.Model):
     title = models.CharField(max_length=200, verbose_name='Название товара')
-    description = models.TextField(verbose_name='Описание товара')
+    description = models.TextField(
+        verbose_name='Описание товара',
+        validators=[MinLengthValidator(100), MaxLengthValidator(500)]
+    )
+    short_description = models.TextField(
+        verbose_name='Краткое описание',
+        validators=[MinLengthValidator(10), MaxLengthValidator(100)],
+        default="Описание отсутствует."  # Default text for existing rows
+    )
     price = models.FloatField(verbose_name='Цена товара')
     quantity = models.PositiveIntegerField(default=0, verbose_name='Количество')
     size = models.CharField(max_length=10, blank=True, null=True, verbose_name='Размер')
@@ -110,6 +122,7 @@ class Product(models.Model):
         verbose_name_plural = 'Товары'
 
 
+
 class ImageProduct(models.Model):
     image = models.ImageField(upload_to='images/', verbose_name='Фото товара')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images', verbose_name='Товар')
@@ -123,79 +136,126 @@ class ImageProduct(models.Model):
         verbose_name_plural = 'Изображения товаров'
 
 
-class Order(models.Model):
+
+class OrderMoneyLimit(models.Model):
+    customer = models.ForeignKey(
+        Receiver, on_delete=models.SET_NULL, null=True, verbose_name='Покупатель', related_name='money_limits'
+    )
+    limit = models.FloatField(default=0, verbose_name='Лимит на $1000')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+
+    def reset_limit(self):
+        """Resets limit every 3 months."""
+        self.limit = 0
+        self.save()
+
+    def __str__(self):
+        return f"Лимит {self.customer.receiver.username}: {self.limit}"
+
+    class Meta:
+        verbose_name = 'Лимит на заказ'
+        verbose_name_plural = 'Лимиты на заказы'
+
+
+class OrderAdmin(models.Model):
+    region = models.ForeignKey('Region', on_delete=models.SET_NULL, null=True, verbose_name='Регион')
+    city = models.ForeignKey('City', on_delete=models.SET_NULL, null=True, verbose_name='Город')
+
+    street = models.TextField(verbose_name='Улица', validators=[MaxLengthValidator(150)])
+
     customer = models.ForeignKey(
         Receiver, on_delete=models.SET_NULL, null=True, verbose_name='Покупатель', related_name='orders'
     )
     weight = models.FloatField(default=0, verbose_name='Вес заказа')
+    full_price = models.FloatField(verbose_name='Общая сумма')
+
+    limit = models.ForeignKey(OrderMoneyLimit, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Лимит")
+    passport_id = models.CharField(max_length=10, verbose_name='Серия паспорта')
+    dof = models.CharField(verbose_name='Дата рождение', max_length=20)
+
+    notes = models.TextField(verbose_name='Заметки', validators=[MaxLengthValidator(200)])
+
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата заказа')
-    is_completed = models.BooleanField(default=False, verbose_name='Статус заказа')
-    payment = models.BooleanField(default=False, verbose_name='Статус оплаты')
-    shipping = models.BooleanField(default=True, verbose_name='Доставка')
 
     def __str__(self):
-        return f'Номер заказа: {self.pk}, на имя: {self.customer.user.username}'
+        return f'Номер заказа: {self.pk}, на имя: {self.customer.receiver.username}'
 
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
 
-    @property
-    def get_order_total_price(self):
-        return sum(item.get_total_price for item in self.orderproduct_set.all())
 
-    @property
-    def get_order_total_quantity(self):
-        return sum(item.quantity for item in self.orderproduct_set.all())
+# Signal to automatically update the limit when an order is created
+@receiver(post_save, sender=OrderAdmin)
+def update_customer_limit(sender, instance, created, **kwargs):
+    if instance.customer:
+        money_limit, created = OrderMoneyLimit.objects.get_or_create(customer=instance.customer)
 
-
-class OrderProduct(models.Model):
-    product = models.ForeignKey(
-        Product, on_delete=models.SET_NULL, null=True, verbose_name='Товар', related_name='order_products'
-    )
-    order = models.ForeignKey(
-        Order, on_delete=models.SET_NULL, null=True, verbose_name='Заказ', related_name='order_products'
-    )
-    quantity = models.IntegerField(default=0, verbose_name='В количестве')
-    added_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
-
-    def __str__(self):
-        return f'Товар {self.product.title} по заказу №: {self.order.pk}'
-
-    class Meta:
-        verbose_name = 'Заказанный товар'
-        verbose_name_plural = 'Заказанные товары'
-
-    @property
-    def get_total_price(self):
-        price = self.product.price
-        if self.product.discount:
-            discount_amount = (price * self.product.discount) / 100
-            price -= discount_amount
-        return price * self.quantity
+        # Add order's price to the customer's limit
+        money_limit.limit += instance.full_price
+        money_limit.save()
 
 
-class ShippingAddress(models.Model):
-    customer = models.ForeignKey(
-        Receiver, on_delete=models.SET_NULL, null=True, verbose_name='Покупатель', related_name='shipping_addresses'
-    )
-    order = models.ForeignKey(
-        Order, on_delete=models.SET_NULL, null=True, verbose_name='Заказ', related_name='shipping_addresses'
-    )
-    address = models.CharField(max_length=150, verbose_name='Адрес доставки (улица, дом, кв)')
-    phone = models.CharField(max_length=30, verbose_name='Номер телефона')
-    comment = models.TextField(verbose_name='Комментарий к заказу', max_length=200)
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата оформления доставки')
-    region = models.ForeignKey('Region', on_delete=models.SET_NULL, null=True, verbose_name='Регион', related_name='addresses')
-    city = models.ForeignKey('City', on_delete=models.SET_NULL, null=True, verbose_name='Город', related_name='addresses')
+# Celery task to reset limit every 3 months
+from celery import shared_task
 
-    def __str__(self):
-        return f'Доставка для {self.customer.user.first_name} на заказ №{self.order.pk}'
+@shared_task
+def reset_limits():
+    """Resets all customer limits every 3 months."""
+    three_months_ago = now() - datetime.timedelta(days=90)
+    limits = OrderMoneyLimit.objects.filter(created_at__lte=three_months_ago)
 
-    class Meta:
-        verbose_name = 'Адрес доставки'
-        verbose_name_plural = 'Адреса доставок'
+    for limit in limits:
+        limit.reset_limit()
+
+
+# class OrderProduct(models.Model):
+#     product = models.ForeignKey(
+#         Product, on_delete=models.SET_NULL, null=True, verbose_name='Товар', related_name='order_products'
+#     )
+#     order = models.ForeignKey(
+#         Order, on_delete=models.SET_NULL, null=True, verbose_name='Заказ', related_name='order_products'
+#     )
+#     quantity = models.IntegerField(default=0, verbose_name='В количестве')
+#     added_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
+#     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
+#
+#     def __str__(self):
+#         return f'Товар {self.product.title} по заказу №: {self.order.pk}'
+#
+#     class Meta:
+#         verbose_name = 'Заказанный товар'
+#         verbose_name_plural = 'Заказанные товары'
+#
+#     @property
+#     def get_total_price(self):
+#         price = self.product.price
+#         if self.product.discount:
+#             discount_amount = (price * self.product.discount) / 100
+#             price -= discount_amount
+#         return price * self.quantity
+#
+#
+# class ShippingAddress(models.Model):
+#     customer = models.ForeignKey(
+#         Receiver, on_delete=models.SET_NULL, null=True, verbose_name='Покупатель', related_name='shipping_addresses'
+#     )
+#     order = models.ForeignKey(
+#         Order, on_delete=models.SET_NULL, null=True, verbose_name='Заказ', related_name='shipping_addresses'
+#     )
+#     address = models.CharField(max_length=150, verbose_name='Адрес доставки (улица, дом, кв)')
+#     phone = models.CharField(max_length=30, verbose_name='Номер телефона')
+#     comment = models.TextField(verbose_name='Комментарий к заказу', max_length=200)
+#     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата оформления доставки')
+#     region = models.ForeignKey('Region', on_delete=models.SET_NULL, null=True, verbose_name='Регион', related_name='addresses')
+#     city = models.ForeignKey('City', on_delete=models.SET_NULL, null=True, verbose_name='Город', related_name='addresses')
+#
+#     def __str__(self):
+#         return f'Доставка для {self.customer.user.first_name} на заказ №{self.order.pk}'
+#
+#     class Meta:
+#         verbose_name = 'Адрес доставки'
+#         verbose_name_plural = 'Адреса доставок'
 
 
 class Region(models.Model):
