@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.example.aps.app-mergeReleaseResources-3:/values-v24/values-v24.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\netro\\.gradle\\caches\\8.10.2\\transforms\\70d6979a7effd67c568a67cfb2248792\\transformed\\appcompat-1.1.0\\res\\values-v24\\values-v24.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,212",
+                        "endColumns": "156,134",
+                        "endOffsets": "207,342"
+                    }
+                }
+            ]
+        }
+    ]
+}

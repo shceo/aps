@@ -1,0 +1,263 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.aps"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="21"
+9        android:targetSdkVersion="35" />
+10    <!--
+11         Required to query activities that can process text, see:
+12         https://developer.android.com/training/package-visibility and
+13         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+14
+15         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin.
+16    -->
+17    <queries>
+17-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:39:5-44:15
+18        <intent>
+18-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:40:9-43:18
+19            <action android:name="android.intent.action.PROCESS_TEXT" />
+19-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:41:13-72
+19-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:41:21-70
+20
+21            <data android:mimeType="text/plain" />
+21-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:42:13-50
+21-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:42:19-48
+22        </intent>
+23    </queries>
+24    <!-- Although the *SdkVersion is captured in gradle build files, this is required for non gradle builds -->
+25    <!-- <uses-sdk android:minSdkVersion="21" /> -->
+26    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+26-->[com.google.firebase:firebase-firestore:25.1.2] C:\Users\netro\.gradle\caches\8.10.2\transforms\405d95fd960c43ea01564aa5254caf0a\transformed\jetified-firebase-firestore-25.1.2\AndroidManifest.xml:10:5-79
+26-->[com.google.firebase:firebase-firestore:25.1.2] C:\Users\netro\.gradle\caches\8.10.2\transforms\405d95fd960c43ea01564aa5254caf0a\transformed\jetified-firebase-firestore-25.1.2\AndroidManifest.xml:10:22-76
+27    <uses-permission android:name="android.permission.INTERNET" />
+27-->[com.google.firebase:firebase-firestore:25.1.2] C:\Users\netro\.gradle\caches\8.10.2\transforms\405d95fd960c43ea01564aa5254caf0a\transformed\jetified-firebase-firestore-25.1.2\AndroidManifest.xml:11:5-67
+27-->[com.google.firebase:firebase-firestore:25.1.2] C:\Users\netro\.gradle\caches\8.10.2\transforms\405d95fd960c43ea01564aa5254caf0a\transformed\jetified-firebase-firestore-25.1.2\AndroidManifest.xml:11:22-64
+28
+29    <permission
+29-->[androidx.core:core:1.13.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\417e7c87884e08d4d7995f4b5128db34\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+30        android:name="com.example.aps.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+30-->[androidx.core:core:1.13.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\417e7c87884e08d4d7995f4b5128db34\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+31        android:protectionLevel="signature" />
+31-->[androidx.core:core:1.13.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\417e7c87884e08d4d7995f4b5128db34\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+32
+33    <uses-permission android:name="com.example.aps.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+33-->[androidx.core:core:1.13.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\417e7c87884e08d4d7995f4b5128db34\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+33-->[androidx.core:core:1.13.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\417e7c87884e08d4d7995f4b5128db34\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+34
+35    <application
+36        android:name="android.app.Application"
+36-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:4:9-42
+37        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+37-->[androidx.core:core:1.13.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\417e7c87884e08d4d7995f4b5128db34\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+38        android:extractNativeLibs="true"
+39        android:icon="@mipmap/ic_launcher"
+39-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:5:9-43
+40        android:label="aps" >
+40-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:3:9-28
+41        <activity
+41-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:6:9-27:20
+42            android:name="com.example.aps.MainActivity"
+42-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:7:13-41
+43            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+43-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:12:13-163
+44            android:exported="true"
+44-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:8:13-36
+45            android:hardwareAccelerated="true"
+45-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:13:13-47
+46            android:launchMode="singleTop"
+46-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:9:13-43
+47            android:taskAffinity=""
+47-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:10:13-36
+48            android:theme="@style/LaunchTheme"
+48-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:11:13-47
+49            android:windowSoftInputMode="adjustResize" >
+49-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:14:13-55
+50
+51            <!--
+52                 Specifies an Android theme to apply to this Activity as soon as
+53                 the Android process has started. This theme is visible to the user
+54                 while the Flutter UI initializes. After that, this theme continues
+55                 to determine the Window background behind the Flutter UI.
+56            -->
+57            <meta-data
+57-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:19:13-22:17
+58                android:name="io.flutter.embedding.android.NormalTheme"
+58-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:20:15-70
+59                android:resource="@style/NormalTheme" />
+59-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:21:15-52
+60
+61            <intent-filter>
+61-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:23:13-26:29
+62                <action android:name="android.intent.action.MAIN" />
+62-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:24:17-68
+62-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:24:25-66
+63
+64                <category android:name="android.intent.category.LAUNCHER" />
+64-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:25:17-76
+64-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:25:27-74
+65            </intent-filter>
+66        </activity>
+67        <!--
+68             Don't delete the meta-data below.
+69             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
+70        -->
+71        <meta-data
+71-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:30:9-32:33
+72            android:name="flutterEmbedding"
+72-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:31:13-44
+73            android:value="2" />
+73-->B:\aps\aps\android\app\src\main\AndroidManifest.xml:32:13-30
+74
+75        <service
+75-->[:cloud_firestore] C:\Users\netro\AppData\Local\Pub\Cache\hosted\pub.dev\cloud_firestore-5.6.5\android\build\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:8:9-12:19
+76            android:name="com.google.firebase.components.ComponentDiscoveryService"
+76-->[:cloud_firestore] C:\Users\netro\AppData\Local\Pub\Cache\hosted\pub.dev\cloud_firestore-5.6.5\android\build\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:8:18-89
+77            android:directBootAware="true"
+77-->[com.google.firebase:firebase-common:21.0.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\b139c3cca8c327fd02a100cff2fcb51d\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:32:13-43
+78            android:exported="false" >
+78-->[com.google.firebase:firebase-firestore:25.1.2] C:\Users\netro\.gradle\caches\8.10.2\transforms\405d95fd960c43ea01564aa5254caf0a\transformed\jetified-firebase-firestore-25.1.2\AndroidManifest.xml:16:13-37
+79            <meta-data
+79-->[:cloud_firestore] C:\Users\netro\AppData\Local\Pub\Cache\hosted\pub.dev\cloud_firestore-5.6.5\android\build\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:9:13-11:85
+80                android:name="com.google.firebase.components:io.flutter.plugins.firebase.firestore.FlutterFirebaseFirestoreRegistrar"
+80-->[:cloud_firestore] C:\Users\netro\AppData\Local\Pub\Cache\hosted\pub.dev\cloud_firestore-5.6.5\android\build\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:10:17-134
+81                android:value="com.google.firebase.components.ComponentRegistrar" />
+81-->[:cloud_firestore] C:\Users\netro\AppData\Local\Pub\Cache\hosted\pub.dev\cloud_firestore-5.6.5\android\build\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:11:17-82
+82            <meta-data
+82-->[:firebase_core] C:\Users\netro\AppData\Local\Pub\Cache\hosted\pub.dev\firebase_core-3.12.1\android\build\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:9:13-11:85
+83                android:name="com.google.firebase.components:io.flutter.plugins.firebase.core.FlutterFirebaseCoreRegistrar"
+83-->[:firebase_core] C:\Users\netro\AppData\Local\Pub\Cache\hosted\pub.dev\firebase_core-3.12.1\android\build\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:10:17-124
+84                android:value="com.google.firebase.components.ComponentRegistrar" />
+84-->[:firebase_core] C:\Users\netro\AppData\Local\Pub\Cache\hosted\pub.dev\firebase_core-3.12.1\android\build\intermediates\merged_manifest\release\processReleaseManifest\AndroidManifest.xml:11:17-82
+85            <meta-data
+85-->[com.google.firebase:firebase-firestore:25.1.2] C:\Users\netro\.gradle\caches\8.10.2\transforms\405d95fd960c43ea01564aa5254caf0a\transformed\jetified-firebase-firestore-25.1.2\AndroidManifest.xml:17:13-19:85
+86                android:name="com.google.firebase.components:com.google.firebase.firestore.FirebaseFirestoreKtxRegistrar"
+86-->[com.google.firebase:firebase-firestore:25.1.2] C:\Users\netro\.gradle\caches\8.10.2\transforms\405d95fd960c43ea01564aa5254caf0a\transformed\jetified-firebase-firestore-25.1.2\AndroidManifest.xml:18:17-122
+87                android:value="com.google.firebase.components.ComponentRegistrar" />
+87-->[com.google.firebase:firebase-firestore:25.1.2] C:\Users\netro\.gradle\caches\8.10.2\transforms\405d95fd960c43ea01564aa5254caf0a\transformed\jetified-firebase-firestore-25.1.2\AndroidManifest.xml:19:17-82
+88            <meta-data
+88-->[com.google.firebase:firebase-firestore:25.1.2] C:\Users\netro\.gradle\caches\8.10.2\transforms\405d95fd960c43ea01564aa5254caf0a\transformed\jetified-firebase-firestore-25.1.2\AndroidManifest.xml:20:13-22:85
+89                android:name="com.google.firebase.components:com.google.firebase.firestore.FirestoreRegistrar"
+89-->[com.google.firebase:firebase-firestore:25.1.2] C:\Users\netro\.gradle\caches\8.10.2\transforms\405d95fd960c43ea01564aa5254caf0a\transformed\jetified-firebase-firestore-25.1.2\AndroidManifest.xml:21:17-111
+90                android:value="com.google.firebase.components.ComponentRegistrar" />
+90-->[com.google.firebase:firebase-firestore:25.1.2] C:\Users\netro\.gradle\caches\8.10.2\transforms\405d95fd960c43ea01564aa5254caf0a\transformed\jetified-firebase-firestore-25.1.2\AndroidManifest.xml:22:17-82
+91            <meta-data
+91-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\805f597cf700b6edc578f20d23953299\transformed\jetified-firebase-common-ktx-21.0.0\AndroidManifest.xml:12:13-14:85
+92                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar"
+92-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\805f597cf700b6edc578f20d23953299\transformed\jetified-firebase-common-ktx-21.0.0\AndroidManifest.xml:13:17-116
+93                android:value="com.google.firebase.components.ComponentRegistrar" />
+93-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\805f597cf700b6edc578f20d23953299\transformed\jetified-firebase-common-ktx-21.0.0\AndroidManifest.xml:14:17-82
+94            <meta-data
+94-->[com.google.firebase:firebase-common:21.0.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\b139c3cca8c327fd02a100cff2fcb51d\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:35:13-37:85
+95                android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar"
+95-->[com.google.firebase:firebase-common:21.0.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\b139c3cca8c327fd02a100cff2fcb51d\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:36:17-109
+96                android:value="com.google.firebase.components.ComponentRegistrar" />
+96-->[com.google.firebase:firebase-common:21.0.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\b139c3cca8c327fd02a100cff2fcb51d\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:37:17-82
+97        </service>
+98
+99        <provider
+99-->[com.google.firebase:firebase-common:21.0.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\b139c3cca8c327fd02a100cff2fcb51d\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:23:9-28:39
+100            android:name="com.google.firebase.provider.FirebaseInitProvider"
+100-->[com.google.firebase:firebase-common:21.0.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\b139c3cca8c327fd02a100cff2fcb51d\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:24:13-77
+101            android:authorities="com.example.aps.firebaseinitprovider"
+101-->[com.google.firebase:firebase-common:21.0.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\b139c3cca8c327fd02a100cff2fcb51d\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:25:13-72
+102            android:directBootAware="true"
+102-->[com.google.firebase:firebase-common:21.0.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\b139c3cca8c327fd02a100cff2fcb51d\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:26:13-43
+103            android:exported="false"
+103-->[com.google.firebase:firebase-common:21.0.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\b139c3cca8c327fd02a100cff2fcb51d\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:27:13-37
+104            android:initOrder="100" />
+104-->[com.google.firebase:firebase-common:21.0.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\b139c3cca8c327fd02a100cff2fcb51d\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:28:13-36
+105
+106        <activity
+106-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\dda84d1cc2f12b5b22ec2f1915cb4ad8\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:20:9-22:45
+107            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+107-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\dda84d1cc2f12b5b22ec2f1915cb4ad8\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:20:19-85
+108            android:exported="false"
+108-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\dda84d1cc2f12b5b22ec2f1915cb4ad8\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:22:19-43
+109            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+109-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\dda84d1cc2f12b5b22ec2f1915cb4ad8\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:21:19-78
+110
+111        <uses-library
+111-->[androidx.window:window:1.2.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\a9c9109d84222ef39ccd74e88c2f7c1d\transformed\jetified-window-1.2.0\AndroidManifest.xml:23:9-25:40
+112            android:name="androidx.window.extensions"
+112-->[androidx.window:window:1.2.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\a9c9109d84222ef39ccd74e88c2f7c1d\transformed\jetified-window-1.2.0\AndroidManifest.xml:24:13-54
+113            android:required="false" />
+113-->[androidx.window:window:1.2.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\a9c9109d84222ef39ccd74e88c2f7c1d\transformed\jetified-window-1.2.0\AndroidManifest.xml:25:13-37
+114        <uses-library
+114-->[androidx.window:window:1.2.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\a9c9109d84222ef39ccd74e88c2f7c1d\transformed\jetified-window-1.2.0\AndroidManifest.xml:26:9-28:40
+115            android:name="androidx.window.sidecar"
+115-->[androidx.window:window:1.2.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\a9c9109d84222ef39ccd74e88c2f7c1d\transformed\jetified-window-1.2.0\AndroidManifest.xml:27:13-51
+116            android:required="false" />
+116-->[androidx.window:window:1.2.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\a9c9109d84222ef39ccd74e88c2f7c1d\transformed\jetified-window-1.2.0\AndroidManifest.xml:28:13-37
+117
+118        <meta-data
+118-->[com.google.android.gms:play-services-basement:18.3.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\2e2fd7202107ad9c85f0ce1d58662eaa\transformed\jetified-play-services-basement-18.3.0\AndroidManifest.xml:21:9-23:69
+119            android:name="com.google.android.gms.version"
+119-->[com.google.android.gms:play-services-basement:18.3.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\2e2fd7202107ad9c85f0ce1d58662eaa\transformed\jetified-play-services-basement-18.3.0\AndroidManifest.xml:22:13-58
+120            android:value="@integer/google_play_services_version" />
+120-->[com.google.android.gms:play-services-basement:18.3.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\2e2fd7202107ad9c85f0ce1d58662eaa\transformed\jetified-play-services-basement-18.3.0\AndroidManifest.xml:23:13-66
+121
+122        <provider
+122-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\746f23c1d25830275379ca1a82fb18f6\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:24:9-32:20
+123            android:name="androidx.startup.InitializationProvider"
+123-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\746f23c1d25830275379ca1a82fb18f6\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:25:13-67
+124            android:authorities="com.example.aps.androidx-startup"
+124-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\746f23c1d25830275379ca1a82fb18f6\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:26:13-68
+125            android:exported="false" >
+125-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\746f23c1d25830275379ca1a82fb18f6\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:27:13-37
+126            <meta-data
+126-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\746f23c1d25830275379ca1a82fb18f6\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:29:13-31:52
+127                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+127-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\746f23c1d25830275379ca1a82fb18f6\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:30:17-78
+128                android:value="androidx.startup" />
+128-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\netro\.gradle\caches\8.10.2\transforms\746f23c1d25830275379ca1a82fb18f6\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:31:17-49
+129            <meta-data
+129-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+130                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+130-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+131                android:value="androidx.startup" />
+131-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+132        </provider>
+133
+134        <receiver
+134-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+135            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+135-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+136            android:directBootAware="false"
+136-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+137            android:enabled="true"
+137-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+138            android:exported="true"
+138-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+139            android:permission="android.permission.DUMP" >
+139-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+140            <intent-filter>
+140-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+141                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+141-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+141-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+142            </intent-filter>
+143            <intent-filter>
+143-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+144                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+144-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+144-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+145            </intent-filter>
+146            <intent-filter>
+146-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+147                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+147-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+147-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+148            </intent-filter>
+149            <intent-filter>
+149-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+150                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+150-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+150-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\netro\.gradle\caches\8.10.2\transforms\2b5226c59b8073618877757eb3f109ca\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+151            </intent-filter>
+152        </receiver>
+153    </application>
+154
+155</manifest>

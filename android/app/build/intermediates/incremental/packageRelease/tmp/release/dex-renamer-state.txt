@@ -1,0 +1,4 @@
+#Fri Mar 21 20:34:55 UZT 2025
+base.0=B\:\\aps\\aps\\android\\app\\build\\intermediates\\dex\\release\\minifyReleaseWithR8\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

@@ -1,4 +1,4 @@
-import 'package:aps/firebase_options.dart';
+import 'package:aps/src/firebase_options.dart';
 import 'package:aps/src/ui/screens/admin_panel/admin_screen.dart';
 import 'package:aps/src/ui/screens/admin_panel/login_admin_screen.dart';
 import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
