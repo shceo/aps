@@ -1,4 +1,5 @@
 import 'package:aps/src/ui/screens/admin_panel/invoice_scree.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AdminScreen extends StatefulWidget {
@@ -10,61 +11,74 @@ class AdminScreen extends StatefulWidget {
 
 class _AdminScreenState extends State<AdminScreen> {
   int _currentIndex = 1; // 0 – Панель, 1 – Таблица (инвойсы)
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Список инвойсов (используем числа как идентификаторы)
-  List<int> invoices = [1];
-
-  /// Добавление нового инвойса (с новой нумерацией)
-  void _addInvoice() {
-    setState(() {
-      int newId = (invoices.isNotEmpty ? invoices.last + 1 : 1);
-      invoices.add(newId);
-    });
+  /// Добавление нового инвойса: вычисляем новый номер и создаём пустой документ
+  Future<void> _addInvoice() async {
+    try {
+      // Получаем все документы коллекции "invoices"
+      QuerySnapshot snapshot =
+          await _firestore.collection('invoices').get();
+      int newId = 1;
+      if (snapshot.docs.isNotEmpty) {
+        // Предполагаем, что идентификаторы документов — это числа в виде строк
+        newId = snapshot.docs
+                .map((doc) => int.tryParse(doc.id) ?? 0)
+                .fold(0, (prev, element) => element > prev ? element : prev) +
+            1;
+      }
+      // Создаём новый документ с новым идентификатором
+      await _firestore
+          .collection('invoices')
+          .doc(newId.toString())
+          .set({'invoice_no': newId});
+    } catch (e) {
+      debugPrint("Ошибка при добавлении инвойса: $e");
+    }
   }
 
-  /// Удаление инвойса с предварительным подтверждением
-  void _deleteInvoice(int index) {
+  /// Удаление инвойса с подтверждением и удалением из Firestore
+  void _deleteInvoice(String invoiceId) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text("Подтверждение удаления"),
-            content: const Text(
-              "Вы уверены, что хотите удалить этот контейнер?",
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Отмена"),
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    invoices.removeAt(index);
-                  });
-                  Navigator.pop(context);
-                },
-                child: const Text(
-                  "Удалить",
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text("Подтверждение удаления"),
+        content: const Text("Вы уверены, что хотите удалить этот контейнер?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Отмена"),
           ),
+          TextButton(
+            onPressed: () async {
+              try {
+                await _firestore
+                    .collection('invoices')
+                    .doc(invoiceId)
+                    .delete();
+              } catch (e) {
+                debugPrint("Ошибка удаления из Firestore: $e");
+              }
+              Navigator.pop(context);
+            },
+            child: const Text("Удалить", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
     );
   }
 
   /// Виджет одного контейнера инвойса с нумерацией и кнопками + и удаления
-  Widget _buildInvoiceCard(int index) {
-    int invoiceId = invoices[index];
+  Widget _buildInvoiceCard(DocumentSnapshot doc) {
+    // Документ ID — это номер инвойса
+    String invoiceId = doc.id;
     return GestureDetector(
-      onTap:
-          () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => InvoiceFormScreen(invoiceId: invoiceId),
-            ),
-          ),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => InvoiceFormScreen(invoiceId: int.parse(invoiceId)),
+        ),
+      ),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(16),
@@ -76,18 +90,17 @@ class _AdminScreenState extends State<AdminScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Заказ № $invoiceId", style: const TextStyle(fontSize: 18)),
+            Text("Заказ № $invoiceId",
+                style: const TextStyle(fontSize: 18)),
             Row(
               children: [
-                // Кнопка "плюс" для добавления нового контейнера
                 IconButton(
                   icon: const Icon(Icons.add, color: Colors.green),
                   onPressed: _addInvoice,
                 ),
-                // Кнопка удаления
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => _deleteInvoice(index),
+                  onPressed: () => _deleteInvoice(invoiceId),
                 ),
               ],
             ),
@@ -97,31 +110,56 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
+  /// Виджет для отображения пустого состояния с кнопкой добавления нового инвойса
+  Widget _buildEmptyState() {
+    return Center(
+      child: ElevatedButton(
+        onPressed: _addInvoice,
+        child: const Text("Добавить новый контейнер"),
+      ),
+    );
+  }
+  
+
   @override
   Widget build(BuildContext context) {
-    // Используем LayoutBuilder для определения, использовать сайд-бар или нижнюю навигацию
+    // Используем StreamBuilder для получения списка инвойсов из Firestore
+    Widget content = StreamBuilder<QuerySnapshot>(
+      stream: _firestore.collection('invoices').orderBy('invoice_no').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final docs = snapshot.data?.docs ?? [];
+        if (docs.isEmpty) {
+          return _buildEmptyState();
+        }
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView.builder(
+            itemCount: docs.length,
+            itemBuilder: (context, index) =>
+                _buildInvoiceCard(docs[index]),
+          ),
+        );
+      },
+    );
+
+    // Остальная навигация остается без изменений
     return LayoutBuilder(
       builder: (context, constraints) {
         bool useSideNav = constraints.maxWidth >= 600;
-        // Контент зависит от выбранного индекса
-        Widget content;
+        Widget finalContent;
         if (_currentIndex == 0) {
-          content = const Center(
+          finalContent = const Center(
             child: Text(
               'Добро пожаловать в Админ Панель!',
               style: TextStyle(fontSize: 24),
             ),
           );
         } else {
-          content = Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ListView.builder(
-              itemCount: invoices.length,
-              itemBuilder: (context, index) => _buildInvoiceCard(index),
-            ),
-          );
+          finalContent = content;
         }
-
         if (useSideNav) {
           return Scaffold(
             body: Row(
@@ -148,7 +186,7 @@ class _AdminScreenState extends State<AdminScreen> {
                   ],
                 ),
                 const VerticalDivider(thickness: 1, width: 1),
-                Expanded(child: content),
+                Expanded(child: finalContent),
               ],
             ),
           );
@@ -158,7 +196,7 @@ class _AdminScreenState extends State<AdminScreen> {
               title: const Text('Админ Панель'),
               centerTitle: true,
             ),
-            body: content,
+            body: finalContent,
             bottomNavigationBar: BottomNavigationBar(
               currentIndex: _currentIndex,
               onTap: (index) {
