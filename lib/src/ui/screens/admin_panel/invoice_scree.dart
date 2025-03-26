@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class InvoiceFormScreen extends StatefulWidget {
   final int invoiceId;
@@ -38,8 +41,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   /// Загружает данные из Firestore, если документ существует.
   Future<void> _loadData() async {
     try {
-      DocumentSnapshot doc = await _firestore.collection('invoices')
-          .doc(widget.invoiceId.toString()).get();
+      DocumentSnapshot doc = await _firestore
+          .collection('invoices')
+          .doc(widget.invoiceId.toString())
+          .get();
       if (doc.exists) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         _senderNameController.text = data['sender_name'] ?? "";
@@ -101,7 +106,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text("Ошибка"),
-          content: const Text("Заказ более 1000 долларов. Сохранение невозможно."),
+          content:
+              const Text("Заказ более 1000 долларов. Сохранение невозможно."),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -114,7 +120,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     }
 
     try {
-      await _firestore.collection('invoices').doc(widget.invoiceId.toString()).set({
+      await _firestore
+          .collection('invoices')
+          .doc(widget.invoiceId.toString())
+          .set({
         'sender_name': _senderNameController.text,
         'sender_tel': _senderTelController.text,
         'receiver_name': _receiverNameController.text,
@@ -159,6 +168,64 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         ),
       );
     }
+  }
+
+  /// Экспорт данных в PDF по шаблону (таблица)
+  Future<void> _exportPdf() async {
+    // Если не все поля заполнены, выводим предупреждение
+    if (!_validateFields()) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Ошибка экспорта"),
+          content: const Text(
+              "Для экспорта в PDF все поля должны быть заполнены."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("ОК"),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    // Формируем PDF-документ с использованием пакета pdf
+    final pdf = pw.Document();
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Table.fromTextArray(
+            context: context,
+            border: pw.TableBorder.all(),
+            cellAlignment: pw.Alignment.centerLeft,
+            headerStyle: pw.TextStyle(
+              fontWeight: pw.FontWeight.bold,
+              fontSize: 12,
+            ),
+            cellStyle: pw.TextStyle(fontSize: 10),
+            data: <List<String>>[
+              <String>['Поля', 'Значения'],
+              <String>['Familya Ism (Jo\'natuvchi)', _senderNameController.text],
+              <String>['Tel nomer (Jo\'natuvchi)', _senderTelController.text],
+              <String>['Familya Ism (Qabul qiluvchi)', _receiverNameController.text],
+              <String>['Pasport/ID', _passportController.text],
+              <String>['Tug\'ilgan sana', _birthDateController.text],
+              <String>['Adress', _addressController.text],
+              <String>['Товарные позиции', _productDetailsController.text],
+              <String>['Brutto (kg)', _bruttoController.text],
+              <String>['Общая стоимость (\$)', _totalValueController.text],
+            ],
+          );
+        },
+      ),
+    );
+
+    // Экспортируем PDF (например, для мобильных устройств откроется диалог печати/скачивания)
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+    );
   }
 
   /// Обработка изменений в поле общей стоимости
@@ -330,9 +397,18 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                 onChanged: _onTotalValueChanged,
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _isOverLimit ? null : _saveData,
-                child: const Text("Сохранить"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: _isOverLimit ? null : _saveData,
+                    child: const Text("Сохранить"),
+                  ),
+                  ElevatedButton(
+                    onPressed: _exportPdf,
+                    child: const Text("Экспорт в PDF"),
+                  ),
+                ],
               ),
             ],
           ),
