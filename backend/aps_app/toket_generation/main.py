@@ -41,15 +41,21 @@
 #     print("Error: Invalid token!")
 
 
+# UP is the part to get the JWT token that expires in 200 hours.
+
+
 import requests
 
-token = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhcHMtZXhwcmVzcyIsImlhdCI6MTc0MjM3Nzk4OSwiZXhwIjoxNzQzMDk3OTg5LCJpc3MiOiJhcHMtZXhwcmVzcyIsImF1ZCI6Imh0dHBzOi8vcHVzaHNlcnZpY2UuZWdvdi51eiJ9.UxfpE1Cbi2c3rzNpfKE_5Sua8JzQMtE5HSVFMAtfPgEqEoHEheJXiu5KC0XGhreN7ViJKs3JCptQPHUItHUdWzcaOl6aLcrWSlGXxkql3f2LwKeMxfi6rEPJC09iuAcRCZh17l8SCfWLw07zAe3OEvTupeLCKtXTlYHOqu0Z8NPtpTchAoBQWK8lauWnBadozfAC6n4-FK7008rxQHzZz-6MLGPo9npa0luM55wM9TNI6TwwVPiqjtjxs8GoH3CMPhwEgxP4g4JOLrMK2RXf7YkpoZLvGZMfXsOgbzmYdRzopDT1xntS8B8bVONTMWiX-Rm1QQ7vCPBJ4uKZ1W70Gg"
+token = 'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhcHMtZXhwcmVzcyIsImlhdCI6MTc0MzE0OTkxOSwiZXhwIjoxNzQzODY5OTE5LCJpc3MiOiJhcHMtZXhwcmVzcyIsImF1ZCI6Imh0dHBzOi8vcHVzaHNlcnZpY2UuZWdvdi51eiJ9.q97BetVzk-wXEzch6Cti67gh6VJ-5SCdJUqP__PuvV0IpY8yuqu8-mQ8LYwLlGZBpbwNW8lNjf-Mx7nHw0n7seXn5LlHoyfXqipCPG9Yspr1Y0zNFKkRlNzpw2ki4iK7iXB0Hb_Ybz4e483HZXMXVuKogrNr-vHY5SPeIoQdfZRatOfgcPI-Uxzr8iGmPz-hsOPwuJFXgud6RYcB9avKds_APDROU4jLR6KH-dCyy918Uy9-itvD1niWX6NjsVAuFn-SjNX3rF3LHcCz1cb0l_TbJf31cD4HVJjt0MCTjhPs1jpdTP5BvfA7z6x_gsAFvsJG6-j24BRl0mK0zu9o8w'
 url = "https://pushservice.egov.uz/v3/app/mq/ping"
 headers = {"Authorization": f"Bearer {token}"}
 
 response = requests.get(url, headers=headers)
 print(response.status_code, response.text)
 
+
+
+# For part 5.2.1  and 5.2.2 of the documentation
 
 import requests
 import uuid
@@ -60,7 +66,7 @@ url = "https://pushservice.egov.uz/v3/app/mq/receive"
 
 headers = {
     "Content-Type": "application/json",
-    "Authorization": "Bearer eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhcHMtZXhwcmVzcyIsImlhdCI6MTc0MjM3Nzk4OSwiZXhwIjoxNzQzMDk3OTg5LCJpc3MiOiJhcHMtZXhwcmVzcyIsImF1ZCI6Imh0dHBzOi8vcHVzaHNlcnZpY2UuZWdvdi51eiJ9.UxfpE1Cbi2c3rzNpfKE_5Sua8JzQMtE5HSVFMAtfPgEqEoHEheJXiu5KC0XGhreN7ViJKs3JCptQPHUItHUdWzcaOl6aLcrWSlGXxkql3f2LwKeMxfi6rEPJC09iuAcRCZh17l8SCfWLw07zAe3OEvTupeLCKtXTlYHOqu0Z8NPtpTchAoBQWK8lauWnBadozfAC6n4-FK7008rxQHzZz-6MLGPo9npa0luM55wM9TNI6TwwVPiqjtjxs8GoH3CMPhwEgxP4g4JOLrMK2RXf7YkpoZLvGZMfXsOgbzmYdRzopDT1xntS8B8bVONTMWiX-Rm1QQ7vCPBJ4uKZ1W70Gg"
+    "Authorization": f"Bearer {token}"
 }
 
 data = {
@@ -79,7 +85,7 @@ url = "https://pushservice.egov.uz/v3/app/mq/publisher/fetch-subscribers"
 
 headers = {
     "Content-Type": "application/json",
-    "Authorization": "Bearer eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhcHMtZXhwcmVzcyIsImlhdCI6MTc0MjM3Nzk4OSwiZXhwIjoxNzQzMDk3OTg5LCJpc3MiOiJhcHMtZXhwcmVzcyIsImF1ZCI6Imh0dHBzOi8vcHVzaHNlcnZpY2UuZWdvdi51eiJ9.UxfpE1Cbi2c3rzNpfKE_5Sua8JzQMtE5HSVFMAtfPgEqEoHEheJXiu5KC0XGhreN7ViJKs3JCptQPHUItHUdWzcaOl6aLcrWSlGXxkql3f2LwKeMxfi6rEPJC09iuAcRCZh17l8SCfWLw07zAe3OEvTupeLCKtXTlYHOqu0Z8NPtpTchAoBQWK8lauWnBadozfAC6n4-FK7008rxQHzZz-6MLGPo9npa0luM55wM9TNI6TwwVPiqjtjxs8GoH3CMPhwEgxP4g4JOLrMK2RXf7YkpoZLvGZMfXsOgbzmYdRzopDT1xntS8B8bVONTMWiX-Rm1QQ7vCPBJ4uKZ1W70Gg"  # Add your token here
+    "Authorization": f"Bearer {token}"
 }
 
 response = requests.get(url, headers=headers)
@@ -103,7 +109,7 @@ url = "https://pushservice.egov.uz/v3/app/mq/publisher/fetch-daily-delivery-stat
 
 headers = {
     "Content-Type": "application/json",
-    "Authorization": "Bearer eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhcHMtZXhwcmVzcyIsImlhdCI6MTc0MjM3Nzk4OSwiZXhwIjoxNzQzMDk3OTg5LCJpc3MiOiJhcHMtZXhwcmVzcyIsImF1ZCI6Imh0dHBzOi8vcHVzaHNlcnZpY2UuZWdvdi51eiJ9.UxfpE1Cbi2c3rzNpfKE_5Sua8JzQMtE5HSVFMAtfPgEqEoHEheJXiu5KC0XGhreN7ViJKs3JCptQPHUItHUdWzcaOl6aLcrWSlGXxkql3f2LwKeMxfi6rEPJC09iuAcRCZh17l8SCfWLw07zAe3OEvTupeLCKtXTlYHOqu0Z8NPtpTchAoBQWK8lauWnBadozfAC6n4-FK7008rxQHzZz-6MLGPo9npa0luM55wM9TNI6TwwVPiqjtjxs8GoH3CMPhwEgxP4g4JOLrMK2RXf7YkpoZLvGZMfXsOgbzmYdRzopDT1xntS8B8bVONTMWiX-Rm1QQ7vCPBJ4uKZ1W70Gg"  # Add your token here
+    "Authorization": f"Bearer {token}"
 }
 
 response = requests.get(url, headers=headers)
@@ -127,7 +133,7 @@ url = f"https://pushservice.egov.uz/v3/app/mq/publisher/fetch-delivery-detailed-
 
 headers = {
     "Content-Type": "application/json",
-    "Authorization": "Bearer eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhcHMtZXhwcmVzcyIsImlhdCI6MTc0MjM3Nzk4OSwiZXhwIjoxNzQzMDk3OTg5LCJpc3MiOiJhcHMtZXhwcmVzcyIsImF1ZCI6Imh0dHBzOi8vcHVzaHNlcnZpY2UuZWdvdi51eiJ9.UxfpE1Cbi2c3rzNpfKE_5Sua8JzQMtE5HSVFMAtfPgEqEoHEheJXiu5KC0XGhreN7ViJKs3JCptQPHUItHUdWzcaOl6aLcrWSlGXxkql3f2LwKeMxfi6rEPJC09iuAcRCZh17l8SCfWLw07zAe3OEvTupeLCKtXTlYHOqu0Z8NPtpTchAoBQWK8lauWnBadozfAC6n4-FK7008rxQHzZz-6MLGPo9npa0luM55wM9TNI6TwwVPiqjtjxs8GoH3CMPhwEgxP4g4JOLrMK2RXf7YkpoZLvGZMfXsOgbzmYdRzopDT1xntS8B8bVONTMWiX-Rm1QQ7vCPBJ4uKZ1W70Gg"  # Add your token here
+    "Authorization": f"Bearer {token}"
 }
 
 response = requests.get(url, headers=headers)
@@ -145,3 +151,5 @@ if response.status_code == 200:
             print(f" - Last Try: {info['lastTryDateTime']}\n")
 else:
     print(f"Error {response.status_code}: {response.text}")
+
+

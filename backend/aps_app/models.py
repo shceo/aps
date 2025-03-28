@@ -196,45 +196,32 @@ def update_customer_limit(sender, instance, created, **kwargs):
         money_limit.save()
 
 
-# Celery task to reset limit every 3 months
-from celery import shared_task
+class OrderProduct(models.Model):
+    product = models.ForeignKey(
+        Product, on_delete=models.SET_NULL, null=True, verbose_name='Товар', related_name='order_products'
+    )
+    order = models.ForeignKey(
+        OrderAdmin, on_delete=models.SET_NULL, null=True, verbose_name='Заказ', related_name='order_products'
+    )
+    quantity = models.IntegerField(default=0, verbose_name='В количестве')
+    added_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
 
-@shared_task
-def reset_limits():
-    """Resets all customer limits every 3 months."""
-    three_months_ago = now() - datetime.timedelta(days=90)
-    limits = OrderMoneyLimit.objects.filter(created_at__lte=three_months_ago)
+    def __str__(self):
+        return f'Товар {self.product.title} по заказу №: {self.order.pk}'
 
-    for limit in limits:
-        limit.reset_limit()
+    class Meta:
+        verbose_name = 'Заказанный товар'
+        verbose_name_plural = 'Заказанные товары'
 
+    @property
+    def get_total_price(self):
+        price = self.product.price
+        if self.product.discount:
+            discount_amount = (price * self.product.discount) / 100
+            price -= discount_amount
+        return price * self.quantity
 
-# class OrderProduct(models.Model):
-#     product = models.ForeignKey(
-#         Product, on_delete=models.SET_NULL, null=True, verbose_name='Товар', related_name='order_products'
-#     )
-#     order = models.ForeignKey(
-#         Order, on_delete=models.SET_NULL, null=True, verbose_name='Заказ', related_name='order_products'
-#     )
-#     quantity = models.IntegerField(default=0, verbose_name='В количестве')
-#     added_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
-#     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
-#
-#     def __str__(self):
-#         return f'Товар {self.product.title} по заказу №: {self.order.pk}'
-#
-#     class Meta:
-#         verbose_name = 'Заказанный товар'
-#         verbose_name_plural = 'Заказанные товары'
-#
-#     @property
-#     def get_total_price(self):
-#         price = self.product.price
-#         if self.product.discount:
-#             discount_amount = (price * self.product.discount) / 100
-#             price -= discount_amount
-#         return price * self.quantity
-#
 #
 # class ShippingAddress(models.Model):
 #     customer = models.ForeignKey(
