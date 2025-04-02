@@ -17,21 +17,20 @@ class _AdminScreenState extends State<AdminScreen> {
   Future<void> _addInvoice() async {
     try {
       // Получаем все документы коллекции "invoices"
-      QuerySnapshot snapshot =
-          await _firestore.collection('invoices').get();
+      QuerySnapshot snapshot = await _firestore.collection('invoices').get();
       int newId = 1;
       if (snapshot.docs.isNotEmpty) {
         // Предполагаем, что идентификаторы документов — это числа в виде строк
-        newId = snapshot.docs
+        newId =
+            snapshot.docs
                 .map((doc) => int.tryParse(doc.id) ?? 0)
                 .fold(0, (prev, element) => element > prev ? element : prev) +
             1;
       }
       // Создаём новый документ с новым идентификатором
-      await _firestore
-          .collection('invoices')
-          .doc(newId.toString())
-          .set({'invoice_no': newId});
+      await _firestore.collection('invoices').doc(newId.toString()).set({
+        'invoice_no': newId,
+      });
     } catch (e) {
       debugPrint("Ошибка при добавлении инвойса: $e");
     }
@@ -41,30 +40,36 @@ class _AdminScreenState extends State<AdminScreen> {
   void _deleteInvoice(String invoiceId) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Подтверждение удаления"),
-        content: const Text("Вы уверены, что хотите удалить этот контейнер?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Отмена"),
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Подтверждение удаления"),
+            content: const Text(
+              "Вы уверены, что хотите удалить этот контейнер?",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Отмена"),
+              ),
+              TextButton(
+                onPressed: () async {
+                  try {
+                    await _firestore
+                        .collection('invoices')
+                        .doc(invoiceId)
+                        .delete();
+                  } catch (e) {
+                    debugPrint("Ошибка удаления из Firestore: $e");
+                  }
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  "Удалить",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () async {
-              try {
-                await _firestore
-                    .collection('invoices')
-                    .doc(invoiceId)
-                    .delete();
-              } catch (e) {
-                debugPrint("Ошибка удаления из Firestore: $e");
-              }
-              Navigator.pop(context);
-            },
-            child: const Text("Удалить", style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
     );
   }
 
@@ -73,12 +78,15 @@ class _AdminScreenState extends State<AdminScreen> {
     // Документ ID — это номер инвойса
     String invoiceId = doc.id;
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => InvoiceFormScreen(invoiceId: int.parse(invoiceId)),
-        ),
-      ),
+      onTap:
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) =>
+                      InvoiceFormScreen(invoiceId: int.parse(invoiceId)),
+            ),
+          ),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(16),
@@ -90,8 +98,7 @@ class _AdminScreenState extends State<AdminScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Заказ № $invoiceId",
-                style: const TextStyle(fontSize: 18)),
+            Text("Заказ № $invoiceId", style: const TextStyle(fontSize: 18)),
             Row(
               children: [
                 IconButton(
@@ -119,13 +126,13 @@ class _AdminScreenState extends State<AdminScreen> {
       ),
     );
   }
-  
 
   @override
   Widget build(BuildContext context) {
     // Используем StreamBuilder для получения списка инвойсов из Firestore
     Widget content = StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('invoices').orderBy('invoice_no').snapshots(),
+      stream:
+          _firestore.collection('invoices').orderBy('invoice_no').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -138,8 +145,7 @@ class _AdminScreenState extends State<AdminScreen> {
           padding: const EdgeInsets.all(16.0),
           child: ListView.builder(
             itemCount: docs.length,
-            itemBuilder: (context, index) =>
-                _buildInvoiceCard(docs[index]),
+            itemBuilder: (context, index) => _buildInvoiceCard(docs[index]),
           ),
         );
       },
