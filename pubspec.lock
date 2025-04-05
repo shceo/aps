@@ -129,6 +129,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  curved_navigation_bar:
+    dependency: "direct main"
+    description:
+      name: curved_navigation_bar
+      sha256: bb4ab128fcb6f4a9f0f1f72d227db531818b20218984789777f049fcbf919279
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6"
   dio:
     dependency: "direct main"
     description:
@@ -211,6 +219,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_slider_drawer:
+    dependency: "direct main"
+    description:
+      name: flutter_slider_drawer
+      sha256: "41a627bc3a87c981ca128c0ec4e0f2135244c8e13a78bf472db4d59a1ed9896f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.2"
   flutter_svg:
     dependency: "direct main"
     description:

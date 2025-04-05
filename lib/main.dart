@@ -1,4 +1,5 @@
 import 'package:aps/src/firebase_options.dart';
+import 'package:aps/src/ui/constants/components_export.dart';
 import 'package:aps/src/ui/screens/admin_panel/admin_screen.dart';
 import 'package:aps/src/ui/screens/admin_panel/login_admin_screen.dart';
 import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
@@ -13,9 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // await Firebase.initializeApp();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
@@ -305,6 +304,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      // theme: ThemeData(
+      //   scaffoldBackgroundColor: ApsColors.molochni
+      // ),
       debugShowCheckedModeBanner: false,
       routerDelegate: _routerDelegate,
       routeInformationParser: AppRouteInformationParser(),

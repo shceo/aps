@@ -240,7 +240,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
           .collection('invoices')
           .doc(widget.invoiceId.toString())
           .set({
-            'invoice_no': widget.invoiceId, // сохраняем номер контейнера
+            'invoice_no': widget.invoiceId,
             'order_code': _orderCodeController.text,
             'sender_name': _senderNameController.text,
             'sender_tel': _senderTelController.text,

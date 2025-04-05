@@ -21,6 +21,8 @@ dependencies:
   cloud_firestore: ^5.6.5
   pdf: ^3.11.3
   printing: ^5.14.2
+  curved_navigation_bar: ^1.0.6
+  flutter_slider_drawer: ^3.0.2
 
 dev_dependencies:
   flutter_test:

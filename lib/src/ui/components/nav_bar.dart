@@ -1,6 +1,9 @@
 import 'package:aps/src/ui/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:aps/l10n/app_localizations.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/material.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -14,30 +17,21 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context);
-    return BottomNavigationBar(
-      currentIndex: currentIndex,
-      selectedItemColor: ApsColors.primary,
-      unselectedItemColor: Colors.grey,
-      onTap: onTap,
-      items: [
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.home),
-          label: loc.home,
-        ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.info_outline),
-          label: loc.details,
-        ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.store),
-          label: loc.shop,
-        ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.person),
-          label: loc.profile,
-        ),
+    return CurvedNavigationBar(
+      index: currentIndex,
+      items: <Widget>[
+        Icon(Icons.home, size: 30),
+        Icon(Icons.info_outline, size: 30),
+        Icon(Icons.store, size: 30),
+        Icon(Icons.person, size: 30),
       ],
+      color: ApsColors.photoBlue,
+      buttonBackgroundColor: ApsColors.photoBlue,
+      backgroundColor: Colors.white,
+      animationCurve: Curves.easeInOut,
+      animationDuration: Duration(milliseconds: 600),
+      onTap: onTap,
+      letIndexChange: (index) => true,
     );
   }
 }
@@ -47,10 +41,10 @@ class CustomSideBar extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   const CustomSideBar({
-    Key? key,
+    super.key,
     required this.currentIndex,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
