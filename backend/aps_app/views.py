@@ -303,17 +303,21 @@ def create_order_tracking(request):
         data = json.loads(request.body)
 
         # Extract data from the request
+        invoice_no = data.get('invoice_no')
+        order_code = data.get('order_code')
         sender_name = data.get("sender_name")
         sender_tel = data.get("sender_tel")
         receiver_name = data.get("receiver_name")  # Username of the receiver
         passport = data.get("passport")
+        birth_date = data.get("birth_date")
         address = data.get("address")
         product_details = data.get("product_details")
         brutto = data.get("brutto")
         total_value = data.get("total_value")
 
         # Check for required fields
-        if not all([sender_name, sender_tel, receiver_name, passport, address, product_details, brutto, total_value]):
+        if not all([invoice_no, order_code, sender_name, sender_tel, receiver_name, passport, birth_date,
+                    address, product_details, brutto, total_value]):
             return JsonResponse({"error": "All fields are required."}, status=400)
 
         # Check if the receiver user exists
@@ -324,10 +328,13 @@ def create_order_tracking(request):
 
         # Create a new OrderTracking object
         order = OrderTracking.objects.create(
+            invoice_no = invoice_no,
+            order_code = order_code,
             sender_name=sender_name,
             sender_tel=sender_tel,
             receiver=user,
             passport=passport,
+            birth_date=birth_date,
             address=address,
             product_details=product_details,
             brutto=brutto,
@@ -360,25 +367,28 @@ def track_user_orders(request):
 
     try:
         data = json.loads(request.body)
-        passport = data.get("passport")
+        invoice_no = data.get("invoice_no")
 
-        if not passport:
-            return JsonResponse({"error": "Passport number is required."}, status=400)
+        if not invoice_no:
+            return JsonResponse({"error": "Invoice number is required to fetch tracking details."}, status=400)
 
         # Filter orders where the user is the receiver
-        orders = OrderTracking.objects.filter(receiver__receiver=request.user, passport=passport)
+        orders = OrderTracking.objects.filter(invoice_no=invoice_no)
 
         if not orders.exists():
-            return JsonResponse({"error": "No orders found for this passport."}, status=404)
+            return JsonResponse({"error": "No orders found for this invoice number."}, status=404)
 
         order_data = [
             {
                 "id": order.id,
+                "invoice_number": order.invoice_no,
+                "order_code": order.order_code,
                 "sender_name": order.sender_name,
                 "sender_tel": order.sender_tel,
                 "receiver_name": order.receiver.receiver.username if order.receiver.receiver else "No User",
                 "receiver_phone": order.receiver.phone,
                 "passport": order.passport,
+                "birth_date": order.birth_date,
                 "address": order.address,
                 "product_details": order.product_details,
                 "brutto": float(order.brutto),
@@ -395,6 +405,7 @@ def track_user_orders(request):
 
     except Exception as e:
         return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
+
 
 
 
