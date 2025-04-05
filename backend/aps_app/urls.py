@@ -16,5 +16,10 @@ urlpatterns = [
 
     path('products/', get_all_products, name='get_all_products'),
     path('products/<int:product_id>/', get_single_product, name='get_single_product'),
-    path("product_by_category/<slug:slug>/", get_product_by_category, name='product_by_category')
+    path("product_by_category/<slug:slug>/", get_product_by_category, name='product_by_category'),
+
+
+    # ===== ORDER TRACKING =============
+    path('create_order_tracking/', create_order_tracking, name='create_o_t'),
+    path('order_tracking/', track_user_orders, name='order_track'),
 ]

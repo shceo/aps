@@ -11,12 +11,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os.path
 from pathlib import Path
-import firebase_admin
-from firebase_admin import credentials
+# import firebase_admin
+# from firebase_admin import credentials
 
-FIREBASE_CREDENTIALS_PATH = "D:/python projects/python/django projects/freelance/APS/backend/first-fce89-firebase-adminsdk-fbsvc-b4d3576d5b.json"
-cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
-firebase_admin.initialize_app(cred)
+# FIREBASE_CREDENTIALS_PATH = "D:/python projects/python/django projects/freelance/APS/backend/first-fce89-firebase-adminsdk-fbsvc-b4d3576d5b.json"
+# cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+# firebase_admin.initialize_app(cred)
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -54,7 +54,6 @@ INSTALLED_APPS = [
 
     # apps
     'aps_app',
-    'notifications'
 ]
 
 MIDDLEWARE = [

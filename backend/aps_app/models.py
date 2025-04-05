@@ -1,11 +1,10 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils.timezone import now
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-import datetime
 from django.urls import reverse
-from django.core.validators import MinLengthValidator, MaxLengthValidator
+from django.core.validators import MinLengthValidator, MaxLengthValidator, MinValueValidator
+from django.utils.translation import gettext_lazy as _
 
 
 class Branch(models.Model):
@@ -59,9 +58,6 @@ class Category(models.Model):
         'self', on_delete=models.SET_NULL, null=True, blank=True,
         related_name='subcategories', verbose_name='Категория'
     )
-
-    def get_absolute_url(self):
-        return reverse('category', kwargs={'slug': self.slug})
 
     def __str__(self):
         return self.title
@@ -270,6 +266,34 @@ class City(models.Model):
         verbose_name_plural = 'Города'
 
 
+# =============== ORDER TRACKING =================
+
+
+class OrderTracking(models.Model):
+    invoice_no = models.IntegerField(default=0, unique=True ,verbose_name='Invoice № of order')
+    order_code = models.CharField(default='No order code', unique=True, max_length=10, verbose_name='Code of order')
+
+    sender_name = models.CharField(max_length=255, verbose_name=_("Sender Name"))
+    sender_tel = models.CharField(max_length=20, verbose_name=_("Sender Telephone"))
+
+    receiver = models.ForeignKey(Receiver, on_delete=models.CASCADE, related_name="orders_track", verbose_name=_("Receiver"))
+
+    passport = models.CharField(max_length=20, verbose_name=_("Passport Number"))
+    birth_date = models.DateField(verbose_name=_("Birth Date"))
+    address = models.TextField(verbose_name=_("Address"))
+    product_details = models.TextField(verbose_name=_("Product Details"))
+    brutto = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_("Brutto Weight"))
+    total_value = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_("Total Value"))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
+
+    def __str__(self):
+        return f"Order for {self.receiver.receiver.username if self.receiver.receiver else 'Unknown'}"
+
+    class Meta:
+        verbose_name = _("Order Tracking")
+        verbose_name_plural = _("Order Trackings")
+        ordering = ["-created_at"]
 
 
 

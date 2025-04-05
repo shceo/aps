@@ -117,3 +117,43 @@ class CityAdmin(admin.ModelAdmin):
     search_fields = ('title', 'region__title')
     list_filter = ('region',)
 
+
+# ============== ORDER TRACKING =================
+
+@admin.register(OrderTracking)
+class OrderTrackingAdmin(admin.ModelAdmin):
+    list_display = (
+        'invoice_no',
+        'order_code',
+        'sender_name',
+        'receiver',
+        'formatted_birth_date',  # ← custom method
+        'brutto',
+        'total_value',
+        'created_at'
+    )
+
+    def formatted_birth_date(self, obj):
+        return obj.birth_date.strftime("%d-%m-%Y")
+    formatted_birth_date.short_description = "Birth Date"
+
+    search_fields = ('invoice_no','order_code','sender_name','receiver','passport',)
+
+    list_filter = ('created_at', 'receiver')
+    readonly_fields = ('created_at', 'updated_at')
+
+    fieldsets = (
+        ('Order Info', {
+            'fields': ('invoice_no', 'order_code', 'sender_name', 'sender_tel', 'receiver')
+        }),
+        ('Receiver Details', {
+            'fields': ('passport', 'birth_date', 'address')
+        }),
+        ('Product Info', {
+            'fields': ('product_details', 'brutto', 'total_value')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at')
+        }),
+    )
+

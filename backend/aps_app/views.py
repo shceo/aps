@@ -167,7 +167,7 @@ def admin_registration_view(request):
 
             try:
                 user = User.objects.create_user(username=phone, password=password1, first_name=first_name)
-                receiver = Branch.objects.create(receiver=user, phone=phone)
+                receiver = Branch.objects.create(seller=user, phone=phone)
 
                 user = authenticate(username=phone, password=password1)
                 if user:
@@ -204,7 +204,7 @@ def register_fcm_token(request):
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 
-from .firebase_helper import send_push_notification
+# from .firebase_helper import send_push_notification
 
 def send_user_notification(request, user_id):
     try:
@@ -287,6 +287,115 @@ def get_product_by_category(request, slug):
         })
 
     return JsonResponse({'category': category.title, 'products': products_data}, safe=False)
+
+
+# ========================== User orders tracking ==========================
+
+@csrf_exempt
+def create_order_tracking(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Unauthorized access. Please log in."}, status=401)
+
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
+
+    try:
+        data = json.loads(request.body)
+
+        # Extract data from the request
+        sender_name = data.get("sender_name")
+        sender_tel = data.get("sender_tel")
+        receiver_name = data.get("receiver_name")  # Username of the receiver
+        passport = data.get("passport")
+        address = data.get("address")
+        product_details = data.get("product_details")
+        brutto = data.get("brutto")
+        total_value = data.get("total_value")
+
+        # Check for required fields
+        if not all([sender_name, sender_tel, receiver_name, passport, address, product_details, brutto, total_value]):
+            return JsonResponse({"error": "All fields are required."}, status=400)
+
+        # Check if the receiver user exists
+        try:
+            user = Receiver.objects.get(passport_id=passport)
+        except Receiver.DoesNotExist:
+            return JsonResponse({"error": f"User '{receiver_name}' not found."}, status=404)
+
+        # Create a new OrderTracking object
+        order = OrderTracking.objects.create(
+            sender_name=sender_name,
+            sender_tel=sender_tel,
+            receiver=user,
+            passport=passport,
+            address=address,
+            product_details=product_details,
+            brutto=brutto,
+            total_value=total_value,
+        )
+
+        # Return success response
+        return JsonResponse({
+            "message": "Order tracking created successfully",
+            "order_id": order.id
+        }, status=201)
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON format."}, status=400)
+
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
+
+
+
+
+
+@csrf_exempt
+def track_user_orders(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Unauthorized access. Please log in."}, status=401)
+
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        passport = data.get("passport")
+
+        if not passport:
+            return JsonResponse({"error": "Passport number is required."}, status=400)
+
+        # Filter orders where the user is the receiver
+        orders = OrderTracking.objects.filter(receiver__receiver=request.user, passport=passport)
+
+        if not orders.exists():
+            return JsonResponse({"error": "No orders found for this passport."}, status=404)
+
+        order_data = [
+            {
+                "id": order.id,
+                "sender_name": order.sender_name,
+                "sender_tel": order.sender_tel,
+                "receiver_name": order.receiver.receiver.username if order.receiver.receiver else "No User",
+                "receiver_phone": order.receiver.phone,
+                "passport": order.passport,
+                "address": order.address,
+                "product_details": order.product_details,
+                "brutto": float(order.brutto),
+                "total_value": float(order.total_value),
+                "created_at": order.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            for order in orders
+        ]
+
+        return JsonResponse({"orders": order_data}, status=200)
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON format."}, status=400)
+
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
+
 
 
 
