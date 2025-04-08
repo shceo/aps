@@ -16,6 +16,7 @@ class _AdminScreenState extends State<AdminScreen> {
 
   String? _userPhone;
   bool _isSuperAdmin = false;
+  String? _selectedAdminPhone;
 
   @override
   void initState() {
@@ -123,6 +124,35 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
+  Widget _buildAdminList(List<DocumentSnapshot> allDocs) {
+    final Set<String?> adminPhones =
+        allDocs
+            .map(
+              (doc) =>
+                  (doc.data() as Map<String, dynamic>)['created_by']
+                      ?.toString(),
+            )
+            .where((phone) => phone != null)
+            .toSet();
+
+    if (adminPhones.isEmpty) {
+      return const Center(child: Text("Нет админов с контейнерами"));
+    }
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children:
+          adminPhones.map((phone) {
+            return Card(
+              child: ListTile(
+                title: Text("📱 $phone"),
+                onTap: () => setState(() => _selectedAdminPhone = phone),
+              ),
+            );
+          }).toList(),
+    );
+  }
+
   Widget _buildEmptyState() {
     return Center(
       child: ElevatedButton(
@@ -142,13 +172,21 @@ class _AdminScreenState extends State<AdminScreen> {
           return const Center(child: CircularProgressIndicator());
         }
         final allDocs = snapshot.data?.docs ?? [];
-       final visibleDocs = _isSuperAdmin
-  ? allDocs
-  : allDocs.where((doc) {
-      final data = doc.data() as Map<String, dynamic>;
-      return data['created_by'] == _userPhone;
-    }).toList();
 
+        if (_isSuperAdmin && _selectedAdminPhone == null) {
+          return _buildAdminList(allDocs);
+        }
+
+        final visibleDocs =
+            allDocs.where((doc) {
+              final data = doc.data() as Map<String, dynamic>;
+              final createdBy = data['created_by'];
+              if (_isSuperAdmin && _selectedAdminPhone != null) {
+                return createdBy == _selectedAdminPhone;
+              } else {
+                return createdBy == _userPhone;
+              }
+            }).toList();
 
         if (visibleDocs.isEmpty) return _buildEmptyState();
 
@@ -174,53 +212,21 @@ class _AdminScreenState extends State<AdminScreen> {
     } else {
       finalContent = content;
     }
-    bool useSideNav = MediaQuery.of(context).size.width >= 600;
-    if (useSideNav) {
-      return Scaffold(
-        body: Row(
-          children: [
-            NavigationRail(
-              selectedIndex: _currentIndex,
-              onDestinationSelected:
-                  (index) => setState(() => _currentIndex = index),
-              labelType: NavigationRailLabelType.all,
-              destinations: const [
-                NavigationRailDestination(
-                  icon: Icon(Icons.dashboard),
-                  selectedIcon: Icon(Icons.dashboard_outlined),
-                  label: Text('Панель'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.table_chart),
-                  selectedIcon: Icon(Icons.table_chart_outlined),
-                  label: Text('Таблица'),
-                ),
-              ],
-            ),
-            const VerticalDivider(thickness: 1, width: 1),
-            Expanded(child: finalContent),
-          ],
-        ),
-      );
-    } else {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Админ Панель'), centerTitle: true),
-        body: finalContent,
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard),
-              label: 'Панель',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.table_chart),
-              label: 'Таблица',
-            ),
-          ],
-        ),
-      );
-    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Админ Панель'), centerTitle: true),
+      body: finalContent,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Панель'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.table_chart),
+            label: 'Таблица',
+          ),
+        ],
+      ),
+    );
   }
 }
