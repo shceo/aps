@@ -1,11 +1,12 @@
 import 'package:aps/src/data/auth_api.dart';
+import 'package:aps/src/ui/constants/screen_exports.dart';
 import 'package:flutter/material.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminAuthScreen extends StatefulWidget {
   final Future<void> Function() onAdminAuthSuccess;
   const AdminAuthScreen({Key? key, required this.onAdminAuthSuccess})
-      : super(key: key);
+    : super(key: key);
 
   @override
   State<AdminAuthScreen> createState() => _AdminAuthScreenState();
@@ -14,11 +15,11 @@ class AdminAuthScreen extends StatefulWidget {
 class _AdminAuthScreenState extends State<AdminAuthScreen> {
   // Флаг, определяющий, в каком режиме экран (логин или регистрация)
   bool isLoginMode = true;
-  
+
   // Общие поля
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  
+
   // Поля, используемые только в режиме регистрации
   final TextEditingController nameController = TextEditingController();
   final TextEditingController confirmPasswordController =
@@ -27,54 +28,53 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
   bool isLoading = false;
   final ApiService apiService = ApiService();
 
- Future<void> _submit() async {
-  // Если режим регистрации, проверяем, совпадают ли пароли
-  if (!isLoginMode &&
-      passwordController.text != confirmPasswordController.text) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Пароли не совпадают")),
-    );
-    return;
-  }
-  
-  setState(() => isLoading = true);
-  dynamic response;
-  if (isLoginMode) {
-    // Режим логина
-    response = await apiService.loginAdmin(
-      phoneController.text,
-      passwordController.text,
-    );
-  } else {
-    // Режим регистрации
-    response = await apiService.registerAdmin(
-      nameController.text,
-      phoneController.text,
-      passwordController.text,
-      confirmPasswordController.text,
-    );
-  }
-  setState(() => isLoading = false);
+  Future<void> _submit() async {
+    // Если режим регистрации, проверяем, совпадают ли пароли
+    if (!isLoginMode &&
+        passwordController.text != confirmPasswordController.text) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Пароли не совпадают")));
+      return;
+    }
 
-  if (response != null &&
-      ((isLoginMode && response.statusCode == 200) ||
-       (!isLoginMode && response.data?["status"] == "ok"))) {
-    // // Сохраняем состояние логина администратора в SharedPreferences
-    // final prefs = await SharedPreferences.getInstance();
-    // await prefs.setBool("adminLoggedIn", true);
-    // // Можно также сохранить время логина, чтобы задать срок действия (например, 1 час)
-    // await prefs.setInt("adminLoginTime", DateTime.now().millisecondsSinceEpoch);
-    
-    // После успешного логина/регистрации вызываем callback
-    await widget.onAdminAuthSuccess();
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(response?.data?["message"] ?? "Ошибка!"),
-      ),
-    );
+    setState(() => isLoading = true);
+    dynamic response;
+    if (isLoginMode) {
+      // Режим логина
+      response = await apiService.loginAdmin(
+        phoneController.text,
+        passwordController.text,
+      );
+    } else {
+      // Режим регистрации
+      response = await apiService.registerAdmin(
+        nameController.text,
+        phoneController.text,
+        passwordController.text,
+        confirmPasswordController.text,
+      );
+    }
+    setState(() => isLoading = false);
+
+    if (response != null &&
+        ((isLoginMode && response.statusCode == 200) ||
+            (!isLoginMode && response.data?["status"] == "ok"))) {
+      // // Сохраняем состояние логина администратора в SharedPreferences
+      // final prefs = await SharedPreferences.getInstance();
+      // await prefs.setBool("adminLoggedIn", true);
+      // // Можно также сохранить время логина, чтобы задать срок действия (например, 1 час)
+      // await prefs.setInt("adminLoginTime", DateTime.now().millisecondsSinceEpoch);
+
+      // После успешного логина/регистрации вызываем callback
+      AdminScreen.currentAdminPhone = phoneController.text;
+      await widget.onAdminAuthSuccess();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response?.data?["message"] ?? "Ошибка!")),
+      );
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +85,7 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
         title: Text(isLoginMode ? "Админ Логин" : "Регистрация админа"),
       ),
       body: Center(
+        
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -109,15 +110,18 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
               if (!isLoginMode)
                 TextField(
                   controller: confirmPasswordController,
-                  decoration: const InputDecoration(labelText: "Подтвердите пароль"),
+                  decoration: const InputDecoration(
+                    labelText: "Подтвердите пароль",
+                  ),
                   obscureText: true,
                 ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: isLoading ? null : _submit,
-                child: isLoading
-                    ? const CircularProgressIndicator()
-                    : Text(isLoginMode ? "Войти" : "Зарегистрироваться"),
+                child:
+                    isLoading
+                        ? const CircularProgressIndicator()
+                        : Text(isLoginMode ? "Войти" : "Зарегистрироваться"),
               ),
               TextButton(
                 onPressed: () {
@@ -126,9 +130,11 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
                     isLoginMode = !isLoginMode;
                   });
                 },
-                child: Text(isLoginMode
-                    ? "Нет аккаунта? Зарегистрируйтесь"
-                    : "Уже есть аккаунт? Войти"),
+                child: Text(
+                  isLoginMode
+                      ? "Нет аккаунта? Зарегистрируйтесь"
+                      : "Уже есть аккаунт? Войти",
+                ),
               ),
             ],
           ),

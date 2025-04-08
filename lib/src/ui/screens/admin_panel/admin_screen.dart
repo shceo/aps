@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AdminScreen extends StatefulWidget {
+  static String? currentAdminPhone;
   const AdminScreen({super.key});
 
   @override
@@ -10,33 +11,40 @@ class AdminScreen extends StatefulWidget {
 }
 
 class _AdminScreenState extends State<AdminScreen> {
-  int _currentIndex = 1; // 0 – Панель, 1 – Таблица (инвойсы)
+  int _currentIndex = 1;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  /// Добавление нового инвойса: вычисляем новый номер и создаём пустой документ
+  String? _userPhone;
+  bool _isSuperAdmin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _userPhone = AdminScreen.currentAdminPhone;
+    _isSuperAdmin = _userPhone == '998996666666';
+  }
+
   Future<void> _addInvoice() async {
     try {
-      // Получаем все документы коллекции "invoices"
       QuerySnapshot snapshot = await _firestore.collection('invoices').get();
       int newId = 1;
       if (snapshot.docs.isNotEmpty) {
-        // Предполагаем, что идентификаторы документов — это числа в виде строк
         newId =
             snapshot.docs
                 .map((doc) => int.tryParse(doc.id) ?? 0)
-                .fold(0, (prev, element) => element > prev ? element : prev) +
+                .fold(0, (prev, elem) => elem > prev ? elem : prev) +
             1;
       }
-      // Создаём новый документ с новым идентификатором
-      await _firestore.collection('invoices').doc(newId.toString()).set({
+      String newIdStr = newId.toString();
+      await _firestore.collection('invoices').doc(newIdStr).set({
         'invoice_no': newId,
+        'created_by': _userPhone,
       });
     } catch (e) {
       debugPrint("Ошибка при добавлении инвойса: $e");
     }
   }
 
-  /// Удаление инвойса с подтверждением и удалением из Firestore
   void _deleteInvoice(String invoiceId) {
     showDialog(
       context: context,
@@ -73,9 +81,7 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
-  /// Виджет одного контейнера инвойса с нумерацией и кнопками + и удаления
   Widget _buildInvoiceCard(DocumentSnapshot doc) {
-    // Документ ID — это номер инвойса
     String invoiceId = doc.id;
     return GestureDetector(
       onTap:
@@ -117,7 +123,6 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
-  /// Виджет для отображения пустого состояния с кнопкой добавления нового инвойса
   Widget _buildEmptyState() {
     return Center(
       child: ElevatedButton(
@@ -129,7 +134,6 @@ class _AdminScreenState extends State<AdminScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Используем StreamBuilder для получения списка инвойсов из Firestore
     Widget content = StreamBuilder<QuerySnapshot>(
       stream:
           _firestore.collection('invoices').orderBy('invoice_no').snapshots(),
@@ -137,93 +141,86 @@ class _AdminScreenState extends State<AdminScreen> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        final docs = snapshot.data?.docs ?? [];
-        if (docs.isEmpty) {
-          return _buildEmptyState();
-        }
+        final allDocs = snapshot.data?.docs ?? [];
+       final visibleDocs = _isSuperAdmin
+  ? allDocs
+  : allDocs.where((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return data['created_by'] == _userPhone;
+    }).toList();
+
+
+        if (visibleDocs.isEmpty) return _buildEmptyState();
+
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: ListView.builder(
-            itemCount: docs.length,
-            itemBuilder: (context, index) => _buildInvoiceCard(docs[index]),
+            itemCount: visibleDocs.length,
+            itemBuilder:
+                (context, index) => _buildInvoiceCard(visibleDocs[index]),
           ),
         );
       },
     );
 
-    // Остальная навигация остается без изменений
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        bool useSideNav = constraints.maxWidth >= 600;
-        Widget finalContent;
-        if (_currentIndex == 0) {
-          finalContent = const Center(
-            child: Text(
-              'Добро пожаловать в Админ Панель!',
-              style: TextStyle(fontSize: 24),
-            ),
-          );
-        } else {
-          finalContent = content;
-        }
-        if (useSideNav) {
-          return Scaffold(
-            body: Row(
-              children: [
-                NavigationRail(
-                  selectedIndex: _currentIndex,
-                  onDestinationSelected: (index) {
-                    setState(() {
-                      _currentIndex = index;
-                    });
-                  },
-                  labelType: NavigationRailLabelType.all,
-                  destinations: const [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.dashboard),
-                      selectedIcon: Icon(Icons.dashboard_outlined),
-                      label: Text('Панель'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.table_chart),
-                      selectedIcon: Icon(Icons.table_chart_outlined),
-                      label: Text('Таблица'),
-                    ),
-                  ],
-                ),
-                const VerticalDivider(thickness: 1, width: 1),
-                Expanded(child: finalContent),
-              ],
-            ),
-          );
-        } else {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Админ Панель'),
-              centerTitle: true,
-            ),
-            body: finalContent,
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: _currentIndex,
-              onTap: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
-              items: const [
-                BottomNavigationBarItem(
+    Widget finalContent;
+    if (_currentIndex == 0) {
+      finalContent = const Center(
+        child: Text(
+          'Добро пожаловать в Админ Панель!',
+          style: TextStyle(fontSize: 24),
+        ),
+      );
+    } else {
+      finalContent = content;
+    }
+    bool useSideNav = MediaQuery.of(context).size.width >= 600;
+    if (useSideNav) {
+      return Scaffold(
+        body: Row(
+          children: [
+            NavigationRail(
+              selectedIndex: _currentIndex,
+              onDestinationSelected:
+                  (index) => setState(() => _currentIndex = index),
+              labelType: NavigationRailLabelType.all,
+              destinations: const [
+                NavigationRailDestination(
                   icon: Icon(Icons.dashboard),
-                  label: 'Панель',
+                  selectedIcon: Icon(Icons.dashboard_outlined),
+                  label: Text('Панель'),
                 ),
-                BottomNavigationBarItem(
+                NavigationRailDestination(
                   icon: Icon(Icons.table_chart),
-                  label: 'Таблица',
+                  selectedIcon: Icon(Icons.table_chart_outlined),
+                  label: Text('Таблица'),
                 ),
               ],
             ),
-          );
-        }
-      },
-    );
+            const VerticalDivider(thickness: 1, width: 1),
+            Expanded(child: finalContent),
+          ],
+        ),
+      );
+    } else {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Админ Панель'), centerTitle: true),
+        body: finalContent,
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) => setState(() => _currentIndex = index),
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.dashboard),
+              label: 'Панель',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.table_chart),
+              label: 'Таблица',
+            ),
+          ],
+        ),
+      );
+    }
   }
 }

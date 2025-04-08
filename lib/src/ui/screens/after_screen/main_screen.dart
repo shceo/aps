@@ -69,7 +69,7 @@ class _MainScreenState extends State<MainScreen> {
     Widget logo = Image.asset(
       'assets/icons/logo.png',
       height: 60,
-      color: ApsColors.primary,
+      color: ApsColors.photoBlue,
     );
     if (isWeb) {
       return InkWell(
@@ -247,7 +247,7 @@ class _MainScreenState extends State<MainScreen> {
           Builder(
             builder: (context) {
               return IconButton(
-                icon: const Icon(Icons.menu_rounded, color: ApsColors.primary),
+                icon: Image.asset('assets/icons/drawer.png', color: ApsColors.photoBlue,),
                 onPressed: () {
                   Scaffold.of(context).openEndDrawer();
                 },
