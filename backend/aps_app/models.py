@@ -5,6 +5,20 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.core.validators import MinLengthValidator, MaxLengthValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
+from django.db import models
+from django.utils import timezone
+from datetime import timedelta
+
+class OTP(models.Model):
+    phone_number = models.CharField(max_length=20)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_expired(self):
+        return timezone.now() > self.created_at + timedelta(minutes=15)
+
+    def __str__(self):
+        return f"{self.phone_number} - {self.code}"
 
 
 class Branch(models.Model):
@@ -21,7 +35,7 @@ class Branch(models.Model):
 
 
 class Receiver(models.Model):
-    receiver = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='User')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name='User')
     phone = models.CharField(max_length=20, null=True, blank=True, verbose_name='Телефон')
     passport_id = models.CharField(max_length=20, null=True, blank=True, verbose_name='Паспорт ID')
 
@@ -273,10 +287,11 @@ class OrderTracking(models.Model):
     invoice_no = models.IntegerField(default=0, unique=True ,verbose_name='Invoice № of order')
     order_code = models.CharField(default='No order code', unique=True, max_length=10, verbose_name='Code of order')
 
+    created_by = models.CharField(max_length=20, blank=True, null=True, verbose_name=_("Created by"))
     sender_name = models.CharField(max_length=255, verbose_name=_("Sender Name"))
     sender_tel = models.CharField(max_length=20, verbose_name=_("Sender Telephone"))
 
-    receiver = models.ForeignKey(Receiver, on_delete=models.CASCADE, related_name="orders_track", verbose_name=_("Receiver"))
+    receiver_name = models.ForeignKey(Receiver, on_delete=models.CASCADE, related_name="orders_track", verbose_name=_("Receiver"))
 
     passport = models.CharField(max_length=20, verbose_name=_("Passport Number"))
     birth_date = models.DateField(verbose_name=_("Birth Date"))
@@ -288,7 +303,7 @@ class OrderTracking(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
 
     def __str__(self):
-        return f"Order for {self.receiver.receiver.username if self.receiver.receiver else 'Unknown'}"
+        return f"Order for {self.receiver_name.receiver.username if self.receiver_name.receiver else 'Unknown'}"
 
     class Meta:
         verbose_name = _("Order Tracking")

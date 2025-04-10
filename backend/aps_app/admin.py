@@ -126,7 +126,7 @@ class OrderTrackingAdmin(admin.ModelAdmin):
         'invoice_no',
         'order_code',
         'sender_name',
-        'receiver',
+        'receiver_name',
         'formatted_birth_date',  # ← custom method
         'brutto',
         'total_value',
@@ -137,14 +137,14 @@ class OrderTrackingAdmin(admin.ModelAdmin):
         return obj.birth_date.strftime("%d-%m-%Y")
     formatted_birth_date.short_description = "Birth Date"
 
-    search_fields = ('invoice_no','order_code','sender_name','receiver','passport',)
+    search_fields = ('invoice_no','order_code','sender_name','receiver_name','passport',)
 
-    list_filter = ('created_at', 'receiver')
+    list_filter = ('created_at', 'receiver_name')
     readonly_fields = ('created_at', 'updated_at')
 
     fieldsets = (
         ('Order Info', {
-            'fields': ('invoice_no', 'order_code', 'sender_name', 'sender_tel', 'receiver')
+            'fields': ('invoice_no', 'order_code', 'sender_name', 'sender_tel', 'receiver_name')
         }),
         ('Receiver Details', {
             'fields': ('passport', 'birth_date', 'address')

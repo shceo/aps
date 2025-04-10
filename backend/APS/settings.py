@@ -9,34 +9,21 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-import os.path
+import os
 from pathlib import Path
-# import firebase_admin
-# from firebase_admin import credentials
 
-# FIREBASE_CREDENTIALS_PATH = "D:/python projects/python/django projects/freelance/APS/backend/first-fce89-firebase-adminsdk-fbsvc-b4d3576d5b.json"
-# cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
-# firebase_admin.initialize_app(cred)
-
-
-# # Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)0%eq7ku5=e(5jn8+&5a=t4p^5xsqowf%#!6hzuuq9%_@#*&k%'
+SECRET_KEY = '=)y$&v1=6_nifp5q-=#n!_12oplp#2pez3*zc4h^x%tb^)x5b+'  # 🔐 Replace with secure one in real deploy
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# SECURITY WARNING: don’t run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = []  # ✅ Replace * with your domain or .pythonanywhere.com in production
 
 # Application definition
-
 INSTALLED_APPS = [
     'jazzmin',
     'django.contrib.admin',
@@ -46,17 +33,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # extra django apps
-
+    # 3rd-party apps
     'corsheaders',
+    'rest_framework',
 
-    # apps
+    # Local apps
     'aps_app',
-    # 'notifications'
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # 👈 Добавить сюда
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -65,7 +51,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 
 ROOT_URLCONF = 'APS.urls'
 
@@ -87,10 +72,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'APS.wsgi.application'
 
+# ===================== Security for Deployment =====================
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
+# ===================== Database =====================
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -98,10 +89,7 @@ DATABASES = {
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
+# ===================== Password Validation =====================
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -117,36 +105,28 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
+# ===================== Internationalization =====================
 LANGUAGE_CODE = 'ru-ru'
-
 TIME_ZONE = 'Asia/Tashkent'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
+# ===================== Static and Media =====================
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
+
 MEDIA_URL = '/media_cdn/'
 MEDIA_ROOT = '/home/khaledo/aps/media_cdn/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+# ===================== CORS =====================
+# If you have constants like `CORS_ALLOWED_ORIGINS`, keep using them here.
+# Example:
+# CORS_ALLOWED_ORIGINS = constants.CORS_ALLOWED_ORIGINS
+# CORS_ALLOW_CREDENTIALS = True
 
+# ===================== Default PK Field =====================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# =========================== For SMS to phones API =================================
-
-# VONAGE_API_KEY = '3e2bbec3'
-# VONAGE_API_SECRET = 'jLNUsDR8V814fXZb'
 
 
 

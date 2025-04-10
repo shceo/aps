@@ -5,6 +5,18 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from .models import *
+import random
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import *
+from .eskiz_utils import send_sms
+from django.utils.decorators import method_decorator
+from django.core.cache import cache
+import re
+
+
+
 
 @csrf_exempt
 def login_view(request):
@@ -100,47 +112,78 @@ def logout_view(request):
         return JsonResponse({'message': 'You logged out from the system', 'status': 'ok'}, status=200)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class RegistrationView(APIView):
 
-@csrf_exempt
-def registration_view(request):
-    if request.user.is_authenticated:
-        return JsonResponse({'message': f'You are already authenticated as {request.user.username}'}, status=200)
+    def post(self, request):
+        if request.user.is_authenticated:
+            return JsonResponse({"error": "User is already logged in."}, status=status.HTTP_400_BAD_REQUEST)
 
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            first_name = data.get('first_name')
-            phone = data.get('phone')
-            password1 = data.get('password')
-            password2 = data.get('password_confirm')
+        if 'code' not in request.data or request.data.get('code') == '':
+            serializer = RegistrationSerializer(data=request.data)
+            if serializer.is_valid():
+                phone = serializer.validated_data.get('phone_number')
+                first_name = serializer.validated_data.get('first_name')
+                password = serializer.validated_data.get('password')
 
-            if not first_name or not phone or not password1 or not password2:
-                return JsonResponse({'message': 'Please enter all required fields', 'status': 'error'}, status=400)
+                cache.set(f"otp_password_{phone}", password, timeout=300)
+                cache.set(f"otp_first_name_{phone}", first_name, timeout=300)
 
-            if password1 != password2:
-                return JsonResponse({'message': 'Passwords do not match', 'status': 'error'}, status=400)
+                if not self.is_valid_uzbek_phone_number(phone):
+                    return JsonResponse({"error": "Invalid Uzbek phone number format. Example: +998971233322."},
+                                    status=status.HTTP_400_BAD_REQUEST)
 
-            if Receiver.objects.filter(phone=phone).exists():
-                return JsonResponse({'message': 'Phone number is already registered', 'status': 'error'}, status=400)
+                if User.objects.filter(username=phone).exists():
+                    return JsonResponse({"error": "This phone number is already registered. Please log in."},
+                                    status=status.HTTP_400_BAD_REQUEST)
 
-            try:
-                user = User.objects.create_user(username=phone, password=password1, first_name=first_name)
-                receiver = Receiver.objects.create(receiver=user, phone=phone)
+                # Generate OTP and send it
+                otp_code = str(random.randint(100000, 999999))
+                OTP.objects.create(phone_number=phone, code=otp_code)
+                message = f"Сообщение от APS Express. Никому не передавайте этот код! Остерегайтесь мошенников! Код: {otp_code}"
+                send_sms(phone, message)
 
-                user = authenticate(username=phone, password=password1)
-                if user:
+                return JsonResponse({"message": "Verification code sent successfully."}, status=status.HTTP_200_OK)
+
+            return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            serializer = OTPVerificationSerializer(data=request.data)
+            if serializer.is_valid():
+                phone = serializer.validated_data.get('phone_number')
+                code = serializer.validated_data.get('code')
+
+                try:
+                    otp = OTP.objects.filter(phone_number=phone, code=code).latest('created_at')
+                    if otp.is_expired():
+                        return JsonResponse({"error": "OTP expired."}, status=status.HTTP_400_BAD_REQUEST)
+
+                    if User.objects.filter(username=phone).exists():
+                        return JsonResponse({"error": "This phone number is already registered. Please log in."},
+                                        status=status.HTTP_400_BAD_REQUEST)
+
+                    password = cache.get(f"otp_password_{phone}")
+                    first_name = cache.get(f"otp_first_name_{phone}")
+
+                    if not password or not first_name:
+                        return JsonResponse({"error": "Your session has expired. Please register again."}, status=400)
+
+                    user = User.objects.create_user(username=phone, password=password)
+                    user.first_name = first_name
+                    user.save()
+                    Receiver.objects.create(receiver=user, phone=phone)
                     login(request, user)
-                    return JsonResponse({'message': 'Registration successful', 'status': 'success'}, status=201)
 
-                return JsonResponse({'message': 'Authentication failed after registration', 'status': 'error'}, status=500)
+                    return JsonResponse({"message": "User registered successfully!"}, status=status.HTTP_201_CREATED)
 
-            except Exception as e:
-                return JsonResponse({'message': f'Error occurred while saving to the database: {str(e)}', 'status': 'error'}, status=500)
+                except OTP.DoesNotExist:
+                    return JsonResponse({"error": "Invalid OTP."}, status=status.HTTP_400_BAD_REQUEST)
 
-        except json.JSONDecodeError:
-            return JsonResponse({'message': 'Invalid JSON format', 'status': 'error'}, status=400)
+            return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    return JsonResponse({'message': 'Only POST requests are allowed', 'status': 'error'}, status=405)
+    def is_valid_uzbek_phone_number(self, phone):
+        pattern = re.compile(r"^\+998\d{9}$")
+        return bool(pattern.match(phone))
 
 
 @csrf_exempt
@@ -305,6 +348,7 @@ def create_order_tracking(request):
         # Extract data from the request
         invoice_no = data.get('invoice_no')
         order_code = data.get('order_code')
+        created_by = data.get('created_by')
         sender_name = data.get("sender_name")
         sender_tel = data.get("sender_tel")
         receiver_name = data.get("receiver_name")  # Username of the receiver
@@ -330,9 +374,10 @@ def create_order_tracking(request):
         order = OrderTracking.objects.create(
             invoice_no = invoice_no,
             order_code = order_code,
+            created_by = created_by,
             sender_name=sender_name,
             sender_tel=sender_tel,
-            receiver=user,
+            receiver_name=user,
             passport=passport,
             birth_date=birth_date,
             address=address,
@@ -383,6 +428,7 @@ def track_user_orders(request):
                 "id": order.id,
                 "invoice_number": order.invoice_no,
                 "order_code": order.order_code,
+                "created_by": order.created_by,
                 "sender_name": order.sender_name,
                 "sender_tel": order.sender_tel,
                 "receiver_name": order.receiver.receiver.username if order.receiver.receiver else "No User",
@@ -405,11 +451,6 @@ def track_user_orders(request):
 
     except Exception as e:
         return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
-
-
-
-
-
 
 
 
