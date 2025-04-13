@@ -123,19 +123,19 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
                         ? const CircularProgressIndicator()
                         : Text(isLoginMode ? "Войти" : "Зарегистрироваться"),
               ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    // Переключаем режим между логином и регистрацией
-                    isLoginMode = !isLoginMode;
-                  });
-                },
-                child: Text(
-                  isLoginMode
-                      ? "Нет аккаунта? Зарегистрируйтесь"
-                      : "Уже есть аккаунт? Войти",
-                ),
-              ),
+              // TextButton(
+              //   onPressed: () {
+              //     setState(() {
+              //       // Переключаем режим между логином и регистрацией
+              //       isLoginMode = !isLoginMode;
+              //     });
+              //   },
+              //   child: Text(
+              //     isLoginMode
+              //         ? "Нет аккаунта? Зарегистрируйтесь"
+              //         : "Уже есть аккаунт? Войти",
+              //   ),
+              // ),
             ],
           ),
         ),

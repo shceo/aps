@@ -214,7 +214,7 @@ class _AdminScreenState extends State<AdminScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Админ Панель'), centerTitle: true),
+      appBar: AppBar(title: const Text('Админ Панель'), centerTitle: true, automaticallyImplyLeading: false,),
       body: finalContent,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
