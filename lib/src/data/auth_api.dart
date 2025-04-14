@@ -15,8 +15,8 @@ class ApiService {
   }
 
   /// ✅ Логин админа
-  Future<Response<Map<String, dynamic>>?> loginAdmin(String phone, String password) async {
-    return _sendPostRequest("login/admin/", {"phone": phone, "password": password});
+  Future<Response<Map<String, dynamic>>?> loginAdmin(String email, String password) async {
+    return _sendPostRequest("login/admin/", {"email": email, "password": password});
   }
 
   /// ✅ Регистрация (с OTP)
@@ -42,10 +42,10 @@ class ApiService {
 
   /// ✅ Регистрация админа
   Future<Response<Map<String, dynamic>>?> registerAdmin(
-      String name, String phone, String password, String passwordConfirm) async {
+      String name, String email, String password, String passwordConfirm) async {
     return _sendPostRequest("reg/admin/", {
       "first_name": name,
-      "phone": phone,
+      "email": email,
       "password": password,
       "password_confirm": passwordConfirm,
     });

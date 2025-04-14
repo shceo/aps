@@ -17,7 +17,7 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
   bool isLoginMode = true;
 
   // Общие поля
-  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   // Поля, используемые только в режиме регистрации
@@ -43,14 +43,14 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
     if (isLoginMode) {
       // Режим логина
       response = await apiService.loginAdmin(
-        phoneController.text,
+        emailController.text,
         passwordController.text,
       );
     } else {
       // Режим регистрации
       response = await apiService.registerAdmin(
         nameController.text,
-        phoneController.text,
+        emailController.text,
         passwordController.text,
         confirmPasswordController.text,
       );
@@ -67,7 +67,7 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
       // await prefs.setInt("adminLoginTime", DateTime.now().millisecondsSinceEpoch);
 
       // После успешного логина/регистрации вызываем callback
-      AdminScreen.currentAdminPhone = phoneController.text;
+      AdminScreen.currentAdminEmail = emailController.text;
       await widget.onAdminAuthSuccess();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -97,8 +97,8 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
                   decoration: const InputDecoration(labelText: "Имя"),
                 ),
               TextField(
-                controller: phoneController,
-                decoration: const InputDecoration(labelText: "Телефон"),
+                controller: emailController,
+                decoration: const InputDecoration(labelText: "Email"),
               ),
               const SizedBox(height: 10),
               TextField(

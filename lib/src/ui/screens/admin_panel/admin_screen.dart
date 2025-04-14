@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AdminScreen extends StatefulWidget {
-  static String? currentAdminPhone;
+  static String? currentAdminEmail;
   const AdminScreen({super.key});
 
   @override
@@ -14,15 +14,15 @@ class _AdminScreenState extends State<AdminScreen> {
   int _currentIndex = 1;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  String? _userPhone;
+  String? _userEmail;
   bool _isSuperAdmin = false;
-  String? _selectedAdminPhone;
+  String? _selectedAdminEmail;
 
   @override
   void initState() {
     super.initState();
-    _userPhone = AdminScreen.currentAdminPhone;
-    _isSuperAdmin = _userPhone == '998996666666';
+    _userEmail = AdminScreen.currentAdminEmail;
+    _isSuperAdmin = _userEmail == 'apsexpress@gmail.com';
   }
 
   Future<void> _addInvoice() async {
@@ -39,7 +39,7 @@ class _AdminScreenState extends State<AdminScreen> {
       String newIdStr = newId.toString();
       await _firestore.collection('invoices').doc(newIdStr).set({
         'invoice_no': newId,
-        'created_by': _userPhone,
+        'created_by': _userEmail,
       });
     } catch (e) {
       debugPrint("Ошибка при добавлении инвойса: $e");
@@ -125,28 +125,28 @@ class _AdminScreenState extends State<AdminScreen> {
   }
 
   Widget _buildAdminList(List<DocumentSnapshot> allDocs) {
-    final Set<String?> adminPhones =
+    final Set<String?> adminEmails =
         allDocs
             .map(
               (doc) =>
                   (doc.data() as Map<String, dynamic>)['created_by']
                       ?.toString(),
             )
-            .where((phone) => phone != null)
+            .where((email) => email != null)
             .toSet();
 
-    if (adminPhones.isEmpty) {
+    if (adminEmails.isEmpty) {
       return const Center(child: Text("Нет админов с контейнерами"));
     }
 
     return ListView(
       padding: const EdgeInsets.all(16),
       children:
-          adminPhones.map((phone) {
+          adminEmails.map((email) {
             return Card(
               child: ListTile(
-                title: Text("📱 $phone"),
-                onTap: () => setState(() => _selectedAdminPhone = phone),
+                title: Text("📧 $email"),
+                onTap: () => setState(() => _selectedAdminEmail = email),
               ),
             );
           }).toList(),
@@ -173,7 +173,7 @@ class _AdminScreenState extends State<AdminScreen> {
         }
         final allDocs = snapshot.data?.docs ?? [];
 
-        if (_isSuperAdmin && _selectedAdminPhone == null) {
+        if (_isSuperAdmin && _selectedAdminEmail == null) {
           return _buildAdminList(allDocs);
         }
 
@@ -181,10 +181,10 @@ class _AdminScreenState extends State<AdminScreen> {
             allDocs.where((doc) {
               final data = doc.data() as Map<String, dynamic>;
               final createdBy = data['created_by'];
-              if (_isSuperAdmin && _selectedAdminPhone != null) {
-                return createdBy == _selectedAdminPhone;
+              if (_isSuperAdmin && _selectedAdminEmail != null) {
+                return createdBy == _selectedAdminEmail;
               } else {
-                return createdBy == _userPhone;
+                return createdBy == _userEmail;
               }
             }).toList();
 
@@ -214,7 +214,11 @@ class _AdminScreenState extends State<AdminScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Админ Панель'), centerTitle: true, automaticallyImplyLeading: false,),
+      appBar: AppBar(
+        title: const Text('Админ Панель'),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+      ),
       body: finalContent,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,

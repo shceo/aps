@@ -14,6 +14,7 @@ class InvoiceFormScreen extends StatefulWidget {
 }
 
 class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
+  // Контроллеры для ввода данных
   final TextEditingController _orderCodeController = TextEditingController();
   final TextEditingController _senderNameController = TextEditingController();
   final TextEditingController _senderTelController = TextEditingController();
@@ -29,15 +30,19 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Переменные для генерации кода заказа
-  String _prefix = "";
   String _sixDigit = "";
   String _cityCode = "";
 
+  // Флаги состояния
   bool _isDataModified = false;
   bool _isOverLimit = false;
   bool _isLoading = true;
   bool _submitted = false;
   bool _warningShown = false;
+
+  // Переменные для выбора раздела
+  bool _hasSelectedSection = false;
+  String _selectedSection = "";
 
   @override
   void initState() {
@@ -45,9 +50,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     _loadData();
   }
 
-  /// Обновление значения поля кода заказа
+  /// Обновление значения поля кода заказа (без префикса)
   void _updateOrderCode() {
-    _orderCodeController.text = _prefix + _sixDigit + _cityCode;
+    _orderCodeController.text = _sixDigit + _cityCode;
   }
 
   /// Генерация 6-значного кода
@@ -114,30 +119,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     }
   }
 
-  /// Выбор префикса кода заказа
-  void _selectPrefix() async {
-    List<String> prefixes = ["P", "K", "M"];
-    String? selectedPrefix = await showDialog<String>(
-      context: context,
-      builder:
-          (context) => SimpleDialog(
-            title: const Text("Выберите префикс"),
-            children:
-                prefixes.map((pref) {
-                  return SimpleDialogOption(
-                    onPressed: () => Navigator.pop(context, pref),
-                    child: Text(pref),
-                  );
-                }).toList(),
-          ),
-    );
-    if (selectedPrefix != null) {
-      _prefix = selectedPrefix;
-      _updateOrderCode();
-      setState(() {});
-    }
-  }
-
   /// Загружает данные из Firestore, если документ существует.
   Future<void> _loadData() async {
     try {
@@ -158,12 +139,11 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         _productDetailsController.text = data['product_details'] ?? "";
         _bruttoController.text = data['brutto'] ?? "";
         _totalValueController.text = data['total_value'] ?? "";
-        // Разбить сохранённый код на части, если возможно
+        // Если ранее сохранённый код заказа существует, разбиваем его (предполагаем формат 6-значный код + код города)
         String orderCode = _orderCodeController.text;
-        if (orderCode.length >= 7) {
-          _prefix = orderCode.substring(0, 1);
-          _sixDigit = orderCode.substring(1, 7);
-          _cityCode = orderCode.substring(7);
+        if (orderCode.length >= 6) {
+          _sixDigit = orderCode.substring(0, 6);
+          _cityCode = orderCode.substring(6);
         }
       }
     } catch (e) {
@@ -189,7 +169,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   }
 
   /// Сохранение данных в Firestore с проверками
-  // invoice_form_screen.dart (обновлённый фрагмент _saveData)
   Future<void> _saveData() async {
     setState(() {
       _submitted = true;
@@ -234,8 +213,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     }
 
     try {
-      // При сохранении добавляем или сохраняем поле invoice_no,
-      // чтобы контейнер не "исчезал" при обновлении данных.
       await _firestore
           .collection('invoices')
           .doc(widget.invoiceId.toString())
@@ -380,21 +357,71 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Если данные ещё грузятся, показываем индикатор загрузки
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(title: Text("Invoice № ${widget.invoiceId}")),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
+
+    // Если раздел ещё не выбран, показываем экран выбора
+    if (!_hasSelectedSection) {
+      return Scaffold(
+        appBar: AppBar(title: const Text("Выбор раздела")),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _selectedSection = "Коммерция";
+                    _hasSelectedSection = true;
+                  });
+                },
+                child: const Text("Коммерция"),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _selectedSection = "Интернет магазин";
+                    _hasSelectedSection = true;
+                  });
+                },
+                child: const Text("Интернет магазин"),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _selectedSection = "Тест";
+                    _hasSelectedSection = true;
+                  });
+                },
+                child: const Text("Тест"),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Если раздел выбран, показываем основную форму с полями ввода
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        appBar: AppBar(title: Text("Invoice № ${widget.invoiceId}")),
+        appBar: AppBar(
+          title: Text(
+            "Invoice № ${widget.invoiceId} - Выбран: $_selectedSection",
+          ),
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // Раздел для кода заказа
+              // Поле для кода заказа (только для чтения)
               TextField(
                 controller: _orderCodeController,
                 decoration: _buildDecoration(
@@ -404,6 +431,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                 readOnly: true,
               ),
               const SizedBox(height: 8),
+              // Строка с кнопками: генерация 6-значного кода и выбор города.
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -414,10 +442,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                   ElevatedButton(
                     onPressed: _selectCityCode,
                     child: const Text("Выбрать город"),
-                  ),
-                  ElevatedButton(
-                    onPressed: _selectPrefix,
-                    child: const Text("Выбрать префикс"),
                   ),
                 ],
               ),
