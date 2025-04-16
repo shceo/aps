@@ -3,11 +3,11 @@ import 'dart:math';
 import 'package:aps/src/ui/components/pdf_export.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Для фильтра ввода
 
 class InvoiceFormScreen extends StatefulWidget {
   final int invoiceId;
-  const InvoiceFormScreen({Key? key, required this.invoiceId})
-    : super(key: key);
+  const InvoiceFormScreen({super.key, required this.invoiceId});
 
   @override
   _InvoiceFormScreenState createState() => _InvoiceFormScreenState();
@@ -29,9 +29,12 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Переменные для генерации кода заказа
+  // Переменные для генерации кода заказа (6-значный код + код города)
   String _sixDigit = "";
   String _cityCode = "";
+
+  // Переменная для хранения ошибки поля стоимости
+  String? _totalValueError;
 
   // Флаги состояния
   bool _isDataModified = false;
@@ -50,12 +53,13 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     _loadData();
   }
 
-  /// Обновление значения поля кода заказа (без префикса)
+  /// Обновление значения кода заказа (без его показа в UI)
   void _updateOrderCode() {
     _orderCodeController.text = _sixDigit + _cityCode;
   }
 
-  /// Генерация 6-значного кода
+  /// Генерация 6-значного кода; вызывается автоматически,
+  /// если ранее сгенерированного кода нет.
   void _generateSixDigitCode() {
     String code = Random().nextInt(1000000).toString().padLeft(6, '0');
     _sixDigit = code;
@@ -63,7 +67,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     setState(() {});
   }
 
-  /// Выбор кода города из диалога
+  /// Выбор кода города из диалога; после выбора кода:
+  /// 1. К сгенерированному коду добавляется код города;
+  /// 2. В поле адреса подставляется полное название выбранного города.
   void _selectCityCode() async {
     if (_sixDigit.isEmpty) {
       showDialog(
@@ -71,7 +77,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         builder:
             (context) => AlertDialog(
               title: const Text("Ошибка"),
-              content: const Text("Сначала сгенерируйте 6-значный код."),
+              content: const Text("Сначала сгенерируйте код."),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
@@ -113,8 +119,11 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
           ),
     );
     if (selectedCity != null) {
+      // Обновляем код заказа
       _cityCode = cities[selectedCity]!;
       _updateOrderCode();
+      // Подставляем полное название выбранного города в поле адреса
+      _addressController.text = selectedCity;
       setState(() {});
     }
   }
@@ -139,22 +148,27 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         _productDetailsController.text = data['product_details'] ?? "";
         _bruttoController.text = data['brutto'] ?? "";
         _totalValueController.text = data['total_value'] ?? "";
-        // Если ранее сохранённый код заказа существует, разбиваем его (предполагаем формат 6-значный код + код города)
-        String orderCode = _orderCodeController.text;
-        if (orderCode.length >= 6) {
-          _sixDigit = orderCode.substring(0, 6);
-          _cityCode = orderCode.substring(6);
+        // Если ранее сохранённый код заказа существует, разбиваем его
+        if (_orderCodeController.text.isNotEmpty &&
+            _orderCodeController.text.length >= 6) {
+          _sixDigit = _orderCodeController.text.substring(0, 6);
+          _cityCode = _orderCodeController.text.substring(6);
         }
       }
     } catch (e) {
       debugPrint("Ошибка загрузки данных: $e");
+    }
+    // Если кода заказа ещё нет, генерируем его автоматически
+    if (_orderCodeController.text.isEmpty) {
+      _generateSixDigitCode();
     }
     setState(() {
       _isLoading = false;
     });
   }
 
-  /// Проверка всех обязательных полей
+  /// Проверка всех обязательных полей.
+  /// Заметим, что теперь код заказа не показывается, но используется при сохранении.
   bool _validateFields() {
     return _orderCodeController.text.trim().isNotEmpty &&
         _senderNameController.text.trim().isNotEmpty &&
@@ -165,10 +179,11 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         _addressController.text.trim().isNotEmpty &&
         _productDetailsController.text.trim().isNotEmpty &&
         _bruttoController.text.trim().isNotEmpty &&
-        _totalValueController.text.trim().isNotEmpty;
+        _totalValueController.text.trim().isNotEmpty &&
+        _totalValueError == null;
   }
 
-  /// Сохранение данных в Firestore с проверками
+  /// Сохранение данных в Firestore с проверками.
   Future<void> _saveData() async {
     setState(() {
       _submitted = true;
@@ -179,7 +194,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         builder:
             (context) => AlertDialog(
               title: const Text("Ошибка"),
-              content: const Text("Все поля обязательны для заполнения."),
+              content: const Text(
+                "Все поля обязательны для заполнения и должны быть корректны.",
+              ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
@@ -267,37 +284,48 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     }
   }
 
-  /// Обработка изменений в поле общей стоимости
+  /// Обработка изменений в поле стоимости.
+  /// Проверка: если введённое значение содержит символы, отличные от цифр,
+  /// то устанавливается ошибка.
   void _onTotalValueChanged(String value) {
-    double total = double.tryParse(value) ?? 0;
-    if (total >= 850 && total < 1000 && !_warningShown) {
-      _warningShown = true;
-      showDialog(
-        context: context,
-        builder:
-            (context) => AlertDialog(
-              title: const Text("Внимание"),
-              content: const Text("Осталось немного до лимита \$1000"),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text("ОК"),
-                ),
-              ],
-            ),
-      );
-    } else if (total < 850) {
-      _warningShown = false;
+    if (value.isNotEmpty && !RegExp(r'^\d+$').hasMatch(value)) {
+      setState(() {
+        _totalValueError = "Доступны для ввода только цифры";
+      });
+    } else {
+      setState(() {
+        _totalValueError = null;
+      });
+      double total = double.tryParse(value) ?? 0;
+      if (total >= 850 && total < 1000 && !_warningShown) {
+        _warningShown = true;
+        showDialog(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                title: const Text("Внимание"),
+                content: const Text("Осталось немного до лимита \$1000"),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text("ОК"),
+                  ),
+                ],
+              ),
+        );
+      } else if (total < 850) {
+        _warningShown = false;
+      }
+      setState(() {
+        _isOverLimit = total > 1000;
+        _isDataModified = true;
+      });
     }
-    setState(() {
-      _isOverLimit = total > 1000;
-      _isDataModified = true;
-    });
   }
 
-  /// Функция для построения InputDecoration с проверкой обязательности
+  /// Функция для построения InputDecoration с проверкой обязательности.
   InputDecoration _buildDecoration(
     String label,
     TextEditingController controller,
@@ -312,7 +340,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     );
   }
 
-  /// Предупреждение при попытке покинуть страницу без сохранения
+  /// Предупреждение при попытке покинуть страницу без сохранения.
   Future<bool> _onWillPop() async {
     if (_isDataModified) {
       return await showDialog(
@@ -357,7 +385,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Если данные ещё грузятся, показываем индикатор загрузки
+    // Если данные ещё грузятся, показываем индикатор загрузки.
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(title: Text("Invoice № ${widget.invoiceId}")),
@@ -365,7 +393,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
       );
     }
 
-    // Если раздел ещё не выбран, показываем экран выбора
+    // Если раздел ещё не выбран, показываем экран выбора.
     if (!_hasSelectedSection) {
       return Scaffold(
         appBar: AppBar(title: const Text("Выбор раздела")),
@@ -408,7 +436,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
       );
     }
 
-    // Если раздел выбран, показываем основную форму с полями ввода
+    // Если раздел выбран, показываем основную форму с полями ввода.
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
@@ -421,29 +449,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // Поле для кода заказа (только для чтения)
-              TextField(
-                controller: _orderCodeController,
-                decoration: _buildDecoration(
-                  "Код заказа",
-                  _orderCodeController,
-                ),
-                readOnly: true,
-              ),
-              const SizedBox(height: 8),
-              // Строка с кнопками: генерация 6-значного кода и выбор города.
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: _generateSixDigitCode,
-                    child: const Text("Генерировать 6-значный код"),
-                  ),
-                  ElevatedButton(
-                    onPressed: _selectCityCode,
-                    child: const Text("Выбрать город"),
-                  ),
-                ],
+              // Кнопка выбора города (код заказа генерируется автоматически в фоне)
+              ElevatedButton(
+                onPressed: _selectCityCode,
+                child: const Text("Выбрать город"),
               ),
               const Divider(height: 32),
               TextField(
@@ -527,13 +536,16 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                   labelText: "Jo'natmaning jami qiymati (\$)",
                   border: const OutlineInputBorder(),
                   errorText:
-                      (_submitted && _totalValueController.text.trim().isEmpty)
+                      _totalValueError ??
+                      ((_submitted && _totalValueController.text.trim().isEmpty)
                           ? "Обязательное поле"
-                          : null,
+                          : null),
                   fillColor: _isOverLimit ? Colors.red[100] : null,
                   filled: _isOverLimit,
                 ),
                 keyboardType: TextInputType.number,
+                // Ограничиваем ввод только цифрами с помощью фильтра
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 onChanged: _onTotalValueChanged,
               ),
               const SizedBox(height: 20),
@@ -546,21 +558,28 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      exportInvoicePdf(
+                      exportInvoicePdfByTemplate(
                         context: context,
-                        orderCode: _orderCodeController.text,
                         senderName: _senderNameController.text,
                         senderTel: _senderTelController.text,
                         receiverName: _receiverNameController.text,
-                        passport: _passportController.text,
-                        birthDate: _birthDateController.text,
-                        address: _addressController.text,
-                        productDetails: _productDetailsController.text,
-                        brutto: _bruttoController.text,
-                        totalValue: _totalValueController.text,
+                        receiverTel:
+                            '8 (495) ...', // или у вас есть отдельный input
+                        cityAddress: _addressController.text,
+                        remarks: 'нет особых отметок', // либо берёте из input
+                        tariff: 'От двери до двери',
+                        payment:
+                            double.tryParse(_totalValueController.text) ?? 0,
+                        // placeNumber: 1, // или у вас где-то хранится число места
+                        weight: double.tryParse(_bruttoController.text) ?? 0,
+                        invoiceNumber: _orderCodeController.text,
+                        barcodeData:
+                            '1082260103', // какие данные хотите зашить в штрихкод
+                        zoneText: 'ZONE 2', // в примере указывается зона
+                        pvzText: 'ПВЗ [SPB33] На Звездной',
                       );
                     },
-                    child: const Text("Экспорт в PDF"),
+                    child: const Text("Распечатать"),
                   ),
                 ],
               ),
