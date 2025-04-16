@@ -14,7 +14,7 @@ Future<void> exportInvoicePdfByTemplate({
   required String receiverName,
   required String receiverTel,
   required String cityAddress,
-  required String remarks,
+  // required String remarks,
   required String tariff,
   required double payment,
   // required int placeNumber,

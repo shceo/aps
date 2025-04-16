@@ -154,6 +154,11 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
           _sixDigit = _orderCodeController.text.substring(0, 6);
           _cityCode = _orderCodeController.text.substring(6);
         }
+        // Если сохранён раздел, устанавливаем его
+        if (data['section'] != null && data['section'].toString().isNotEmpty) {
+          _selectedSection = data['section'];
+          _hasSelectedSection = true;
+        }
       }
     } catch (e) {
       debugPrint("Ошибка загрузки данных: $e");
@@ -245,6 +250,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
             'product_details': _productDetailsController.text,
             'brutto': _bruttoController.text,
             'total_value': _totalValueController.text,
+            // Сохраняем выбранный раздел, если он уже установлен
+            'section': _selectedSection,
           }, SetOptions(merge: true));
       setState(() {
         _isDataModified = false;
@@ -402,31 +409,50 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   setState(() {
                     _selectedSection = "Коммерция";
                     _hasSelectedSection = true;
                   });
+                  // Сохраняем выбранный раздел сразу в Firestore
+                  await _firestore
+                      .collection('invoices')
+                      .doc(widget.invoiceId.toString())
+                      .set({
+                        'section': _selectedSection,
+                      }, SetOptions(merge: true));
                 },
                 child: const Text("Коммерция"),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   setState(() {
                     _selectedSection = "Интернет магазин";
                     _hasSelectedSection = true;
                   });
+                  await _firestore
+                      .collection('invoices')
+                      .doc(widget.invoiceId.toString())
+                      .set({
+                        'section': _selectedSection,
+                      }, SetOptions(merge: true));
                 },
                 child: const Text("Интернет магазин"),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   setState(() {
                     _selectedSection = "Тест";
                     _hasSelectedSection = true;
                   });
+                  await _firestore
+                      .collection('invoices')
+                      .doc(widget.invoiceId.toString())
+                      .set({
+                        'section': _selectedSection,
+                      }, SetOptions(merge: true));
                 },
                 child: const Text("Тест"),
               ),
@@ -522,11 +548,13 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
               const SizedBox(height: 12),
               TextField(
                 controller: _bruttoController,
+                keyboardType: TextInputType.number,
+                // Ограничиваем ввод только цифрами с помощью фильтра
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: _buildDecoration(
                   "Jo'natmaning Brutto vazni (kg)",
                   _bruttoController,
                 ),
-                keyboardType: TextInputType.number,
                 onChanged: (_) => _isDataModified = true,
               ),
               const SizedBox(height: 12),
@@ -566,7 +594,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                         receiverTel:
                             '8 (495) ...', // или у вас есть отдельный input
                         cityAddress: _addressController.text,
-                        remarks: 'нет особых отметок', // либо берёте из input
+                        // remarks: 'нет особых отметок', // либо берёте из input
                         tariff: 'От двери до двери',
                         payment:
                             double.tryParse(_totalValueController.text) ?? 0,
