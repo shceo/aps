@@ -107,16 +107,7 @@ Future<void> exportInvoicePdfByTemplate({
 
               pw.SizedBox(height: 6),
               // 5. Номер отправления и большой штрихкод
-              pw.Text(
-                invoiceNumber,
-                style: pw.TextStyle(
-                  font: customFont,
-                  fontSize: 12,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              pw.SizedBox(height: 6),
-              // Блок со штрихкодом
+            
               pw.Center(
                 child: pw.BarcodeWidget(
                   data: barcodeData, // данные для штрихкода
@@ -132,14 +123,16 @@ Future<void> exportInvoicePdfByTemplate({
               pw.SizedBox(height: 12),
 
               // 6. Подписи SPL, ПВЗ, ZONE
-              pw.Text(
-                "SPL",
+               pw.Text(
+                invoiceNumber,
                 style: pw.TextStyle(
                   font: customFont,
-                  fontSize: 16,
+                  fontSize: 20,
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
+              pw.SizedBox(height: 6),
+              // Блок со штрихкодом
               pw.Text(
                 pvzText, // Например: "ПВЗ [SPB33] На Звездной"
                 style: pw.TextStyle(font: customFont, fontSize: 11),
