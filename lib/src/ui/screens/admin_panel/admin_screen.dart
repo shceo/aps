@@ -217,7 +217,7 @@ class _AdminScreenState extends State<AdminScreen> {
       appBar: AppBar(
         title: const Text('Админ Панель'),
         centerTitle: true,
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
       ),
       body: finalContent,
       bottomNavigationBar: BottomNavigationBar(
