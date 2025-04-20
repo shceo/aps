@@ -247,7 +247,10 @@ class _MainScreenState extends State<MainScreen> {
           Builder(
             builder: (context) {
               return IconButton(
-                icon: Image.asset('assets/icons/drawer.png', color: ApsColors.photoBlue,),
+                icon: Image.asset(
+                  'assets/icons/drawer.png',
+                  color: ApsColors.photoBlue,
+                ),
                 onPressed: () {
                   Scaffold.of(context).openEndDrawer();
                 },
@@ -266,10 +269,6 @@ class _MainScreenState extends State<MainScreen> {
           Navigator.of(context).pop();
           _pushPage(const AboutScreen());
         },
-        // onAccountingTap: () {
-        //   Navigator.of(context).pop();
-        //   _pushPage(const AccountingPage());
-        // },
         onCargoTap: () {
           Navigator.of(context).pop();
           _pushPage(const LocationScreen());
