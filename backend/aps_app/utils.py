@@ -43,3 +43,39 @@
 #         return {"error": "Token has expired"}
 #     except jwt.InvalidTokenError:
 #         return {"error": "Invalid token"}
+from aps_app.models import City, Region
+
+# Define the regions and their respective tumans with 'tuman' appended
+uzbekistan_regions = {
+    'Xorazm': [
+        "Bogʻot tuman", "Gurlan tuman", "Xonqa tuman", "Tuproqqal’a tumani",
+        "Xiva tumani", "Qoʻshkoʻpir tumani", "Shovot tumani", "Urganch tumani",
+        "Yangiariq tumani", "Yangibozor tumani", "Hazorasp tumani"
+    ],
+    'Buxoro': [
+        "Olot tuman", "Buxoro tuman", "Gʻijduvon tuman", "Jondor tuman", "Kogon tuman",
+        "Qorakoʻl tuman", "Qorovulbozor tuman", "Yangibozor tuman", "Romitan tuman",
+        "Shofirkon tuman", "Vobkent tuman"
+    ],
+    'Navoi': [
+        "Konimex tuman", "Karmana tuman", "Qiziltepa tuman", "Xatirchi tuman", "Navbahor tuman",
+        "Nurota tuman", "Tomdi tuman", "Uchquduq tuman"
+    ],
+    'Qashqadaryo': [
+        "Dehqonobod tuman", "Kasbi tuman", "Kitob tuman", "Koson tuman", "Koʻkdala tuman",
+        "Mirishkor tuman", "Muborak tuman", "Nishon tuman", "Qamashi tuman", "Qarshi tuman",
+        "Yakkabogʻ tuman", "Gʻuzor tuman", "Shahrisabz tuman", "Chiroqchi tuman"
+    ],
+    'Surxondaryo': [
+        "Angor tuman", "Boysun tuman", "Denov tuman", "Jarqoʻrgon tuman", "Kizirik tuman",
+        "Muzrobod tuman", "Oltinsoy tuman", "Sariosiyo tuman", "Shoʻrchi tuman", "Shershan tuman",
+        "Termiz tuman", "Uzun tuman", "Qumqoʻrgʻon tuman", "Bandikhon tuman"
+    ],
+    # You can add more regions and tumans here...
+}
+
+# Insert tumans into the database
+for region_name, tuman_names in uzbekistan_regions.items():
+    region_obj, created = Region.objects.get_or_create(title=region_name)  # Get or create Region object
+    for tuman_name in tuman_names:
+        City.objects.get_or_create(title=tuman_name, region=region_obj)  # Get or create Tuman for each city

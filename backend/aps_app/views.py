@@ -3,11 +3,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
 from .models import *
 import random
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
 from .eskiz_utils import send_sms
@@ -123,6 +121,13 @@ class RegistrationView(APIView):
             serializer = RegistrationSerializer(data=request.data)
             if serializer.is_valid():
                 phone = serializer.validated_data.get('phone_number')
+
+                # === Check if OTP was recently sent ===
+                cooldown_key = f"otp_cooldown_{phone}"
+                if cache.get(cooldown_key):
+                    return JsonResponse({"error": "Please wait 5 minutes before requesting a new code."},
+                                        status=status.HTTP_429_TOO_MANY_REQUESTS)
+
                 first_name = serializer.validated_data.get('first_name')
                 password = serializer.validated_data.get('password')
 
@@ -131,17 +136,21 @@ class RegistrationView(APIView):
 
                 if not self.is_valid_uzbek_phone_number(phone):
                     return JsonResponse({"error": "Invalid Uzbek phone number format. Example: +998971233322."},
-                                    status=status.HTTP_400_BAD_REQUEST)
+                                        status=status.HTTP_400_BAD_REQUEST)
 
                 if User.objects.filter(username=phone).exists():
                     return JsonResponse({"error": "This phone number is already registered. Please log in."},
-                                    status=status.HTTP_400_BAD_REQUEST)
+                                        status=status.HTTP_400_BAD_REQUEST)
 
-                # Generate OTP and send it
+                # === Send OTP ===
                 otp_code = str(random.randint(100000, 999999))
                 OTP.objects.create(phone_number=phone, code=otp_code)
-                message = f"Сообщение от APS Express. Никому не передавайте этот код! Остерегайтесь мошенников! Код: {otp_code}"
+
+                message = f"SMS-информирование APS Express. Никому не передавайте этот код! Остерегайтесь мошенников! Код: {otp_code}"
                 send_sms(phone, message)
+
+                # === Set 5-minute cooldown ===
+                cache.set(cooldown_key, True, timeout=300)
 
                 return JsonResponse({"message": "Verification code sent successfully."}, status=status.HTTP_200_OK)
 
@@ -160,7 +169,7 @@ class RegistrationView(APIView):
 
                     if User.objects.filter(username=phone).exists():
                         return JsonResponse({"error": "This phone number is already registered. Please log in."},
-                                        status=status.HTTP_400_BAD_REQUEST)
+                                            status=status.HTTP_400_BAD_REQUEST)
 
                     password = cache.get(f"otp_password_{phone}")
                     first_name = cache.get(f"otp_first_name_{phone}")
@@ -227,37 +236,6 @@ def admin_registration_view(request):
 
     return JsonResponse({'message': 'Only POST requests are allowed', 'status': 'error'}, status=405)
 
-@csrf_exempt
-def register_fcm_token(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        user_id = data.get("user_id")
-        fcm_token = data.get("fcm_token")
-
-        if not user_id or not fcm_token:
-            return JsonResponse({"error": "Missing user_id or fcm_token"}, status=400)
-
-        try:
-            user = User.objects.get(id=user_id)
-            device, created = UserDevice.objects.update_or_create(user=user, defaults={"fcm_token": fcm_token})
-            return JsonResponse({"message": "FCM Token registered successfully"})
-        except User.DoesNotExist:
-            return JsonResponse({"error": "User not found"}, status=404)
-
-    return JsonResponse({"error": "Invalid request"}, status=400)
-
-
-# from .firebase_helper import send_push_notification
-
-def send_user_notification(request, user_id):
-    try:
-        device = UserDevice.objects.get(user_id=user_id)
-        token = device.fcm_token
-        response = send_push_notification(token, "Hello!", "This is a test notification.")
-        return JsonResponse({"message": "Notification sent", "response": response})
-    except UserDevice.DoesNotExist:
-        return JsonResponse({"error": "User not found or no device registered"}, status=404)
-
 
 # ============================ Products and Orders ==================================
 
@@ -307,8 +285,8 @@ def get_single_product(request, product_id):
     return JsonResponse({'product': product_data}, safe=False)
 
 # ✅ Get products by category
-def get_product_by_category(request, slug):
-    category = get_object_or_404(Category, slug=slug)
+def get_product_by_category(request, category_id):
+    category = get_object_or_404(Category, pk=category_id)
     products = Product.objects.filter(category=category)
 
     products_data = []
@@ -330,6 +308,21 @@ def get_product_by_category(request, slug):
         })
 
     return JsonResponse({'category': category.title, 'products': products_data}, safe=False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ========================== User orders tracking ==========================
@@ -399,9 +392,6 @@ def create_order_tracking(request):
         return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
 
 
-
-
-
 @csrf_exempt
 def track_user_orders(request):
     if not request.user.is_authenticated:
@@ -453,6 +443,78 @@ def track_user_orders(request):
         return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
 
 
+
+def get_district_by_city(request):
+    if request.method != 'POST':
+        return JsonResponse({"error": "Only POST method is allowed"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON format"}, status=400)
+
+    city_json = data.get('city')
+
+    if not city_json:
+        return JsonResponse({"error": "Sending city is required"}, status=400)
+
+    try:
+        city = City.objects.get(city__iexact=city_json.strip())
+    except City.DoesNotExist:
+        return JsonResponse({"error": f"No city by name '{city_json}' found. Enter a valid name."}, status=404)
+
+    regions = Region.objects.filter(region=city)
+
+    serializer = RegionSerializer(regions, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+
+
+import requests
+
+YANDEX_API_KEY = 'cfeaf66a-7a1d-4296-b1cd-f1417ca9adbd'
+
+@csrf_exempt
+def validate_address(request):
+    if request.method == 'POST':
+        address = request.POST.get('address') or json.loads(request.body).get('address')
+
+        if not address:
+            return JsonResponse({'error': 'Address not provided'}, status=400)
+
+        url = 'https://geocode-maps.yandex.ru/1.x/'
+        params = {
+            'apikey': YANDEX_API_KEY,
+            'geocode': address,
+            'format': 'json'
+        }
+
+        response = requests.get(url, params=params)
+        data = response.json()
+
+        try:
+            feature = data['response']['GeoObjectCollection']['featureMember']
+            if not feature:
+                return JsonResponse({'valid': False})
+
+            address_data = feature[0]['GeoObject']['metaDataProperty']['GeocoderMetaData']['Address']['Components']
+            components = {c['kind']: c['name'] for c in address_data}
+
+            print(components, '====================================')
+            print(address_data)
+            return JsonResponse({
+                'valid': True,
+                'country': components.get('country'),
+                'region': components.get('province'),
+                'district': components.get('district'),
+                'street': components.get('street'),
+                'house': components.get('house')
+            })
+
+
+        except Exception as e:
+            return JsonResponse({'error': 'Error processing address'}, status=500)
+    return None
 
 
 

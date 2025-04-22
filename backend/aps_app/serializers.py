@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.core.validators import RegexValidator
 
+from aps_app.models import *
+
 
 class RegistrationSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=15)
@@ -10,12 +12,6 @@ class RegistrationSerializer(serializers.Serializer):
         write_only=True,
         min_length=8,
         required=True,
-        validators=[
-            RegexValidator(
-                regex=r'^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$',
-                message="Password must be at least 8 characters long, include an uppercase letter, a digit, and a special character."
-            )
-        ]
     )
 
     password_confirm = serializers.CharField(write_only=True)
@@ -34,3 +30,11 @@ class RegistrationSerializer(serializers.Serializer):
 class OTPVerificationSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=15)
     code = serializers.CharField(max_length=6)
+
+
+
+# serializers.py
+class RegionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Region
+        fields = ['id', 'region']

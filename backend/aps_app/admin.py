@@ -15,11 +15,6 @@ class ReceiverAdmin(admin.ModelAdmin):
     search_fields = ('receiver__username', 'phone')
     ordering = ('receiver',)
 
-@admin.register(UserDevice)
-class UserDeviceAdmin(admin.ModelAdmin):
-    list_display = ('user', 'fcm_token')
-    search_fields = ('user__username',)
-    ordering = ('user',)
 
 
 # ================== Products ============================
