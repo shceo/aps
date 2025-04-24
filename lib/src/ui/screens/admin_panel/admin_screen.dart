@@ -1,6 +1,7 @@
-import 'package:aps/src/ui/screens/admin_panel/invoice_scree.dart';
+import 'package:aps/src/ui/screens/admin_panel/invoice_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AdminScreen extends StatefulWidget {
   static String? currentAdminEmail;
@@ -23,6 +24,15 @@ class _AdminScreenState extends State<AdminScreen> {
     super.initState();
     _userEmail = AdminScreen.currentAdminEmail;
     _isSuperAdmin = _userEmail == 'apsexpress@gmail.com';
+  }
+
+  DateTime get _nowIstanbul {
+    // Istanbul is UTC+3 year-round
+    return DateTime.now().toUtc().add(const Duration(hours: 3));
+  }
+
+  String _formatIstanbulTime() {
+    return DateFormat('dd.MM.yyyy | HH:mm').format(_nowIstanbul);
   }
 
   Future<void> _addInvoice() async {
@@ -218,6 +228,30 @@ class _AdminScreenState extends State<AdminScreen> {
         title: const Text('Админ Панель'),
         centerTitle: true,
         automaticallyImplyLeading: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: _addInvoice,
+            tooltip: 'Добавить новую почту',
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                const Text('Время сервера', style: TextStyle(fontSize: 12)),
+                Text(
+                  _formatIstanbulTime(),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: finalContent,
       bottomNavigationBar: BottomNavigationBar(
