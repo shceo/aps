@@ -1,7 +1,10 @@
+import 'dart:async';
+import 'package:aps/src/ui/constants/common_dimentions.dart';
 import 'package:aps/src/ui/screens/admin_panel/invoice_screen.dart';
+import 'package:aps/src/ui/screens/admin_panel/timer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 
 class AdminScreen extends StatefulWidget {
   static String? currentAdminEmail;
@@ -19,21 +22,34 @@ class _AdminScreenState extends State<AdminScreen> {
   bool _isSuperAdmin = false;
   String? _selectedAdminEmail;
 
+  // Timer? _timer;
+
   @override
   void initState() {
     super.initState();
     _userEmail = AdminScreen.currentAdminEmail;
     _isSuperAdmin = _userEmail == 'apsexpress@gmail.com';
+
+    //   // Таймер для автоматического обновления времени
+    //   _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+    //     setState(() {});
+    //   });
   }
 
-  DateTime get _nowIstanbul {
-    // Istanbul is UTC+3 year-round
-    return DateTime.now().toUtc().add(const Duration(hours: 3));
-  }
+  // @override
+  // void dispose() {
+  //   _timer?.cancel();
+  //   super.dispose();
+  // }
 
-  String _formatIstanbulTime() {
-    return DateFormat('dd.MM.yyyy | HH:mm').format(_nowIstanbul);
-  }
+  // DateTime get _nowIstanbul {
+  //   // Istanbul is UTC+3 year-round
+  //   return DateTime.now().toUtc().add(const Duration(hours: 3));
+  // }
+
+  // String _formatIstanbulTime() {
+  //   return DateFormat('dd.MM.yyyy | HH:mm').format(_nowIstanbul);
+  // }
 
   Future<void> _addInvoice() async {
     try {
@@ -119,8 +135,12 @@ class _AdminScreenState extends State<AdminScreen> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.add, color: Colors.green),
-                  onPressed: _addInvoice,
+                  icon: const Icon(
+                    Icons.library_add_sharp,
+                    color: Colors.orange,
+                  ),
+                  onPressed: () {},
+                  // onPressed: () => _addInvoice,
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
@@ -230,26 +250,17 @@ class _AdminScreenState extends State<AdminScreen> {
         automaticallyImplyLeading: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            onPressed: () => _showContextMenu(context),
+            icon: Icon(Icons.language_rounded),
+          ),
+          IconButton(
+            icon: const Icon(Icons.add, color: Colors.green),
             onPressed: _addInvoice,
             tooltip: 'Добавить новую почту',
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                const Text('Время сервера', style: TextStyle(fontSize: 12)),
-                Text(
-                  _formatIstanbulTime(),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 18),
+            child: IstanbulClock(),
           ),
         ],
       ),
@@ -267,4 +278,79 @@ class _AdminScreenState extends State<AdminScreen> {
       ),
     );
   }
+}
+
+void _showContextMenu(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return Center(
+        child: Material(
+          type: MaterialType.transparency,
+          child: Container(
+            width: 250,
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Выберите язык',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 16),
+                ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: AssetImage('assets/images/uz.png'),
+                    radius: CommonDimensions.large,
+                  ),
+                  title: Text('O\'zbek'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    // TODO: handle edit
+                  },
+                ),
+                ListTile(
+                 leading: CircleAvatar(
+                    backgroundImage: AssetImage('assets/images/ru.png'),
+                    radius: CommonDimensions.large,
+                  ),
+                  title: Text('Русский'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    // TODO: handle edit
+                  },
+                ),
+                ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: AssetImage('assets/images/gb.png'),
+                    radius: CommonDimensions.large,
+                  ),
+                  title: Text('English'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    // TODO: handle delete
+                  },
+                ),
+                ListTile(
+                   leading: CircleAvatar(
+                    backgroundImage: AssetImage('assets/images/tr.png'),
+                    radius: CommonDimensions.large,
+                  ),
+                  title: Text('Türkçe'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    // TODO: handle share
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }

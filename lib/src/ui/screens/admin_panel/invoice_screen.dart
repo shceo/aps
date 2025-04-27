@@ -395,13 +395,14 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading)
+    if (_isLoading) {
       return Scaffold(
         appBar: AppBar(title: Text("Invoice № ${widget.invoiceId}")),
         body: const Center(child: CircularProgressIndicator()),
       );
+    }
     if (!_hasSelectedSection) {
-      /* ... оставить без изменений ... */
+
     }
 
     return WillPopScope(
@@ -550,7 +551,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                       _buildTableRow(
                         "Brutto vazni (kg)",
                         _bruttoController,
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.text,
                         icon: Icons.line_weight,
                       ),
                       _buildTableRow(
@@ -561,7 +562,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                       ),
                     ],
                   ),
-                ),
+                ), 
               ),
               const SizedBox(height: 20),
               Row(

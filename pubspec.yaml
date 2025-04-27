@@ -38,6 +38,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/json/
     - assets/fonts/  # Добавьте папку со шрифтами
 
   fonts:
