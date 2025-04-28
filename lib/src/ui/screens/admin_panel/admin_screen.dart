@@ -1,11 +1,13 @@
 import 'dart:async';
+import 'package:aps/l10n/app_localizations.dart';
+import 'package:aps/main.dart';
 import 'package:aps/src/ui/constants/common_dimentions.dart';
 import 'package:aps/src/ui/screens/admin_panel/invoice_screen.dart';
 import 'package:aps/src/ui/screens/admin_panel/timer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-// import 'package:intl/intl.dart';
 
+// import 'package:intl/intl.dart';
 class AdminScreen extends StatefulWidget {
   static String? currentAdminEmail;
   const AdminScreen({super.key});
@@ -22,34 +24,12 @@ class _AdminScreenState extends State<AdminScreen> {
   bool _isSuperAdmin = false;
   String? _selectedAdminEmail;
 
-  // Timer? _timer;
-
   @override
   void initState() {
     super.initState();
     _userEmail = AdminScreen.currentAdminEmail;
     _isSuperAdmin = _userEmail == 'apsexpress@gmail.com';
-
-    //   // Таймер для автоматического обновления времени
-    //   _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-    //     setState(() {});
-    //   });
   }
-
-  // @override
-  // void dispose() {
-  //   _timer?.cancel();
-  //   super.dispose();
-  // }
-
-  // DateTime get _nowIstanbul {
-  //   // Istanbul is UTC+3 year-round
-  //   return DateTime.now().toUtc().add(const Duration(hours: 3));
-  // }
-
-  // String _formatIstanbulTime() {
-  //   return DateFormat('dd.MM.yyyy | HH:mm').format(_nowIstanbul);
-  // }
 
   Future<void> _addInvoice() async {
     try {
@@ -68,7 +48,7 @@ class _AdminScreenState extends State<AdminScreen> {
         'created_by': _userEmail,
       });
     } catch (e) {
-      debugPrint("Ошибка при добавлении инвойса: $e");
+      debugPrint(e.toString());
     }
   }
 
@@ -77,14 +57,14 @@ class _AdminScreenState extends State<AdminScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text("Подтверждение удаления"),
-            content: const Text(
-              "Вы уверены, что хотите удалить этот контейнер?",
+            title: Text(AppLocalizations.of(context).deleteConfirmationTitle),
+            content: Text(
+              AppLocalizations.of(context).deleteConfirmationContent,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Отмена"),
+                child: Text(AppLocalizations.of(context).cancel),
               ),
               TextButton(
                 onPressed: () async {
@@ -94,13 +74,13 @@ class _AdminScreenState extends State<AdminScreen> {
                         .doc(invoiceId)
                         .delete();
                   } catch (e) {
-                    debugPrint("Ошибка удаления из Firestore: $e");
+                    debugPrint(e.toString());
                   }
                   Navigator.pop(context);
                 },
-                child: const Text(
-                  "Удалить",
-                  style: TextStyle(color: Colors.red),
+                child: Text(
+                  AppLocalizations.of(context).delete,
+                  style: const TextStyle(color: Colors.red),
                 ),
               ),
             ],
@@ -131,7 +111,10 @@ class _AdminScreenState extends State<AdminScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Заказ № $invoiceId", style: const TextStyle(fontSize: 18)),
+            Text(
+              '${AppLocalizations.of(context).orderNo} $invoiceId',
+              style: const TextStyle(fontSize: 18),
+            ),
             Row(
               children: [
                 IconButton(
@@ -139,12 +122,13 @@ class _AdminScreenState extends State<AdminScreen> {
                     Icons.library_add_sharp,
                     color: Colors.orange,
                   ),
-                  onPressed: () {},
-                  // onPressed: () => _addInvoice,
+                  onPressed: _addInvoice,
+                  tooltip: AppLocalizations.of(context).addInvoice,
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () => _deleteInvoice(invoiceId),
+                  tooltip: AppLocalizations.of(context).delete,
                 ),
               ],
             ),
@@ -166,7 +150,9 @@ class _AdminScreenState extends State<AdminScreen> {
             .toSet();
 
     if (adminEmails.isEmpty) {
-      return const Center(child: Text("Нет админов с контейнерами"));
+      return Center(
+        child: Text(AppLocalizations.of(context).noAdminsWithContainers),
+      );
     }
 
     return ListView(
@@ -175,7 +161,9 @@ class _AdminScreenState extends State<AdminScreen> {
           adminEmails.map((email) {
             return Card(
               child: ListTile(
-                title: Text("📧 $email"),
+                title: Text(
+                  '${AppLocalizations.of(context).emailPrefix} $email',
+                ),
                 onTap: () => setState(() => _selectedAdminEmail = email),
               ),
             );
@@ -187,13 +175,14 @@ class _AdminScreenState extends State<AdminScreen> {
     return Center(
       child: ElevatedButton(
         onPressed: _addInvoice,
-        child: const Text("Добавить новый контейнер"),
+        child: Text(AppLocalizations.of(context).addNewContainer),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     Widget content = StreamBuilder<QuerySnapshot>(
       stream:
           _firestore.collection('invoices').orderBy('invoice_no').snapshots(),
@@ -233,10 +222,10 @@ class _AdminScreenState extends State<AdminScreen> {
 
     Widget finalContent;
     if (_currentIndex == 0) {
-      finalContent = const Center(
+      finalContent = Center(
         child: Text(
-          'Добро пожаловать в Админ Панель!',
-          style: TextStyle(fontSize: 24),
+          loc.welcomeToAdminPanel,
+          style: const TextStyle(fontSize: 24),
         ),
       );
     } else {
@@ -245,18 +234,19 @@ class _AdminScreenState extends State<AdminScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Админ Панель'),
+        title: Text(loc.adminPanelTitle),
         centerTitle: true,
         automaticallyImplyLeading: true,
         actions: [
           IconButton(
             onPressed: () => _showContextMenu(context),
-            icon: Icon(Icons.language_rounded),
+            icon: const Icon(Icons.language_rounded),
+            tooltip: loc.changeLanguage,
           ),
           IconButton(
             icon: const Icon(Icons.add, color: Colors.green),
             onPressed: _addInvoice,
-            tooltip: 'Добавить новую почту',
+            tooltip: loc.addNewEmail,
           ),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 18),
@@ -268,11 +258,14 @@ class _AdminScreenState extends State<AdminScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Панель'),
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.table_chart),
-            label: 'Таблица',
+            icon: const Icon(Icons.dashboard),
+            label: loc.dashboard,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.table_chart),
+            label: loc.table,
           ),
         ],
       ),
@@ -289,7 +282,7 @@ void _showContextMenu(BuildContext context) {
           type: MaterialType.transparency,
           child: Container(
             width: 250,
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
@@ -298,52 +291,55 @@ void _showContextMenu(BuildContext context) {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Выберите язык',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context).chooseLanguage,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 ListTile(
-                  leading: CircleAvatar(
+                  leading: const CircleAvatar(
                     backgroundImage: AssetImage('assets/images/uz.png'),
                     radius: CommonDimensions.large,
                   ),
-                  title: Text('O\'zbek'),
+                  title: Text(AppLocalizations.of(context).uzbek),
                   onTap: () {
                     Navigator.of(context).pop();
-                    // TODO: handle edit
+                    MyApp.setLocale(context, const Locale('uz'));
                   },
                 ),
                 ListTile(
-                 leading: CircleAvatar(
+                  leading: const CircleAvatar(
                     backgroundImage: AssetImage('assets/images/ru.png'),
                     radius: CommonDimensions.large,
                   ),
-                  title: Text('Русский'),
+                  title: Text(AppLocalizations.of(context).russian),
                   onTap: () {
                     Navigator.of(context).pop();
-                    // TODO: handle edit
+                    MyApp.setLocale(context, const Locale('ru'));
                   },
                 ),
                 ListTile(
-                  leading: CircleAvatar(
+                  leading: const CircleAvatar(
                     backgroundImage: AssetImage('assets/images/gb.png'),
                     radius: CommonDimensions.large,
                   ),
-                  title: Text('English'),
+                  title: Text(AppLocalizations.of(context).english),
                   onTap: () {
                     Navigator.of(context).pop();
-                    // TODO: handle delete
+                    MyApp.setLocale(context, const Locale('en'));
                   },
                 ),
                 ListTile(
-                   leading: CircleAvatar(
+                  leading: const CircleAvatar(
                     backgroundImage: AssetImage('assets/images/tr.png'),
                     radius: CommonDimensions.large,
                   ),
-                  title: Text('Türkçe'),
+                  title: Text(AppLocalizations.of(context).turkish),
                   onTap: () {
                     Navigator.of(context).pop();
-                    // TODO: handle share
+                    MyApp.setLocale(context, const Locale('tr'));
                   },
                 ),
               ],

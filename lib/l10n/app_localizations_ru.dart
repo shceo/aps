@@ -63,7 +63,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get accounting => 'Бухгалтерия';
 
   @override
-  String get reports => 'Отчеты';
+  String get reports => 'Отчёты';
 
   @override
   String get setup => 'Настройки и информация';
@@ -75,10 +75,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get flights => 'Рейсы';
 
   @override
-  String get flight_plan => 'План полета';
+  String get flight_plan => 'План полёта';
 
   @override
-  String get plane_layout => 'Схема самолета';
+  String get plane_layout => 'Схема самолёта';
 
   @override
   String get payload_info => 'Информация о грузе';
@@ -96,7 +96,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get invalid_order_code => 'Неверный код заказа';
 
   @override
-  String get home => 'Главное';
+  String get home => 'Главная';
 
   @override
   String get details => 'Подробнее';
@@ -121,4 +121,64 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get confirm => 'Подтвердить';
+
+  @override
+  String get deleteConfirmationTitle => 'Подтверждение удаления';
+
+  @override
+  String get deleteConfirmationContent => 'Вы уверены, что хотите удалить этот элемент?';
+
+  @override
+  String get delete => 'Удалить';
+
+  @override
+  String get orderNo => 'Заказ №';
+
+  @override
+  String get addInvoice => 'Добавить контейнер';
+
+  @override
+  String get noAdminsWithContainers => 'Нет админов с контейнерами';
+
+  @override
+  String get emailPrefix => '📧';
+
+  @override
+  String get addNewContainer => 'Добавить новый контейнер';
+
+  @override
+  String get welcomeToAdminPanel => 'Добро пожаловать в Админ Панель!';
+
+  @override
+  String get adminPanelTitle => 'Админ Панель';
+
+  @override
+  String get changeLanguage => 'Сменить язык';
+
+  @override
+  String get addNewEmail => 'Добавить новую почту';
+
+  @override
+  String get dashboard => 'Панель';
+
+  @override
+  String get table => 'Таблица';
+
+  @override
+  String get chooseLanguage => 'Выберите язык';
+
+  @override
+  String get uzbek => 'O\'zbek';
+
+  @override
+  String get russian => 'Русский';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get turkish => 'Türkçe';
+
+  @override
+  String get serverTimeLabel => 'Время сервера';
 }

@@ -37,5 +37,30 @@
   "reset_order_code_message": "Are you sure you want to reset the order code?",
   "reset_order_code_button": "Reset Order Code",
   "cancel": "Cancel",
-  "confirm": "Confirm"
+  "confirm": "Confirm",
+
+
+  
+  "deleteConfirmationTitle": "Delete Confirmation",
+  "deleteConfirmationContent": "Are you sure you want to delete this item?",
+  "delete": "Delete",
+  "orderNo": "Order No.",
+  "addInvoice": "Add Invoice",
+  "noAdminsWithContainers": "No admins with containers",
+  "emailPrefix": "📧",
+  "addNewContainer": "Add New Container",
+  "welcomeToAdminPanel": "Welcome to the Admin Panel!",
+  "adminPanelTitle": "Admin Panel",
+  "changeLanguage": "Change Language",
+  "addNewEmail": "Add New Email",
+  "dashboard": "Dashboard",
+  "table": "Table",
+  "chooseLanguage": "Choose Language",
+  "uzbek": "O'zbek",
+  "russian": "Русский",
+  "english": "English",
+  "turkish": "Türkçe",
+  "serverTimeLabel": "Server time"
+
+
 }

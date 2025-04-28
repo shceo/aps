@@ -121,4 +121,64 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get confirm => 'Onayla';
+
+  @override
+  String get deleteConfirmationTitle => 'Silme Onayı';
+
+  @override
+  String get deleteConfirmationContent => 'Bu öğeyi silmek istediğinizden emin misiniz?';
+
+  @override
+  String get delete => 'Sil';
+
+  @override
+  String get orderNo => 'Sipariş №';
+
+  @override
+  String get addInvoice => 'Konteyner Ekle';
+
+  @override
+  String get noAdminsWithContainers => 'Konteyneri olan yönetici yok';
+
+  @override
+  String get emailPrefix => '📧';
+
+  @override
+  String get addNewContainer => 'Yeni Konteyner Ekle';
+
+  @override
+  String get welcomeToAdminPanel => 'Yönetici Paneline Hoş Geldiniz!';
+
+  @override
+  String get adminPanelTitle => 'Yönetici Paneli';
+
+  @override
+  String get changeLanguage => 'Dili Değiştir';
+
+  @override
+  String get addNewEmail => 'Yeni E-posta Ekle';
+
+  @override
+  String get dashboard => 'Panel';
+
+  @override
+  String get table => 'Tablo';
+
+  @override
+  String get chooseLanguage => 'Dil Seçin';
+
+  @override
+  String get uzbek => 'O\'zbek';
+
+  @override
+  String get russian => 'Rusça';
+
+  @override
+  String get english => 'İngilizce';
+
+  @override
+  String get turkish => 'Türkçe';
+
+  @override
+  String get serverTimeLabel => 'Sunucu saati';
 }

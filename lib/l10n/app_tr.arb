@@ -37,5 +37,29 @@
   "reset_order_code_message": "Sipariş kodunu sıfırlamak istediğinizden emin misiniz?",
   "reset_order_code_button": "Sipariş Kodunu Sıfırla",
   "cancel": "İptal",
-  "confirm": "Onayla"
+  "confirm": "Onayla",
+
+
+
+  
+  "deleteConfirmationTitle": "Silme Onayı",
+  "deleteConfirmationContent": "Bu öğeyi silmek istediğinizden emin misiniz?",
+  "delete": "Sil",
+  "orderNo": "Sipariş №",
+  "addInvoice": "Konteyner Ekle",
+  "noAdminsWithContainers": "Konteyneri olan yönetici yok",
+  "emailPrefix": "📧",
+  "addNewContainer": "Yeni Konteyner Ekle",
+  "welcomeToAdminPanel": "Yönetici Paneline Hoş Geldiniz!",
+  "adminPanelTitle": "Yönetici Paneli",
+  "changeLanguage": "Dili Değiştir",
+  "addNewEmail": "Yeni E-posta Ekle",
+  "dashboard": "Panel",
+  "table": "Tablo",
+  "chooseLanguage": "Dil Seçin",
+  "uzbek": "O'zbek",
+  "russian": "Rusça",
+  "english": "İngilizce",
+  "turkish": "Türkçe",
+  "serverTimeLabel": "Sunucu saati"
 }

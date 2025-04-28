@@ -121,4 +121,64 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get confirm => '确认';
+
+  @override
+  String get deleteConfirmationTitle => 'Delete Confirmation';
+
+  @override
+  String get deleteConfirmationContent => 'Are you sure you want to delete this item?';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get orderNo => 'Order No.';
+
+  @override
+  String get addInvoice => 'Add Invoice';
+
+  @override
+  String get noAdminsWithContainers => 'No admins with containers';
+
+  @override
+  String get emailPrefix => '📧';
+
+  @override
+  String get addNewContainer => 'Add New Container';
+
+  @override
+  String get welcomeToAdminPanel => 'Welcome to the Admin Panel!';
+
+  @override
+  String get adminPanelTitle => 'Admin Panel';
+
+  @override
+  String get changeLanguage => 'Change Language';
+
+  @override
+  String get addNewEmail => 'Add New Email';
+
+  @override
+  String get dashboard => 'Dashboard';
+
+  @override
+  String get table => 'Table';
+
+  @override
+  String get chooseLanguage => 'Choose Language';
+
+  @override
+  String get uzbek => 'O\'zbek';
+
+  @override
+  String get russian => 'Русский';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get turkish => 'Türkçe';
+
+  @override
+  String get serverTimeLabel => 'Server time';
 }

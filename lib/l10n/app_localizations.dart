@@ -328,6 +328,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Confirm'**
   String get confirm;
+
+  /// No description provided for @deleteConfirmationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Confirmation'**
+  String get deleteConfirmationTitle;
+
+  /// No description provided for @deleteConfirmationContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this item?'**
+  String get deleteConfirmationContent;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @orderNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Order No.'**
+  String get orderNo;
+
+  /// No description provided for @addInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Invoice'**
+  String get addInvoice;
+
+  /// No description provided for @noAdminsWithContainers.
+  ///
+  /// In en, this message translates to:
+  /// **'No admins with containers'**
+  String get noAdminsWithContainers;
+
+  /// No description provided for @emailPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'📧'**
+  String get emailPrefix;
+
+  /// No description provided for @addNewContainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Container'**
+  String get addNewContainer;
+
+  /// No description provided for @welcomeToAdminPanel.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to the Admin Panel!'**
+  String get welcomeToAdminPanel;
+
+  /// No description provided for @adminPanelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Panel'**
+  String get adminPanelTitle;
+
+  /// No description provided for @changeLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Language'**
+  String get changeLanguage;
+
+  /// No description provided for @addNewEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Email'**
+  String get addNewEmail;
+
+  /// No description provided for @dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get dashboard;
+
+  /// No description provided for @table.
+  ///
+  /// In en, this message translates to:
+  /// **'Table'**
+  String get table;
+
+  /// No description provided for @chooseLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Language'**
+  String get chooseLanguage;
+
+  /// No description provided for @uzbek.
+  ///
+  /// In en, this message translates to:
+  /// **'O\'zbek'**
+  String get uzbek;
+
+  /// No description provided for @russian.
+  ///
+  /// In en, this message translates to:
+  /// **'Русский'**
+  String get russian;
+
+  /// No description provided for @english.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get english;
+
+  /// No description provided for @turkish.
+  ///
+  /// In en, this message translates to:
+  /// **'Türkçe'**
+  String get turkish;
+
+  /// No description provided for @serverTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Server time'**
+  String get serverTimeLabel;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

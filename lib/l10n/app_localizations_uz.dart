@@ -121,4 +121,64 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get confirm => 'Tasdiqlash';
+
+  @override
+  String get deleteConfirmationTitle => 'O\'chirishni tasdiqlash';
+
+  @override
+  String get deleteConfirmationContent => 'Ushbu elementni o\'chirmoqchimisiz?';
+
+  @override
+  String get delete => 'O\'chirish';
+
+  @override
+  String get orderNo => 'Buyurtma №';
+
+  @override
+  String get addInvoice => 'Konteyner qo\'shish';
+
+  @override
+  String get noAdminsWithContainers => 'Konteyneri bo‘lgan admin yo‘q';
+
+  @override
+  String get emailPrefix => '📧';
+
+  @override
+  String get addNewContainer => 'Yangi konteyner qo\'shish';
+
+  @override
+  String get welcomeToAdminPanel => 'Admin Paneliga xush kelibsiz!';
+
+  @override
+  String get adminPanelTitle => 'Admin Paneli';
+
+  @override
+  String get changeLanguage => 'Tilni o\'zgartirish';
+
+  @override
+  String get addNewEmail => 'Yangi pochta qo\'shish';
+
+  @override
+  String get dashboard => 'Panel';
+
+  @override
+  String get table => 'Jadval';
+
+  @override
+  String get chooseLanguage => 'Tilni tanlang';
+
+  @override
+  String get uzbek => 'O\'zbek';
+
+  @override
+  String get russian => 'Ruscha';
+
+  @override
+  String get english => 'Inglizcha';
+
+  @override
+  String get turkish => 'Turkcha';
+
+  @override
+  String get serverTimeLabel => 'Server vaqti';
 }

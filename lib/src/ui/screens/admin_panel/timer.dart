@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:aps/l10n/app_localizations.dart';
 
 /// Виджет, который самостоятельно каждую минуту обновляет своё отображение.
 class IstanbulClock extends StatefulWidget {
@@ -17,9 +18,7 @@ class _IstanbulClockState extends State<IstanbulClock> {
   @override
   void initState() {
     super.initState();
-    // Сразу покажем текущее время:
     _updateTime();
-    // И запустим таймер по минутам:
     _timer = Timer.periodic(const Duration(minutes: 1), (_) {
       _updateTime();
     });
@@ -39,12 +38,13 @@ class _IstanbulClockState extends State<IstanbulClock> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final formatted = DateFormat('dd.MM.yyyy | HH:mm').format(_now);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        const Text('Время сервера', style: TextStyle(fontSize: 12)),
+        Text(loc.serverTimeLabel, style: const TextStyle(fontSize: 12)),
         Text(
           formatted,
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
