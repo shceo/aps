@@ -307,6 +307,22 @@ class OrderTracking(models.Model):
         ordering = ["-created_at"]
 
 
+class ProductTranslation(models.Model):
+    codetved = models.CharField(max_length=10, verbose_name="Код ТН ВЭД")
+    position = models.IntegerField(verbose_name="Позиция")
+    english = models.CharField(max_length=255, verbose_name="Название на английском")
+    russian = models.CharField(max_length=255, verbose_name="Название на русском")
+    uzbek = models.CharField(max_length=255, verbose_name="Название на узбекском")
+    turkish = models.CharField(max_length=255, verbose_name="Название на турецком")
+
+    class Meta:
+        verbose_name = "Перевод продукта"
+        verbose_name_plural = "Переводы продуктов"
+        ordering = ['codetved']
+
+    def __str__(self):
+        return f"{self.english} ({self.codetved})"
+
 
 
 

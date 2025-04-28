@@ -152,3 +152,8 @@ class OrderTrackingAdmin(admin.ModelAdmin):
         }),
     )
 
+@admin.register(ProductTranslation)
+class ProductTranslationAdmin(admin.ModelAdmin):
+    list_display = ('codetved', 'english', 'russian', 'uzbek', 'turkish')
+    search_fields = ('codetved', 'english', 'russian', 'uzbek', 'turkish')
+    list_filter = ('position',)

@@ -1,4 +1,6 @@
 import json
+from pickletools import read_long1
+
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -310,15 +312,46 @@ def get_product_by_category(request, category_id):
     return JsonResponse({'category': category.title, 'products': products_data}, safe=False)
 
 
+def product_translation_list(request):
+    products = ProductTranslation.objects.all()
+
+    product_data = [
+        {
+            'codetved': product.codetved,
+            'english': product.english,
+            'russian': product.russian,
+            'uzbek': product.uzbek,
+            'turkish': product.turkish
+        }
+        for product in products
+    ]
+
+    return JsonResponse(product_data, safe=False)
 
 
 
+@csrf_exempt
+def get_district_by_region(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        info = data.get('region')
 
+        if not info:
+            return JsonResponse({"error": "Region parameter is missing."}, status=400)
 
+        try:
+            region = Region.objects.get(title=info)
+        except Region.DoesNotExist:
+            return JsonResponse({"error": f"No region named {info}"}, status=404)
 
+        districts = City.objects.filter(region=region)
 
+        district_data = [district.title for district in districts]
 
+        return JsonResponse(district_data, safe=False)
 
+    else:
+        return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
 
 
 
@@ -327,194 +360,196 @@ def get_product_by_category(request, category_id):
 
 # ========================== User orders tracking ==========================
 
-@csrf_exempt
-def create_order_tracking(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Unauthorized access. Please log in."}, status=401)
-
-    if request.method != "POST":
-        return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
-
-    try:
-        data = json.loads(request.body)
-
-        # Extract data from the request
-        invoice_no = data.get('invoice_no')
-        order_code = data.get('order_code')
-        created_by = data.get('created_by')
-        sender_name = data.get("sender_name")
-        sender_tel = data.get("sender_tel")
-        receiver_name = data.get("receiver_name")  # Username of the receiver
-        passport = data.get("passport")
-        birth_date = data.get("birth_date")
-        address = data.get("address")
-        product_details = data.get("product_details")
-        brutto = data.get("brutto")
-        total_value = data.get("total_value")
-
-        # Check for required fields
-        if not all([invoice_no, order_code, sender_name, sender_tel, receiver_name, passport, birth_date,
-                    address, product_details, brutto, total_value]):
-            return JsonResponse({"error": "All fields are required."}, status=400)
-
-        # Check if the receiver user exists
-        try:
-            user = Receiver.objects.get(passport_id=passport)
-        except Receiver.DoesNotExist:
-            return JsonResponse({"error": f"User '{receiver_name}' not found."}, status=404)
-
-        # Create a new OrderTracking object
-        order = OrderTracking.objects.create(
-            invoice_no = invoice_no,
-            order_code = order_code,
-            created_by = created_by,
-            sender_name=sender_name,
-            sender_tel=sender_tel,
-            receiver_name=user,
-            passport=passport,
-            birth_date=birth_date,
-            address=address,
-            product_details=product_details,
-            brutto=brutto,
-            total_value=total_value,
-        )
-
-        # Return success response
-        return JsonResponse({
-            "message": "Order tracking created successfully",
-            "order_id": order.id
-        }, status=201)
-
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON format."}, status=400)
-
-    except Exception as e:
-        return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
-
-
-@csrf_exempt
-def track_user_orders(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Unauthorized access. Please log in."}, status=401)
-
-    if request.method != "POST":
-        return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
-
-    try:
-        data = json.loads(request.body)
-        invoice_no = data.get("invoice_no")
-
-        if not invoice_no:
-            return JsonResponse({"error": "Invoice number is required to fetch tracking details."}, status=400)
-
-        # Filter orders where the user is the receiver
-        orders = OrderTracking.objects.filter(invoice_no=invoice_no)
-
-        if not orders.exists():
-            return JsonResponse({"error": "No orders found for this invoice number."}, status=404)
-
-        order_data = [
-            {
-                "id": order.id,
-                "invoice_number": order.invoice_no,
-                "order_code": order.order_code,
-                "created_by": order.created_by,
-                "sender_name": order.sender_name,
-                "sender_tel": order.sender_tel,
-                "receiver_name": order.receiver.receiver.username if order.receiver.receiver else "No User",
-                "receiver_phone": order.receiver.phone,
-                "passport": order.passport,
-                "birth_date": order.birth_date,
-                "address": order.address,
-                "product_details": order.product_details,
-                "brutto": float(order.brutto),
-                "total_value": float(order.total_value),
-                "created_at": order.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            }
-            for order in orders
-        ]
-
-        return JsonResponse({"orders": order_data}, status=200)
-
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON format."}, status=400)
-
-    except Exception as e:
-        return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
+# @csrf_exempt
+# def create_order_tracking(request):
+#     if not request.user.is_authenticated:
+#         return JsonResponse({"error": "Unauthorized access. Please log in."}, status=401)
+#
+#     if request.method != "POST":
+#         return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
+#
+#     try:
+#         data = json.loads(request.body)
+#
+#         # Extract data from the request
+#         invoice_no = data.get('invoice_no')
+#         order_code = data.get('order_code')
+#         created_by = data.get('created_by')
+#         sender_name = data.get("sender_name")
+#         sender_tel = data.get("sender_tel")
+#         receiver_name = data.get("receiver_name")  # Username of the receiver
+#         passport = data.get("passport")
+#         birth_date = data.get("birth_date")
+#         address = data.get("address")
+#         product_details = data.get("product_details")
+#         brutto = data.get("brutto")
+#         total_value = data.get("total_value")
+#
+#         # Check for required fields
+#         if not all([invoice_no, order_code, sender_name, sender_tel, receiver_name, passport, birth_date,
+#                     address, product_details, brutto, total_value]):
+#             return JsonResponse({"error": "All fields are required."}, status=400)
+#
+#         # Check if the receiver user exists
+#         try:
+#             user = Receiver.objects.get(passport_id=passport)
+#         except Receiver.DoesNotExist:
+#             return JsonResponse({"error": f"User '{receiver_name}' not found."}, status=404)
+#
+#         # Create a new OrderTracking object
+#         order = OrderTracking.objects.create(
+#             invoice_no = invoice_no,
+#             order_code = order_code,
+#             created_by = created_by,
+#             sender_name=sender_name,
+#             sender_tel=sender_tel,
+#             receiver_name=user,
+#             passport=passport,
+#             birth_date=birth_date,
+#             address=address,
+#             product_details=product_details,
+#             brutto=brutto,
+#             total_value=total_value,
+#         )
+#
+#         # Return success response
+#         return JsonResponse({
+#             "message": "Order tracking created successfully",
+#             "order_id": order.id
+#         }, status=201)
+#
+#     except json.JSONDecodeError:
+#         return JsonResponse({"error": "Invalid JSON format."}, status=400)
+#
+#     except Exception as e:
+#         return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
 
 
-
-def get_district_by_city(request):
-    if request.method != 'POST':
-        return JsonResponse({"error": "Only POST method is allowed"}, status=405)
-
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON format"}, status=400)
-
-    city_json = data.get('city')
-
-    if not city_json:
-        return JsonResponse({"error": "Sending city is required"}, status=400)
-
-    try:
-        city = City.objects.get(city__iexact=city_json.strip())
-    except City.DoesNotExist:
-        return JsonResponse({"error": f"No city by name '{city_json}' found. Enter a valid name."}, status=404)
-
-    regions = Region.objects.filter(region=city)
-
-    serializer = RegionSerializer(regions, many=True)
-    return JsonResponse(serializer.data, safe=False)
+# @csrf_exempt
+# def track_user_orders(request):
+#     if not request.user.is_authenticated:
+#         return JsonResponse({"error": "Unauthorized access. Please log in."}, status=401)
+#
+#     if request.method != "POST":
+#         return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
+#
+#     try:
+#         data = json.loads(request.body)
+#         invoice_no = data.get("invoice_no")
+#
+#         if not invoice_no:
+#             return JsonResponse({"error": "Invoice number is required to fetch tracking details."}, status=400)
+#
+#         # Filter orders where the user is the receiver
+#         orders = OrderTracking.objects.filter(invoice_no=invoice_no)
+#
+#         if not orders.exists():
+#             return JsonResponse({"error": "No orders found for this invoice number."}, status=404)
+#
+#         order_data = [
+#             {
+#                 "id": order.id,
+#                 "invoice_number": order.invoice_no,
+#                 "order_code": order.order_code,
+#                 "created_by": order.created_by,
+#                 "sender_name": order.sender_name,
+#                 "sender_tel": order.sender_tel,
+#                 "receiver_name": order.receiver.receiver.username if order.receiver.receiver else "No User",
+#                 "receiver_phone": order.receiver.phone,
+#                 "passport": order.passport,
+#                 "birth_date": order.birth_date,
+#                 "address": order.address,
+#                 "product_details": order.product_details,
+#                 "brutto": float(order.brutto),
+#                 "total_value": float(order.total_value),
+#                 "created_at": order.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+#             }
+#             for order in orders
+#         ]
+#
+#         return JsonResponse({"orders": order_data}, status=200)
+#
+#     except json.JSONDecodeError:
+#         return JsonResponse({"error": "Invalid JSON format."}, status=400)
+#
+#     except Exception as e:
+#         return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
 
 
 
-import requests
-
-YANDEX_API_KEY = 'cfeaf66a-7a1d-4296-b1cd-f1417ca9adbd'
-
-@csrf_exempt
-def validate_address(request):
-    if request.method == 'POST':
-        address = request.POST.get('address') or json.loads(request.body).get('address')
-
-        if not address:
-            return JsonResponse({'error': 'Address not provided'}, status=400)
-
-        url = 'https://geocode-maps.yandex.ru/1.x/'
-        params = {
-            'apikey': YANDEX_API_KEY,
-            'geocode': address,
-            'format': 'json'
-        }
-
-        response = requests.get(url, params=params)
-        data = response.json()
-
-        try:
-            feature = data['response']['GeoObjectCollection']['featureMember']
-            if not feature:
-                return JsonResponse({'valid': False})
-
-            address_data = feature[0]['GeoObject']['metaDataProperty']['GeocoderMetaData']['Address']['Components']
-            components = {c['kind']: c['name'] for c in address_data}
-
-            print(components, '====================================')
-            print(address_data)
-            return JsonResponse({
-                'valid': True,
-                'country': components.get('country'),
-                'region': components.get('province'),
-                'district': components.get('district'),
-                'street': components.get('street'),
-                'house': components.get('house')
-            })
+# def get_district_by_city(request):
+#     if request.method != 'POST':
+#         return JsonResponse({"error": "Only POST method is allowed"}, status=405)
+#
+#     try:
+#         data = json.loads(request.body)
+#     except json.JSONDecodeError:
+#         return JsonResponse({"error": "Invalid JSON format"}, status=400)
+#
+#     city_json = data.get('city')
+#
+#     if not city_json:
+#         return JsonResponse({"error": "Sending city is required"}, status=400)
+#
+#     try:
+#         city = City.objects.get(city__iexact=city_json.strip())
+#     except City.DoesNotExist:
+#         return JsonResponse({"error": f"No city by name '{city_json}' found. Enter a valid name."}, status=404)
+#
+#     regions = Region.objects.filter(region=city)
+#
+#     serializer = RegionSerializer(regions, many=True)
+#     return JsonResponse(serializer.data, safe=False)
 
 
-        except Exception as e:
-            return JsonResponse({'error': 'Error processing address'}, status=500)
-    return None
+
+# import requests
+#
+# YANDEX_API_KEY = 'cfeaf66a-7a1d-4296-b1cd-f1417ca9adbd'
+#
+# @csrf_exempt
+# def validate_address(request):
+#     if request.method == 'POST':
+#         address = request.POST.get('address') or json.loads(request.body).get('address')
+#
+#         if not address:
+#             return JsonResponse({'error': 'Address not provided'}, status=400)
+#
+#         url = 'https://geocode-maps.yandex.ru/1.x/'
+#         params = {
+#             'apikey': YANDEX_API_KEY,
+#             'geocode': address,
+#             'format': 'json'
+#         }
+#
+#         response = requests.get(url, params=params)
+#         data = response.json()
+#
+#         try:
+#             feature = data['response']['GeoObjectCollection']['featureMember']
+#             if not feature:
+#                 return JsonResponse({'valid': False})
+#
+#             address_data = feature[0]['GeoObject']['metaDataProperty']['GeocoderMetaData']['Address']['Components']
+#             components = {c['kind']: c['name'] for c in address_data}
+#
+#             print(components, '====================================')
+#             print(address_data)
+#             return JsonResponse({
+#                 'valid': True,
+#                 'country': components.get('country'),
+#                 'region': components.get('province'),
+#                 'district': components.get('district'),
+#                 'street': components.get('street'),
+#                 'house': components.get('house')
+#             })
+#
+#
+#         except Exception as e:
+#             return JsonResponse({'error': 'Error processing address'}, status=500)
+#     return None
+
+
 
 
 
