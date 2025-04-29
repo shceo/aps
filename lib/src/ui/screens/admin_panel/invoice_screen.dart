@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'package:aps/l10n/app_localizations.dart';
 import 'package:aps/src/ui/components/pdf_export.dart';
@@ -5,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Для фильтра ввода
 import 'package:intl/intl.dart'; // Для форматирования даты
+import 'package:http/http.dart' as http;
 
 class InvoiceFormScreen extends StatefulWidget {
   final int invoiceId;
@@ -55,6 +57,15 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   void initState() {
     super.initState();
     _loadData();
+    super.initState();
+    _productFocusNodes[0].addListener(() {
+      if (_productFocusNodes[0].hasFocus) _showSuggestions(0);
+    });
+
+    // @override
+    // void initState() {
+
+    //   });
   }
 
   Future<void> _loadData() async {
@@ -391,7 +402,127 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     _productDetailsController.dispose();
     _bruttoController.dispose();
     _totalValueController.dispose();
+    for (var c in _productControllers) c.dispose();
+    for (var f in _productFocusNodes) f.dispose();
     super.dispose();
+  }
+
+  List<TextEditingController> _productControllers = [TextEditingController()];
+  List<FocusNode> _productFocusNodes = [FocusNode()];
+  int _maxProducts = 40;
+
+  OverlayEntry? _suggestionsEntry;
+
+  // Метод удаления:
+  void _removeSuggestions() {
+    _suggestionsEntry?.remove();
+    _suggestionsEntry = null;
+  }
+
+  void _showSuggestions(int index) async {
+    final term = _productControllers[index].text.trim();
+    if (term.isEmpty) {
+      _removeSuggestions();
+      return;
+    }
+
+    _removeSuggestions();
+
+    final overlay = Overlay.of(context)!;
+    final fieldBox =
+        _productFocusNodes[index].context!.findRenderObject() as RenderBox;
+    final fieldPos = fieldBox.localToGlobal(Offset.zero);
+    final fieldSize = fieldBox.size;
+
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (_) {
+        return Positioned(
+          left: fieldPos.dx,
+          top: fieldPos.dy + fieldSize.height,
+          width: fieldSize.width,
+          child: Material(
+            elevation: 4,
+            child: FutureBuilder<http.Response>(
+              future: http.get(
+                Uri.parse('https://khaledo.pythonanywhere.com/products/lists/'),
+              ),
+              builder: (ctx, snap) {
+                if (!snap.hasData) {
+                  return const SizedBox(
+                    height: 100,
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+                final List products = json.decode(snap.data!.body);
+                // Всегда работаем с английским названием:
+                final matches =
+                    products.where((p) {
+                      final name = (p['english'] ?? '') as String;
+                      return name.toLowerCase().contains(term.toLowerCase());
+                    }).toList();
+
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: _removeSuggestions,
+                      ),
+                    ),
+                    if (matches.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          'No items found',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                    Flexible(
+                      child: ListView(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        children:
+                            matches.map((p) {
+                              final name = (p['english'] ?? '') as String;
+                              return ListTile(
+                                title: Text(name),
+                                onTap: () {
+                                  _productControllers[index].text =
+                                      '${index + 1}. $name';
+                                  _productControllers[index]
+                                      .selection = TextSelection.fromPosition(
+                                    TextPosition(
+                                      offset:
+                                          _productControllers[index]
+                                              .text
+                                              .length,
+                                    ),
+                                  );
+                                  _removeSuggestions();
+                                  if (index + 1 < _productControllers.length) {
+                                    FocusScope.of(context).requestFocus(
+                                      _productFocusNodes[index + 1],
+                                    );
+                                  }
+                                },
+                              );
+                            }).toList(),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+
+    overlay.insert(entry);
+    _suggestionsEntry = entry;
   }
 
   @override
@@ -626,12 +757,82 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                           ),
                         ],
                       ),
-                      _buildTableRow(
-                        loc.productDetails,
-                        _productDetailsController,
-                        maxLines: 5,
-                        icon: Icons.inventory,
+
+                      TableRow(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Text(
+                              loc.productDetails,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Column(
+                              children: [
+                                ...List.generate(_productControllers.length, (
+                                  i,
+                                ) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 4,
+                                    ),
+                                    child: TextField(
+                                      controller: _productControllers[i],
+                                      focusNode: _productFocusNodes[i],
+                                      decoration: InputDecoration(
+                                        hintText:
+                                            '${i + 1}. ${loc.productDetails}',
+                                        suffixIcon: IconButton(
+                                          icon: const Icon(
+                                            Icons.add,
+                                            color: Colors.green,
+                                          ),
+                                          onPressed: () {
+                                            if (_productControllers[i].text
+                                                .trim()
+                                                .isEmpty)
+                                              return;
+                                            if (_productControllers.length <
+                                                _maxProducts) {
+                                              _productControllers.add(
+                                                TextEditingController(),
+                                              );
+                                              _productFocusNodes.add(
+                                                FocusNode(),
+                                              );
+                                              setState(() {});
+                                              FocusScope.of(
+                                                context,
+                                              ).requestFocus(
+                                                _productFocusNodes.last,
+                                              );
+                                            }
+                                          },
+                                        ),
+                                        filled: true,
+                                        fillColor: Colors.grey[100],
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                      ),
+                                      // Заменили onChanged:
+                                      onChanged: (_) => _showSuggestions(i),
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
+
                       TableRow(
                         children: [
                           Padding(
