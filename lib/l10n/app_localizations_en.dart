@@ -181,4 +181,109 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get serverTimeLabel => 'Server time';
+
+  @override
+  String get overLimitError => 'Order exceeds the \$1000 limit';
+
+  @override
+  String get errorTitle => 'Error';
+
+  @override
+  String get fieldsRequired => 'Please fill in all required fields';
+
+  @override
+  String get chooseCity => 'Choose a city';
+
+  @override
+  String get saveError => 'Save error';
+
+  @override
+  String get successMessage => 'Data saved successfully!';
+
+  @override
+  String get closeToLimit => 'You are close to the \$1000 limit';
+
+  @override
+  String get successTitle => 'Success';
+
+  @override
+  String get warningTitle => 'Warning';
+
+  @override
+  String get digitsOnlyError => 'Only digits are allowed';
+
+  @override
+  String get invoice => 'Invoice';
+
+  @override
+  String get selectedSection => 'Selected';
+
+  @override
+  String get orderCode => 'Order Code';
+
+  @override
+  String get senderName => 'Sender Name';
+
+  @override
+  String get senderTel => 'Sender Phone';
+
+  @override
+  String get receiverName => 'Receiver Name';
+
+  @override
+  String get receiverTel => 'Receiver Phone';
+
+  @override
+  String get passportId => 'Passport/ID';
+
+  @override
+  String get birthDate => 'Birth Date';
+
+  @override
+  String get selectDate => 'Select date';
+
+  @override
+  String get addressFull => 'Address (full)';
+
+  @override
+  String get addressHint => 'Enter address or choose city';
+
+  @override
+  String get productDetails => 'Product Details';
+
+  @override
+  String get bruttoWeight => 'Brutto Weight (kg)';
+
+  @override
+  String get totalValue => 'Total Value (USD)';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get print => 'Print';
+
+  @override
+  String get doorToDoor => 'Door to Door';
+
+  @override
+  String get zone2 => 'ZONE 2';
+
+  @override
+  String get pvzLabel => 'PVZ [SPB33] on Zvezdnaya';
+
+  @override
+  String get generateFirst => 'Generate code first';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get unsavedDataWarning => 'You have unsaved changes. Leave?';
+
+  @override
+  String get stay => 'Stay';
+
+  @override
+  String get leave => 'Leave';
 }

@@ -181,4 +181,109 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get serverTimeLabel => 'Server vaqti';
+
+  @override
+  String get overLimitError => 'Limit oshib ketdi';
+
+  @override
+  String get errorTitle => 'Xato';
+
+  @override
+  String get fieldsRequired => 'Iltimos, barcha majburiy maydonlarni to\'ldiring';
+
+  @override
+  String get chooseCity => 'Shaharni tanlang';
+
+  @override
+  String get saveError => 'Saqlash xatosi';
+
+  @override
+  String get successMessage => 'Muvaffaqiyatli saqlandi';
+
+  @override
+  String get closeToLimit => '1000\$ limitga oz qoldi';
+
+  @override
+  String get successTitle => 'Muvaffaqiyatli';
+
+  @override
+  String get warningTitle => 'Ogohlantirish';
+
+  @override
+  String get digitsOnlyError => 'Faqat raqamlar kiritilishi mumkin';
+
+  @override
+  String get invoice => 'Hisobot';
+
+  @override
+  String get selectedSection => 'Tanlangan';
+
+  @override
+  String get orderCode => 'Buyurtma kodi';
+
+  @override
+  String get senderName => 'Jo\'natuvchi ismi';
+
+  @override
+  String get senderTel => 'Jo\'natuvchi telefoni';
+
+  @override
+  String get receiverName => 'Qabul qiluvchi ismi';
+
+  @override
+  String get receiverTel => 'Qabul qiluvchi telefoni';
+
+  @override
+  String get passportId => 'Pasport/ID';
+
+  @override
+  String get birthDate => 'Tug\'ilgan sana';
+
+  @override
+  String get selectDate => 'Sana tanlang';
+
+  @override
+  String get addressFull => 'Manzil (to\'liq)';
+
+  @override
+  String get addressHint => 'Manzil kiriting yoki shaharni tanlang';
+
+  @override
+  String get productDetails => 'Mahsulot tafsilotlari';
+
+  @override
+  String get bruttoWeight => 'Brutto vazn (kg)';
+
+  @override
+  String get totalValue => 'Umumiy qiymat (USD)';
+
+  @override
+  String get save => 'Saqlash';
+
+  @override
+  String get print => 'Chop etish';
+
+  @override
+  String get doorToDoor => 'Eshikdan eshikka';
+
+  @override
+  String get zone2 => '2-ZONA';
+
+  @override
+  String get pvzLabel => 'PVZ [SPB33] Zvezdnaya\'da';
+
+  @override
+  String get generateFirst => 'Avval kod yarating';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get unsavedDataWarning => 'Saqlanmagan o\'zgarishlar mavjud. Chiqilsinmi?';
+
+  @override
+  String get stay => 'Qolish';
+
+  @override
+  String get leave => 'Chiqish';
 }

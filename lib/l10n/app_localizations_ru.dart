@@ -181,4 +181,109 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get serverTimeLabel => 'Время сервера';
+
+  @override
+  String get overLimitError => 'Заказ превышает лимит в \$1000';
+
+  @override
+  String get errorTitle => 'Ошибка';
+
+  @override
+  String get fieldsRequired => 'Пожалуйста, заполните все обязательные поля';
+
+  @override
+  String get chooseCity => 'Выберите город';
+
+  @override
+  String get saveError => 'Ошибка при сохранении';
+
+  @override
+  String get successMessage => 'Данные успешно сохранены!';
+
+  @override
+  String get closeToLimit => 'Осталось немного до лимита \$1000';
+
+  @override
+  String get successTitle => 'Успешно';
+
+  @override
+  String get warningTitle => 'Предупреждение';
+
+  @override
+  String get digitsOnlyError => 'Допустимы только цифры';
+
+  @override
+  String get invoice => 'Инвойс';
+
+  @override
+  String get selectedSection => 'Выбран';
+
+  @override
+  String get orderCode => 'Код заказа';
+
+  @override
+  String get senderName => 'Имя отправителя';
+
+  @override
+  String get senderTel => 'Телефон отправителя';
+
+  @override
+  String get receiverName => 'Имя получателя';
+
+  @override
+  String get receiverTel => 'Телефон получателя';
+
+  @override
+  String get passportId => 'Паспорт/ID';
+
+  @override
+  String get birthDate => 'Дата рождения';
+
+  @override
+  String get selectDate => 'Выберите дату';
+
+  @override
+  String get addressFull => 'Адрес (полный)';
+
+  @override
+  String get addressHint => 'Введите адрес или выберите город';
+
+  @override
+  String get productDetails => 'Детали товара';
+
+  @override
+  String get bruttoWeight => 'Брутто (кг)';
+
+  @override
+  String get totalValue => 'Общая стоимость (USD)';
+
+  @override
+  String get save => 'Сохранить';
+
+  @override
+  String get print => 'Распечатать';
+
+  @override
+  String get doorToDoor => 'От двери до двери';
+
+  @override
+  String get zone2 => 'ЗОНА 2';
+
+  @override
+  String get pvzLabel => 'ПВЗ [SPB33] на Звёздной';
+
+  @override
+  String get generateFirst => 'Сначала сгенерируйте код';
+
+  @override
+  String get ok => 'ОК';
+
+  @override
+  String get unsavedDataWarning => 'Данные не сохранены. Выйти?';
+
+  @override
+  String get stay => 'Остаться';
+
+  @override
+  String get leave => 'Выйти';
 }

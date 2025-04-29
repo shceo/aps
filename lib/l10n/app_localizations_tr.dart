@@ -181,4 +181,109 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get serverTimeLabel => 'Sunucu saati';
+
+  @override
+  String get overLimitError => 'Limit aşıldı';
+
+  @override
+  String get errorTitle => 'Hata';
+
+  @override
+  String get fieldsRequired => 'Lütfen tüm gerekli alanları doldurun';
+
+  @override
+  String get chooseCity => 'Şehir seçin';
+
+  @override
+  String get saveError => 'Kaydetme hatası';
+
+  @override
+  String get successMessage => 'Başarıyla kaydedildi';
+
+  @override
+  String get closeToLimit => '1000\$ limitine az kaldı';
+
+  @override
+  String get successTitle => 'Başarılı';
+
+  @override
+  String get warningTitle => 'Uyarı';
+
+  @override
+  String get digitsOnlyError => 'Sadece rakam girilebilir';
+
+  @override
+  String get invoice => 'Fatura';
+
+  @override
+  String get selectedSection => 'Seçili';
+
+  @override
+  String get orderCode => 'Sipariş Kodu';
+
+  @override
+  String get senderName => 'Gönderen Adı';
+
+  @override
+  String get senderTel => 'Gönderen Telefon';
+
+  @override
+  String get receiverName => 'Alıcı Adı';
+
+  @override
+  String get receiverTel => 'Alıcı Telefon';
+
+  @override
+  String get passportId => 'Pasaport/ID';
+
+  @override
+  String get birthDate => 'Doğum Tarihi';
+
+  @override
+  String get selectDate => 'Tarih seçin';
+
+  @override
+  String get addressFull => 'Adres (tam)';
+
+  @override
+  String get addressHint => 'Adres girin veya şehir seçin';
+
+  @override
+  String get productDetails => 'Ürün Detayları';
+
+  @override
+  String get bruttoWeight => 'Brüt Ağırlık (kg)';
+
+  @override
+  String get totalValue => 'Toplam Tutar (USD)';
+
+  @override
+  String get save => 'Kaydet';
+
+  @override
+  String get print => 'Yazdır';
+
+  @override
+  String get doorToDoor => 'Kapıdan Kapıya';
+
+  @override
+  String get zone2 => 'BÖLGE 2';
+
+  @override
+  String get pvzLabel => 'PVZ [SPB33] Zvezdnaya\'da';
+
+  @override
+  String get generateFirst => 'Önce kod üretin';
+
+  @override
+  String get ok => 'Tamam';
+
+  @override
+  String get unsavedDataWarning => 'Kaydedilmemiş değişiklikler var. Çıkılsın mı?';
+
+  @override
+  String get stay => 'Kal';
+
+  @override
+  String get leave => 'Çık';
 }

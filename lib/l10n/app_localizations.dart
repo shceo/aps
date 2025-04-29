@@ -448,6 +448,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Server time'**
   String get serverTimeLabel;
+
+  /// No description provided for @overLimitError.
+  ///
+  /// In en, this message translates to:
+  /// **'Order exceeds the \$1000 limit'**
+  String get overLimitError;
+
+  /// No description provided for @errorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get errorTitle;
+
+  /// No description provided for @fieldsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all required fields'**
+  String get fieldsRequired;
+
+  /// No description provided for @chooseCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a city'**
+  String get chooseCity;
+
+  /// No description provided for @saveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Save error'**
+  String get saveError;
+
+  /// No description provided for @successMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Data saved successfully!'**
+  String get successMessage;
+
+  /// No description provided for @closeToLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'You are close to the \$1000 limit'**
+  String get closeToLimit;
+
+  /// No description provided for @successTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get successTitle;
+
+  /// No description provided for @warningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get warningTitle;
+
+  /// No description provided for @digitsOnlyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Only digits are allowed'**
+  String get digitsOnlyError;
+
+  /// No description provided for @invoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice'**
+  String get invoice;
+
+  /// No description provided for @selectedSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get selectedSection;
+
+  /// No description provided for @orderCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Code'**
+  String get orderCode;
+
+  /// No description provided for @senderName.
+  ///
+  /// In en, this message translates to:
+  /// **'Sender Name'**
+  String get senderName;
+
+  /// No description provided for @senderTel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sender Phone'**
+  String get senderTel;
+
+  /// No description provided for @receiverName.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiver Name'**
+  String get receiverName;
+
+  /// No description provided for @receiverTel.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiver Phone'**
+  String get receiverTel;
+
+  /// No description provided for @passportId.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport/ID'**
+  String get passportId;
+
+  /// No description provided for @birthDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Birth Date'**
+  String get birthDate;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get selectDate;
+
+  /// No description provided for @addressFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Address (full)'**
+  String get addressFull;
+
+  /// No description provided for @addressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter address or choose city'**
+  String get addressHint;
+
+  /// No description provided for @productDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Product Details'**
+  String get productDetails;
+
+  /// No description provided for @bruttoWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Brutto Weight (kg)'**
+  String get bruttoWeight;
+
+  /// No description provided for @totalValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Value (USD)'**
+  String get totalValue;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @print.
+  ///
+  /// In en, this message translates to:
+  /// **'Print'**
+  String get print;
+
+  /// No description provided for @doorToDoor.
+  ///
+  /// In en, this message translates to:
+  /// **'Door to Door'**
+  String get doorToDoor;
+
+  /// No description provided for @zone2.
+  ///
+  /// In en, this message translates to:
+  /// **'ZONE 2'**
+  String get zone2;
+
+  /// No description provided for @pvzLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'PVZ [SPB33] on Zvezdnaya'**
+  String get pvzLabel;
+
+  /// No description provided for @generateFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate code first'**
+  String get generateFirst;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// No description provided for @unsavedDataWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes. Leave?'**
+  String get unsavedDataWarning;
+
+  /// No description provided for @stay.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay'**
+  String get stay;
+
+  /// No description provided for @leave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get leave;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

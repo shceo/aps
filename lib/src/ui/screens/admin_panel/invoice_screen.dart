@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:aps/l10n/app_localizations.dart';
 import 'package:aps/src/ui/components/pdf_export.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -104,23 +105,24 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   }
 
   Future<void> _selectCityCode() async {
-    if (_sixDigit.isEmpty) {
-      await showDialog(
-        context: context,
-        builder:
-            (_) => AlertDialog(
-              title: const Text("Ошибка"),
-              content: const Text("Сначала сгенерируйте код."),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("ОК"),
-                ),
-              ],
-            ),
-      );
-      return;
-    }
+    final loc = AppLocalizations.of(context);
+    // if (_sixDigit.isEmpty) {
+    //   await showDialog(
+    //     context: context,
+    //     builder:
+    //         (_) => AlertDialog(
+    //           title: const Text("Ошибка"),
+    //           content: const Text("Сначала сгенерируйте код."),
+    //           actions: [
+    //             TextButton(
+    //               onPressed: () => Navigator.pop(context),
+    //               child: const Text("ОК"),
+    //             ),
+    //           ],
+    //         ),
+    //   );
+    //   return;
+    // }
     Map<String, String> cities = {
       "Andijon": "AND",
       "Farg'ona": "FNA",
@@ -141,7 +143,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
       context: context,
       builder:
           (_) => SimpleDialog(
-            title: const Text("Выберите город"),
+            title: Text(loc.chooseCity),
             children:
                 cities.keys
                     .map(
@@ -178,16 +180,15 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   }
 
   Future<void> _saveData() async {
+    final loc = AppLocalizations.of(context);
     setState(() => _submitted = true);
     if (!_validateFields()) {
       await showDialog(
         context: context,
         builder:
             (_) => AlertDialog(
-              title: const Text("Ошибка"),
-              content: const Text(
-                "Все поля обязательны для заполнения и должны быть корректны.",
-              ),
+              title: Text(loc.errorTitle),
+              content: Text(loc.fieldsRequired),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
@@ -204,10 +205,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         context: context,
         builder:
             (_) => AlertDialog(
-              title: const Text("Ошибка"),
-              content: const Text(
-                "Заказ более 1000 долларов. Сохранение невозможно.",
-              ),
+              title: Text(loc.errorTitle),
+              content: Text(loc.overLimitError),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
@@ -242,8 +241,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         context: context,
         builder:
             (_) => AlertDialog(
-              title: const Text("Успех"),
-              content: const Text("Данные успешно сохранены!"),
+              title: Text(loc.successTitle),
+              content: Text(loc.successMessage),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -260,8 +259,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         context: context,
         builder:
             (_) => AlertDialog(
-              title: const Text("Ошибка"),
-              content: Text("Ошибка при сохранении: $e"),
+              title: Text(loc.errorTitle),
+              content: Text("${loc.saveError}: $e"),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
@@ -274,8 +273,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   }
 
   void _onTotalValueChanged(String value) {
+    final loc = AppLocalizations.of(context);
     if (value.isNotEmpty && !RegExp(r'^\d+\$').hasMatch(value)) {
-      setState(() => _totalValueError = "Доступны для ввода только цифры");
+      setState(() => _totalValueError = loc.digitsOnlyError);
     } else {
       setState(() => _totalValueError = null);
       double total = double.tryParse(value) ?? 0;
@@ -285,8 +285,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
           context: context,
           builder:
               (context) => AlertDialog(
-                title: const Text("Внимание"),
-                content: const Text("Осталось немного до лимита \$1000"),
+                title: Text(loc.warningTitle),
+                content: Text(loc.closeToLimit),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
@@ -353,21 +353,22 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
   /// Предупреждение при покидании страницы
   Future<bool> _onWillPop() async {
+    final loc = AppLocalizations.of(context);
     if (_isDataModified) {
       final result = await showDialog<bool>(
         context: context,
         builder:
             (_) => AlertDialog(
-              title: const Text("Внимание"),
-              content: const Text("Данные не сохранены! Покинуть страницу?"),
+              title: Text(loc.warningTitle),
+              content: Text(loc.unsavedDataWarning),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  child: const Text("Остаться"),
+                  child: Text(loc.stay),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, true),
-                  child: const Text("Выйти"),
+                  child: Text(loc.leave),
                 ),
               ],
             ),
@@ -395,22 +396,23 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String _passportPrefix = '';
+
+    final loc = AppLocalizations.of(context);
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: Text("Invoice № ${widget.invoiceId}")),
+        appBar: AppBar(title: Text('${loc.invoice} № ${widget.invoiceId}')),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
-    if (!_hasSelectedSection) {
-
-    }
+    if (!_hasSelectedSection) {}
 
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            "Invoice № ${widget.invoiceId} - Выбран: $_selectedSection",
+            '${loc.invoice} № ${widget.invoiceId} - ${loc.selectedSection} $_selectedSection',
           ),
         ),
         body: SingleChildScrollView(
@@ -432,40 +434,122 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                     },
                     children: [
                       _buildTableRow(
-                        "Familya Ism (Jo'natuvchi)",
+                        loc.senderName,
                         _senderNameController,
                         icon: Icons.person,
                       ),
                       _buildTableRow(
-                        "Tel nomer (Jo'natuvchi)",
+                        loc.senderTel,
                         _senderTelController,
                         keyboardType: TextInputType.phone,
                         icon: Icons.phone,
                       ),
                       _buildTableRow(
-                        "Familya Ism (Qabul qiluvchi)",
+                        loc.receiverName,
                         _receiverNameController,
                         icon: Icons.person_outline,
                       ),
-                      // Новый раздел телефона принимающего
                       _buildTableRow(
-                        "Tel nomer (Qabul qiluvchi)",
+                        loc.receiverTel,
                         _receiverTelController,
                         keyboardType: TextInputType.phone,
                         icon: Icons.phone_android,
                       ),
-                      _buildTableRow(
-                        "Pasport/ID: AD 1234567",
-                        _passportController,
-                        icon: Icons.badge,
+
+                      TableRow(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Text(
+                              loc.passportId,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: TextField(
+                              controller: _passportController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                decimal: true,
+                              ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'[\d\.,]'),
+                                ),
+                              ],
+                              decoration: InputDecoration(
+                                hintText: loc.passportId,
+                                prefixIcon: const Icon(Icons.badge),
+                                suffixIcon: IconButton(
+                                  icon: const Icon(
+                                    Icons.add,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () async {
+                                    final prefix = await showDialog<String>(
+                                      context: context,
+                                      builder:
+                                          (_) => SimpleDialog(
+                                            title: Text(
+                                              "loc.choosePassportPrefix",
+                                            ),
+                                            children:
+                                                ['AA', 'AB', 'AC', 'AD', 'AE']
+                                                    .map(
+                                                      (
+                                                        val,
+                                                      ) => SimpleDialogOption(
+                                                        onPressed:
+                                                            () => Navigator.pop(
+                                                              context,
+                                                              val,
+                                                            ),
+                                                        child: Text(val),
+                                                      ),
+                                                    )
+                                                    .toList(),
+                                          ),
+                                    );
+                                    if (prefix != null) {
+                                      _passportPrefix = prefix;
+                                      _passportController.text =
+                                          '$_passportPrefix${_passportController.text.replaceAll(RegExp(r'[^0-9\.,]'), '')}';
+                                      _passportController.selection =
+                                          TextSelection.fromPosition(
+                                            TextPosition(
+                                              offset:
+                                                  _passportController
+                                                      .text
+                                                      .length,
+                                            ),
+                                          );
+                                      setState(() {});
+                                    }
+                                  },
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey[100],
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              onChanged:
+                                  (_) => setState(() => _isDataModified = true),
+                            ),
+                          ),
+                        ],
                       ),
+
                       // Поле для даты рождения: только выбор из календаря
                       TableRow(
                         children: [
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             child: Text(
-                              "Tug'ilgan sana",
+                              loc.birthDate,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -477,7 +561,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                               controller: _birthDateController,
                               readOnly: true,
                               decoration: InputDecoration(
-                                hintText: 'Выберите дату',
+                                hintText: loc.selectDate,
                                 prefixIcon: const Icon(Icons.calendar_today),
                                 filled: true,
                                 fillColor: Colors.grey[100],
@@ -510,7 +594,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             child: Text(
-                              "Adress (полный адрес)",
+                              loc.addressFull,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -522,7 +606,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                               controller: _addressController,
                               readOnly: false,
                               decoration: InputDecoration(
-                                hintText: 'Введите адрес или выберите город',
+                                hintText: loc.addressHint,
                                 prefixIcon: const Icon(Icons.location_on),
                                 suffixIcon: IconButton(
                                   icon: const Icon(Icons.location_city),
@@ -543,26 +627,67 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                         ],
                       ),
                       _buildTableRow(
-                        "Товарные позиции...",
+                        loc.productDetails,
                         _productDetailsController,
                         maxLines: 5,
                         icon: Icons.inventory,
                       ),
-                      _buildTableRow(
-                        "Brutto vazni (kg)",
-                        _bruttoController,
-                        keyboardType: TextInputType.text,
-                        icon: Icons.line_weight,
+                      TableRow(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Text(
+                              loc.bruttoWeight,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: TextField(
+                              controller: _bruttoController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                decimal: true,
+                              ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'[\d\.,]'),
+                                ),
+                              ],
+                              decoration: InputDecoration(
+                                hintText: loc.bruttoWeight,
+                                prefixIcon: const Icon(Icons.line_weight),
+                                filled: true,
+                                fillColor: Colors.grey[100],
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide.none,
+                                ),
+                                errorText:
+                                    _bruttoController.text.isNotEmpty &&
+                                            !RegExp(
+                                              r'^[\d\.,]+$',
+                                            ).hasMatch(_bruttoController.text)
+                                        ? loc.digitsOnlyError
+                                        : null,
+                              ),
+                              onChanged:
+                                  (_) => setState(() => _isDataModified = true),
+                            ),
+                          ),
+                        ],
                       ),
+
                       _buildTableRow(
-                        "Jami qiymat (\$)",
+                        loc.totalValue,
                         _totalValueController,
                         keyboardType: TextInputType.number,
                         icon: Icons.attach_money,
                       ),
                     ],
                   ),
-                ), 
+                ),
               ),
               const SizedBox(height: 20),
               Row(
@@ -570,7 +695,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: _isOverLimit ? null : _saveData,
-                    child: const Text("Сохранить"),
+                    child: Text(loc.save),
                   ),
                   ElevatedButton(
                     onPressed: () {
@@ -593,7 +718,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                         pvzText: 'ПВЗ [SPB33] На Звездной',
                       );
                     },
-                    child: const Text("Распечатать"),
+                    child: Text(loc.print),
                   ),
                 ],
               ),
