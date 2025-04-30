@@ -57,15 +57,13 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   void initState() {
     super.initState();
     _loadData();
-    super.initState();
-    _productFocusNodes[0].addListener(() {
-      if (_productFocusNodes[0].hasFocus) _showSuggestions(0);
-    });
-
-    // @override
-    // void initState() {
-
-    //   });
+    for (var i = 0; i < _productFocusNodes.length; i++) {
+      _productFocusNodes[i].addListener(() {
+        if (_productFocusNodes[i].hasFocus) {
+          _showSuggestions(i);
+        }
+      });
+    }
   }
 
   Future<void> _loadData() async {
@@ -75,20 +73,23 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
               .collection('invoices')
               .doc(widget.invoiceId.toString())
               .get();
+
       if (doc.exists) {
         final data = doc.data()!;
+
+        // Заполняем основные поля
         _orderCodeController.text = data['order_code'] ?? "";
         _senderNameController.text = data['sender_name'] ?? "";
         _senderTelController.text = data['sender_tel'] ?? "";
         _receiverNameController.text = data['receiver_name'] ?? "";
-        _receiverTelController.text = data['receiver_tel'] ?? ""; // загрузка
+        _receiverTelController.text = data['receiver_tel'] ?? "";
         _passportController.text = data['passport'] ?? "";
         _birthDateController.text = data['birth_date'] ?? "";
         _addressController.text = data['address'] ?? "";
         _citySelected = _addressController.text.isNotEmpty;
-        _productDetailsController.text = data['product_details'] ?? "";
         _bruttoController.text = data['brutto'] ?? "";
         _totalValueController.text = data['total_value'] ?? "";
+
         if (_orderCodeController.text.length >= 6) {
           _sixDigit = _orderCodeController.text.substring(0, 6);
           _cityCode = _orderCodeController.text.substring(6);
@@ -97,11 +98,55 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
           _selectedSection = data['section'];
           _hasSelectedSection = true;
         }
+
+        // Обработка product_details
+        final pd = data['product_details'] as String? ?? '';
+        final lines = pd.split('\n').where((s) => s.trim().isNotEmpty).toList();
+
+        // Удаляем старые контроллеры и фокусы
+        for (var c in _productControllers) {
+          c.dispose();
+        }
+        for (var f in _productFocusNodes) {
+          f.dispose();
+        }
+        _productControllers.clear();
+        _productFocusNodes.clear();
+
+        // Создаём новые контроллеры и фокусы
+        for (var i = 0; i < lines.length; i++) {
+          final ctrl = TextEditingController(text: lines[i]);
+          final fn = FocusNode();
+          fn.addListener(() {
+            if (fn.hasFocus) {
+              _showSuggestions(_productFocusNodes.indexOf(fn));
+            }
+          });
+
+          _productControllers.add(ctrl);
+          _productFocusNodes.add(fn);
+        }
+
+        // Если не было записей — добавляем одно пустое поле
+        if (_productControllers.isEmpty) {
+          final ctrl = TextEditingController();
+          final fn = FocusNode();
+          fn.addListener(() {
+            if (fn.hasFocus) {
+              _showSuggestions(_productFocusNodes.indexOf(fn));
+            }
+          });
+          _productControllers.add(ctrl);
+          _productFocusNodes.add(fn);
+        }
       }
     } catch (e) {
       debugPrint("Ошибка загрузки данных: $e");
     }
-    if (_orderCodeController.text.isEmpty) _generateSixDigitCode();
+
+    if (_orderCodeController.text.isEmpty) {
+      _generateSixDigitCode();
+    }
     setState(() => _isLoading = false);
   }
 
@@ -117,23 +162,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
   Future<void> _selectCityCode() async {
     final loc = AppLocalizations.of(context);
-    // if (_sixDigit.isEmpty) {
-    //   await showDialog(
-    //     context: context,
-    //     builder:
-    //         (_) => AlertDialog(
-    //           title: const Text("Ошибка"),
-    //           content: const Text("Сначала сгенерируйте код."),
-    //           actions: [
-    //             TextButton(
-    //               onPressed: () => Navigator.pop(context),
-    //               child: const Text("ОК"),
-    //             ),
-    //           ],
-    //         ),
-    //   );
-    //   return;
-    // }
     Map<String, String> cities = {
       "Andijon": "AND",
       "Farg'ona": "FNA",
@@ -184,7 +212,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         _passportController.text.trim().isNotEmpty &&
         _birthDateController.text.trim().isNotEmpty &&
         _addressController.text.trim().isNotEmpty &&
-        _productDetailsController.text.trim().isNotEmpty &&
+        // _productDetailsController.text.trim().isNotEmpty &&
+        _productControllers.every((c) => c.text.trim().isNotEmpty) &&
         _bruttoController.text.trim().isNotEmpty &&
         _totalValueController.text.trim().isNotEmpty &&
         _totalValueError == null;
@@ -242,7 +271,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
             'passport': _passportController.text,
             'birth_date': _birthDateController.text,
             'address': _addressController.text,
-            'product_details': _productDetailsController.text,
+            'product_details': _productControllers
+                .map((c) => c.text.trim())
+                .join('\n'),
+
             'brutto': _bruttoController.text,
             'total_value': _totalValueController.text,
             'section': _selectedSection,
@@ -428,7 +460,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
     _removeSuggestions();
 
-    final overlay = Overlay.of(context)!;
+    final overlay = Overlay.of(context);
     final fieldBox =
         _productFocusNodes[index].context!.findRenderObject() as RenderBox;
     final fieldPos = fieldBox.localToGlobal(Offset.zero);
@@ -550,7 +582,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // const Divider(height: 32),
               Card(
                 elevation: 4,
                 shape: RoundedRectangleBorder(
@@ -673,8 +704,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                           ),
                         ],
                       ),
-
-                      // Поле для даты рождения: только выбор из календаря
                       TableRow(
                         children: [
                           Padding(
@@ -719,7 +748,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                           ),
                         ],
                       ),
-                      // Поле адреса с кнопкой выбора города
                       TableRow(
                         children: [
                           Padding(
@@ -905,9 +933,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                         senderName: _senderNameController.text,
                         senderTel: _senderTelController.text,
                         receiverName: _receiverNameController.text,
-                        receiverTel:
-                            _receiverTelController
-                                .text, // используем новый контроллер
+                        receiverTel: _receiverTelController.text,
                         cityAddress: _addressController.text,
                         tariff: 'От двери до двери',
                         payment:
