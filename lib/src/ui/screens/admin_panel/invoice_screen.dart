@@ -487,7 +487,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                   );
                 }
                 final List products = json.decode(snap.data!.body);
-                // Всегда работаем с английским названием:
                 final matches =
                     products.where((p) {
                       final name = (p['english'] ?? '') as String;
