@@ -206,14 +206,12 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   }
 
   Future<void> _selectDistrict() async {
-    // final loc = AppLocalizations.of(context);
-    // Отправляем POST-запрос с выбранным городом
     final response = await http.post(
       Uri.parse('https://khaledo.pythonanywhere.com/districts/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'region': _addressController.text}),
     );
-    if (response.statusCode != 200) return; 
+    if (response.statusCode != 200) return;
 
     final List districts = json.decode(response.body) as List;
     final selected = await showDialog<String>(
