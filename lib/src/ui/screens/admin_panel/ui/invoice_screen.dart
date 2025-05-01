@@ -160,6 +160,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     _orderCodeController.text = _sixDigit + _cityCode;
   }
 
+  bool _districtSelected = false;
   Future<void> _selectCityCode() async {
     final loc = AppLocalizations.of(context);
     Map<String, String> cities = {
@@ -199,7 +200,42 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
       _updateOrderCode();
       _addressController.text = selectedCity;
       _citySelected = true;
+      _districtSelected = false;
       setState(() {});
+    }
+  }
+
+  Future<void> _selectDistrict() async {
+    // final loc = AppLocalizations.of(context);
+    // Отправляем POST-запрос с выбранным городом
+    final response = await http.post(
+      Uri.parse('https://khaledo.pythonanywhere.com/districts/'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'region': _addressController.text}),
+    );
+    if (response.statusCode != 200) return; 
+
+    final List districts = json.decode(response.body) as List;
+    final selected = await showDialog<String>(
+      context: context,
+      builder:
+          (_) => SimpleDialog(
+            title: Text("Choose district"),
+            children:
+                districts.map((d) {
+                  return SimpleDialogOption(
+                    onPressed: () => Navigator.pop(context, d),
+                    child: Text(d as String),
+                  );
+                }).toList(),
+          ),
+    );
+
+    if (selected != null) {
+      // Вписываем «Город, Район»
+      _addressController.text = '${_addressController.text}, $selected';
+      _districtSelected = true;
+      setState(() => _isDataModified = true);
     }
   }
 
@@ -766,10 +802,29 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                               decoration: InputDecoration(
                                 hintText: loc.addressHint,
                                 prefixIcon: const Icon(Icons.location_on),
-                                suffixIcon: IconButton(
-                                  icon: const Icon(Icons.location_city),
-                                  color: _citySelected ? Colors.grey : null,
-                                  onPressed: _selectCityCode,
+                                // Две кнопки: выбор города и выбор района
+                                suffixIcon: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // Кнопка выбора города
+                                    IconButton(
+                                      icon: const Icon(Icons.location_city),
+                                      color: _citySelected ? Colors.grey : null,
+                                      onPressed: _selectCityCode,
+                                    ),
+                                    // Кнопка выбора района, активна только если город выбран
+                                    IconButton(
+                                      icon: const Icon(Icons.place),
+                                      color:
+                                          _districtSelected
+                                              ? Colors.grey
+                                              : null,
+                                      onPressed:
+                                          _citySelected
+                                              ? _selectDistrict
+                                              : null,
+                                    ),
+                                  ],
                                 ),
                                 filled: true,
                                 fillColor: Colors.grey[100],
