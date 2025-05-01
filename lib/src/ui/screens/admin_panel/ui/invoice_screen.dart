@@ -821,8 +821,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                                           onPressed: () {
                                             if (_productControllers[i].text
                                                 .trim()
-                                                .isEmpty)
+                                                .isEmpty) {
                                               return;
+                                            }
                                             if (_productControllers.length <
                                                 _maxProducts) {
                                               _productControllers.add(
@@ -849,7 +850,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                                           borderSide: BorderSide.none,
                                         ),
                                       ),
-                                      // Заменили onChanged:
                                       onChanged: (_) => _showSuggestions(i),
                                     ),
                                   );
@@ -859,7 +859,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                           ),
                         ],
                       ),
-
                       TableRow(
                         children: [
                           Padding(
@@ -906,7 +905,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                           ),
                         ],
                       ),
-
                       _buildTableRow(
                         loc.totalValue,
                         _totalValueController,

@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:aps/l10n/app_localizations.dart';
 import 'package:aps/main.dart';
 import 'package:aps/src/ui/constants/common_dimentions.dart';
-import 'package:aps/src/ui/screens/admin_panel/invoice_screen.dart';
-import 'package:aps/src/ui/screens/admin_panel/timer.dart';
+import 'package:aps/src/ui/screens/admin_panel/ui/invoice_screen.dart';
+import 'package:aps/src/ui/screens/admin_panel/components/timer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 

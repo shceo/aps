@@ -1,7 +1,7 @@
 import 'package:aps/src/firebase_options.dart';
 import 'package:aps/src/ui/constants/components_export.dart';
-import 'package:aps/src/ui/screens/admin_panel/admin_screen.dart';
-import 'package:aps/src/ui/screens/admin_panel/login_admin_screen.dart';
+import 'package:aps/src/ui/screens/admin_panel/ui/admin_screen.dart';
+import 'package:aps/src/ui/screens/admin_panel/ui/login_admin_screen.dart';
 import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
 import 'package:aps/src/ui/screens/auth_screen.dart';
 import 'package:aps/src/ui/screens/register_page.dart';
