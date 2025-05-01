@@ -33,7 +33,6 @@ class _OrderCodeVerificationState extends State<OrderCodeVerification> {
     setState(() {
       _isLoading = false;
     });
-
     if (snapshot.docs.isNotEmpty) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isOrderCodeVerified', true);
@@ -44,18 +43,28 @@ class _OrderCodeVerificationState extends State<OrderCodeVerification> {
         builder: (BuildContext context) {
           return AlertDialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(20),
             ),
-            backgroundColor: const Color(0xFFFFF8E1),
+            backgroundColor: const Color(0xFFFFFFFF),
             content: Container(
+              width: 400,
               padding: const EdgeInsets.all(16),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.error, color: Colors.red, size: 48),
-                  const SizedBox(height: 16),
+                  Image.asset('assets/icons/error.png'),
+                  const SizedBox(height: 18),
                   Text(
                     AppLocalizations.of(context).invalid_order_code,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    AppLocalizations.of(context).invalid_order_code_des,
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 18, color: Colors.black),
                   ),
@@ -65,10 +74,10 @@ class _OrderCodeVerificationState extends State<OrderCodeVerification> {
             actions: [
               Center(
                 child: Container(
-                  margin: const EdgeInsets.only(bottom: 16),
+                  margin: const EdgeInsets.only(bottom: 28),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple,
-                    borderRadius: BorderRadius.circular(8),
+                    color: ApsColors.photoBlue,
+                    borderRadius: BorderRadius.circular(15),
                   ),
                   child: TextButton(
                     onPressed: () {
@@ -76,8 +85,8 @@ class _OrderCodeVerificationState extends State<OrderCodeVerification> {
                     },
                     child: const Padding(
                       padding: EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
+                        horizontal: 130,
+                        vertical: 13,
                       ),
                       child: Text(
                         "OK",

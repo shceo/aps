@@ -96,6 +96,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get invalid_order_code => 'Geçersiz sipariş kodu';
 
   @override
+  String get invalid_order_code_des => 'Lütfen tekrar deneyin';
+
+  @override
   String get home => 'Ana Sayfa';
 
   @override

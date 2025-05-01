@@ -96,6 +96,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invalid_order_code => 'Invalid order code';
 
   @override
+  String get invalid_order_code_des => 'Please try again';
+
+  @override
   String get home => 'Home';
 
   @override

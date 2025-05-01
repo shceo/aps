@@ -29,6 +29,7 @@
   "order_code_hint": "例如，1234",
   "confirm_order_code": "确认",
   "invalid_order_code": "订单代码错误",
+  "invalid_order_code_des": "请再次尝试",
   "home": "主页",
   "details": "详情",
   "shop": "商店",
