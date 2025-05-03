@@ -46,6 +46,7 @@ class _AdminScreenState extends State<AdminScreen> {
       await _firestore.collection('invoices').doc(newIdStr).set({
         'invoice_no': newId,
         'created_by': _userEmail,
+        'created_at': FieldValue.serverTimestamp(),
       });
     } catch (e) {
       debugPrint(e.toString());
@@ -89,7 +90,8 @@ class _AdminScreenState extends State<AdminScreen> {
   }
 
   Widget _buildInvoiceCard(DocumentSnapshot doc) {
-    String invoiceId = doc.id;
+    final data = doc.data() as Map<String, dynamic>;
+    final invoiceId = doc.id;
     return GestureDetector(
       onTap:
           () => Navigator.push(
@@ -122,8 +124,34 @@ class _AdminScreenState extends State<AdminScreen> {
                     Icons.library_add_sharp,
                     color: Colors.orange,
                   ),
-                  onPressed: _addInvoice,
                   tooltip: AppLocalizations.of(context).addInvoice,
+                  onPressed: () {
+                    final passport = (data['passport'] ?? '').toString().trim();
+                    if (passport.isEmpty) {
+                      // Паспорта нет — показываем ошибку
+                      showDialog(
+                        context: context,
+                        builder:
+                            (_) => AlertDialog(
+                              title: Text(
+                                AppLocalizations.of(context).errorTitle,
+                              ),
+                              content: Text(
+                                AppLocalizations.of(context).noPassportError,
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text(AppLocalizations.of(context).ok),
+                                ),
+                              ],
+                            ),
+                      );
+                    } else {
+                      // Паспорта есть — можно добавить новый контейнер
+                      _addInvoice();
+                    }
+                  },
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),

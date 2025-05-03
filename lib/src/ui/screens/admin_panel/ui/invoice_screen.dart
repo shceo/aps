@@ -4,8 +4,8 @@ import 'package:aps/l10n/app_localizations.dart';
 import 'package:aps/src/ui/components/pdf_export.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Для фильтра ввода
-import 'package:intl/intl.dart'; // Для форматирования даты
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 class InvoiceFormScreen extends StatefulWidget {
@@ -17,13 +17,11 @@ class InvoiceFormScreen extends StatefulWidget {
 }
 
 class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
-  // Контроллеры для ввода данных
   final TextEditingController _orderCodeController = TextEditingController();
   final TextEditingController _senderNameController = TextEditingController();
   final TextEditingController _senderTelController = TextEditingController();
   final TextEditingController _receiverNameController = TextEditingController();
-  final TextEditingController _receiverTelController =
-      TextEditingController(); // Новое поле
+  final TextEditingController _receiverTelController = TextEditingController();
   final TextEditingController _passportController = TextEditingController();
   final TextEditingController _birthDateController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
@@ -34,22 +32,15 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Флаги состояния
   bool _isDataModified = false;
   bool _isOverLimit = false;
   bool _isLoading = true;
   bool _submitted = false;
   bool _warningShown = false;
-  bool _citySelected = false; // для кнопки выбора города
-
-  // Генерация кода заказа
+  bool _citySelected = false;
   String _sixDigit = "";
   String _cityCode = "";
-
-  // Ошибка стоимости
   String? _totalValueError;
-
-  // Раздел
   bool _hasSelectedSection = false;
   String _selectedSection = "";
 
@@ -77,7 +68,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
       if (doc.exists) {
         final data = doc.data()!;
 
-        // Заполняем основные поля
         _orderCodeController.text = data['order_code'] ?? "";
         _senderNameController.text = data['sender_name'] ?? "";
         _senderTelController.text = data['sender_tel'] ?? "";
@@ -99,11 +89,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
           _hasSelectedSection = true;
         }
 
-        // Обработка product_details
         final pd = data['product_details'] as String? ?? '';
         final lines = pd.split('\n').where((s) => s.trim().isNotEmpty).toList();
 
-        // Удаляем старые контроллеры и фокусы
         for (var c in _productControllers) {
           c.dispose();
         }
@@ -126,8 +114,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
           _productControllers.add(ctrl);
           _productFocusNodes.add(fn);
         }
-
-        // Если не было записей — добавляем одно пустое поле
         if (_productControllers.isEmpty) {
           final ctrl = TextEditingController();
           final fn = FocusNode();
@@ -230,7 +216,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     );
 
     if (selected != null) {
-      // Вписываем «Город, Район»
       _addressController.text = '${_addressController.text}, $selected';
       _districtSelected = true;
       setState(() => _isDataModified = true);
@@ -246,7 +231,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         _passportController.text.trim().isNotEmpty &&
         _birthDateController.text.trim().isNotEmpty &&
         _addressController.text.trim().isNotEmpty &&
-        // _productDetailsController.text.trim().isNotEmpty &&
         _productControllers.every((c) => c.text.trim().isNotEmpty) &&
         _bruttoController.text.trim().isNotEmpty &&
         _totalValueController.text.trim().isNotEmpty &&
@@ -273,18 +257,40 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
       );
       return;
     }
-    double total = double.tryParse(_totalValueController.text) ?? 0;
-    if (total > 1000) {
+
+    final double total = double.tryParse(_totalValueController.text) ?? 0;
+    final now = DateTime.now();
+    final firstOfMonth = DateTime(now.year, now.month, 1);
+    final firstOfNextMonth = DateTime(now.year, now.month + 1, 1);
+    final qs =
+        await _firestore
+            .collection('invoices')
+            .where('passport', isEqualTo: _passportController.text)
+            .where(
+              'created_at',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(firstOfMonth),
+            )
+            .where(
+              'created_at',
+              isLessThan: Timestamp.fromDate(firstOfNextMonth),
+            )
+            .get();
+    double sumThisMonth = 0;
+    for (var doc in qs.docs) {
+      sumThisMonth += double.tryParse(doc.get('total_value') as String) ?? 0;
+    }
+
+    if (sumThisMonth + total > 200) {
       await showDialog(
         context: context,
         builder:
             (_) => AlertDialog(
               title: Text(loc.errorTitle),
-              content: Text(loc.overLimitError),
+              content: Text(loc.monthlyLimitExceeded),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("ОК"),
+                  child: Text(loc.ok),
                 ),
               ],
             ),
@@ -301,7 +307,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
             'sender_name': _senderNameController.text,
             'sender_tel': _senderTelController.text,
             'receiver_name': _receiverNameController.text,
-            'receiver_tel': _receiverTelController.text, // сохранение
+            'receiver_tel': _receiverTelController.text,
             'passport': _passportController.text,
             'birth_date': _birthDateController.text,
             'address': _addressController.text,
@@ -311,6 +317,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
             'brutto': _bruttoController.text,
             'total_value': _totalValueController.text,
+            'created_at': FieldValue.serverTimestamp(),
             'section': _selectedSection,
           }, SetOptions(merge: true));
       setState(() => _isDataModified = false);
@@ -349,38 +356,38 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     }
   }
 
-  void _onTotalValueChanged(String value) {
-    final loc = AppLocalizations.of(context);
-    if (value.isNotEmpty && !RegExp(r'^\d+\$').hasMatch(value)) {
-      setState(() => _totalValueError = loc.digitsOnlyError);
-    } else {
-      setState(() => _totalValueError = null);
-      double total = double.tryParse(value) ?? 0;
-      if (total >= 850 && total < 1000 && !_warningShown) {
-        _warningShown = true;
-        showDialog(
-          context: context,
-          builder:
-              (context) => AlertDialog(
-                title: Text(loc.warningTitle),
-                content: Text(loc.closeToLimit),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text("ОК"),
-                  ),
-                ],
-              ),
-        );
-      } else if (total < 850) {
-        _warningShown = false;
-      }
-      setState(() {
-        _isOverLimit = total > 1000;
-        _isDataModified = true;
-      });
-    }
-  }
+  // void _onTotalValueChanged(String value) {
+  //   final loc = AppLocalizations.of(context);
+  //   if (value.isNotEmpty && !RegExp(r'^\d+\$').hasMatch(value)) {
+  //     setState(() => _totalValueError = loc.digitsOnlyError);
+  //   } else {
+  //     setState(() => _totalValueError = null);
+  //     double total = double.tryParse(value) ?? 0;
+  //     if (total >= 100 && total < 200 && !_warningShown) {
+  //       _warningShown = true;
+  //       showDialog(
+  //         context: context,
+  //         builder:
+  //             (context) => AlertDialog(
+  //               title: Text(loc.warningTitle),
+  //               content: Text(loc.closeToLimit),
+  //               actions: [
+  //                 TextButton(
+  //                   onPressed: () => Navigator.pop(context),
+  //                   child: const Text("ОК"),
+  //                 ),
+  //               ],
+  //             ),
+  //       );
+  //     } else if (total < 100) {
+  //       _warningShown = false;
+  //     }
+  //     setState(() {
+  //       _isOverLimit = total > 200;
+  //       _isDataModified = true;
+  //     });
+  //   }
+  // }
 
   TableRow _buildTableRow(
     String label,
@@ -428,7 +435,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     );
   }
 
-  /// Предупреждение при покидании страницы
   Future<bool> _onWillPop() async {
     final loc = AppLocalizations.of(context);
     if (_isDataModified) {
@@ -473,13 +479,13 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     super.dispose();
   }
 
-  List<TextEditingController> _productControllers = [TextEditingController()];
-  List<FocusNode> _productFocusNodes = [FocusNode()];
-  int _maxProducts = 40;
+  final List<TextEditingController> _productControllers = [
+    TextEditingController(),
+  ];
+  final List<FocusNode> _productFocusNodes = [FocusNode()];
+  final int _maxProducts = 40;
 
   OverlayEntry? _suggestionsEntry;
-
-  // Метод удаления:
   void _removeSuggestions() {
     _suggestionsEntry?.remove();
     _suggestionsEntry = null;
@@ -800,17 +806,14 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                               decoration: InputDecoration(
                                 hintText: loc.addressHint,
                                 prefixIcon: const Icon(Icons.location_on),
-                                // Две кнопки: выбор города и выбор района
                                 suffixIcon: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    // Кнопка выбора города
                                     IconButton(
                                       icon: const Icon(Icons.location_city),
                                       color: _citySelected ? Colors.grey : null,
                                       onPressed: _selectCityCode,
                                     ),
-                                    // Кнопка выбора района, активна только если город выбран
                                     IconButton(
                                       icon: const Icon(Icons.place),
                                       color:

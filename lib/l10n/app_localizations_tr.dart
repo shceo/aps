@@ -289,4 +289,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get leave => 'Çık';
+
+  @override
+  String get monthlyLimitExceeded => 'Bu ay için \$200 limiti aşıldı';
+
+  @override
+  String get noPassportError => 'Yeni konteyner eklenemedi: pasaport doldurulmadı';
 }

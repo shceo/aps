@@ -99,5 +99,10 @@
   "unsavedDataWarning": "Kaydedilmemiş değişiklikler var. Çıkılsın mı?",
   "stay": "Kal",
   "leave": "Çık"
+,
+"monthlyLimitExceeded": "Bu ay için $200 limiti aşıldı",
+"noPassportError": "Yeni konteyner eklenemedi: pasaport doldurulmadı"
+
+
 
 }

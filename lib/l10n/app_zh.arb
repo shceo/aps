@@ -38,5 +38,7 @@
   "reset_order_code_message": "您确定要重置订单代码吗？",
   "reset_order_code_button": "重置订单代码",
   "cancel": "取消",
-  "confirm": "确认"
+  "confirm": "确认",
+  "monthlyLimitExceeded": "本月 $200 限额已超出"
+
 }

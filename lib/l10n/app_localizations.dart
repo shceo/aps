@@ -664,6 +664,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Leave'**
   String get leave;
+
+  /// No description provided for @monthlyLimitExceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly limit of \$200 exceeded'**
+  String get monthlyLimitExceeded;
+
+  /// No description provided for @noPassportError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot add new container: passport not filled'**
+  String get noPassportError;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

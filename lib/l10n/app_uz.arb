@@ -97,5 +97,9 @@
   "ok": "OK",
   "unsavedDataWarning": "Saqlanmagan o'zgarishlar mavjud. Chiqilsinmi?",
   "stay": "Qolish",
-  "leave": "Chiqish"
+  "leave": "Chiqish",
+  "monthlyLimitExceeded": "Joriy oy uchun $200 limiti oshib ketdi",
+  "noPassportError": "Yangi konteyner qoʻshib boʻlmadi: pasport toʻldirilmagan"
+
+
 }

@@ -289,4 +289,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get leave => 'Leave';
+
+  @override
+  String get monthlyLimitExceeded => 'Monthly limit of \$200 exceeded';
+
+  @override
+  String get noPassportError => 'Cannot add new container: passport not filled';
 }

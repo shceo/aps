@@ -289,4 +289,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get leave => 'Leave';
+
+  @override
+  String get monthlyLimitExceeded => '本月 \$200 限额已超出';
+
+  @override
+  String get noPassportError => 'Cannot add new container: passport not filled';
 }

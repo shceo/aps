@@ -68,7 +68,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildAppBarTitle(bool isWeb) {
     Widget logo = Image.asset(
       'assets/icons/logo.png',
-      height: 60,
+      height: 180,
       color: ApsColors.photoBlue,
     );
     if (isWeb) {
@@ -95,7 +95,8 @@ class _MainScreenState extends State<MainScreen> {
 
   /// Отображение контента в зависимости от состояния верификации
   Widget _buildContent(AppLocalizations loc) {
-    if ((_currentIndex == 0 || _currentIndex == 1) && !_isOrderCodeVerified) {
+    if ((_currentIndex == 0 /*|| _currentIndex == 1*/ ) &&
+        !_isOrderCodeVerified) {
       return _buildOrderCodeVerification(loc);
     } else {
       return _buildPageContent(loc);
@@ -107,7 +108,7 @@ class _MainScreenState extends State<MainScreen> {
       index: _currentIndex,
       children: [
         _buildMainContent(loc),
-        Center(child: Text(loc.details, style: const TextStyle(fontSize: 24))),
+        // Center(child: Text(loc.details, style: const TextStyle(fontSize: 24))),
         MarketScreen(),
         Center(child: Text(loc.profile, style: const TextStyle(fontSize: 24))),
       ],

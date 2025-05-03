@@ -96,7 +96,10 @@
   "ok": "OK",
   "unsavedDataWarning": "You have unsaved changes. Leave?",
   "stay": "Stay",
-  "leave": "Leave"
+  "leave": "Leave",
+  "monthlyLimitExceeded": "Monthly limit of $200 exceeded",
+  "noPassportError": "Cannot add new container: passport not filled"
+
 
 
 }

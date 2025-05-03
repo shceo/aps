@@ -23,20 +23,20 @@ class CustomBottomNavBar extends StatelessWidget {
           size: 30,
           color: currentIndex == 0 ? ApsColors.platinum : Colors.black,
         ),
+        // Icon(
+        //   Icons.info_outline,
+        //   size: 30,
+        //   color: currentIndex == 1 ? ApsColors.platinum : Colors.black,
+        // ),
         Icon(
-          Icons.info_outline,
+          Icons.store,
           size: 30,
           color: currentIndex == 1 ? ApsColors.platinum : Colors.black,
         ),
         Icon(
-          Icons.store,
-          size: 30,
-          color: currentIndex == 2 ? ApsColors.platinum : Colors.black,
-        ),
-        Icon(
           Icons.person,
           size: 30,
-          color: currentIndex == 3 ? ApsColors.platinum : Colors.black,
+          color: currentIndex == 2 ? ApsColors.platinum : Colors.black,
         ),
       ],
       color: ApsColors.photoBlue,
@@ -75,32 +75,32 @@ class CustomSideBar extends StatelessWidget {
           selected: currentIndex == 0,
           onTap: () => onTap(0),
         ),
+        // ListTile(
+        //   leading: Icon(
+        //     Icons.info_outline,
+        //     color: currentIndex == 1 ? ApsColors.platinum : Colors.black,
+        //   ),
+        //   title: Text(loc.details),
+        //   selected: currentIndex == 1,
+        //   onTap: () => onTap(1),
+        // ),
         ListTile(
           leading: Icon(
-            Icons.info_outline,
+            Icons.store,
             color: currentIndex == 1 ? ApsColors.platinum : Colors.black,
           ),
-          title: Text(loc.details),
+          title: Text(loc.shop),
           selected: currentIndex == 1,
           onTap: () => onTap(1),
         ),
         ListTile(
           leading: Icon(
-            Icons.store,
+            Icons.person,
             color: currentIndex == 2 ? ApsColors.platinum : Colors.black,
           ),
-          title: Text(loc.shop),
+          title: Text(loc.profile),
           selected: currentIndex == 2,
           onTap: () => onTap(2),
-        ),
-        ListTile(
-          leading: Icon(
-            Icons.person,
-            color: currentIndex == 3 ? ApsColors.platinum : Colors.black,
-          ),
-          title: Text(loc.profile),
-          selected: currentIndex == 3,
-          onTap: () => onTap(3),
         ),
       ],
     );

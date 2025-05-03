@@ -289,4 +289,10 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get leave => 'Chiqish';
+
+  @override
+  String get monthlyLimitExceeded => 'Joriy oy uchun \$200 limiti oshib ketdi';
+
+  @override
+  String get noPassportError => 'Yangi konteyner qoʻshib boʻlmadi: pasport toʻldirilmagan';
 }

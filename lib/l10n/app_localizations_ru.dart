@@ -289,4 +289,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get leave => 'Выйти';
+
+  @override
+  String get monthlyLimitExceeded => 'Превышен лимит \$200 за текущий месяц';
+
+  @override
+  String get noPassportError => 'Невозможно добавить новый контейнер: поле «Паспорт» не заполнено';
 }
