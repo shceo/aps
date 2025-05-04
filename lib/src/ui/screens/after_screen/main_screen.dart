@@ -1,7 +1,7 @@
 import 'package:aps/l10n/app_localizations.dart';
-import 'package:aps/src/ui/components/custom_burger.dart';
-import 'package:aps/src/ui/components/nav_bar.dart';
-import 'package:aps/src/ui/components/order_code_verification.dart';
+import 'package:aps/src/ui/widgets/custom_burger.dart';
+import 'package:aps/src/ui/widgets/nav_bar.dart';
+import 'package:aps/src/ui/widgets/order_code_verification.dart';
 import 'package:aps/src/ui/constants/app_colors.dart';
 import 'package:aps/src/ui/constants/screen_exports.dart';
 import 'package:aps/src/ui/screens/drawers_screens/about_screen.dart';

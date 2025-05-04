@@ -135,7 +135,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get delete => 'Delete';
 
   @override
-  String get orderNo => 'Order No.';
+  String get orderNo => 'Invoice №';
 
   @override
   String get addInvoice => 'Add Invoice';

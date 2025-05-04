@@ -45,7 +45,7 @@
   "deleteConfirmationTitle": "Delete Confirmation",
   "deleteConfirmationContent": "Are you sure you want to delete this item?",
   "delete": "Delete",
-  "orderNo": "Order No.",
+  "orderNo": "Invoice №",
   "addInvoice": "Add Invoice",
   "noAdminsWithContainers": "No admins with containers",
   "emailPrefix": "📧",

@@ -4,7 +4,7 @@ import 'package:aps/src/data/auth_api.dart'; // Здесь находится Ap
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:aps/l10n/app_localizations.dart';
-import 'package:aps/src/ui/components/text_u.dart';
+import 'package:aps/src/ui/widgets/text_u.dart';
 import 'package:aps/src/ui/constants/back_images.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:aps/main.dart';

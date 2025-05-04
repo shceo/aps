@@ -135,7 +135,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get delete => 'O\'chirish';
 
   @override
-  String get orderNo => 'Buyurtma №';
+  String get orderNo => 'Invoice №';
 
   @override
   String get addInvoice => 'Konteyner qo\'shish';

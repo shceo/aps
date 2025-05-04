@@ -135,7 +135,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get delete => 'Удалить';
 
   @override
-  String get orderNo => 'Заказ №';
+  String get orderNo => 'Инвойс №';
 
   @override
   String get addInvoice => 'Добавить контейнер';

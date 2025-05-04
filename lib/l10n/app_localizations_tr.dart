@@ -135,7 +135,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get delete => 'Sil';
 
   @override
-  String get orderNo => 'Sipariş №';
+  String get orderNo => 'Invoice №';
 
   @override
   String get addInvoice => 'Konteyner Ekle';

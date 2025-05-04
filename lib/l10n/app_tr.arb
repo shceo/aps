@@ -46,7 +46,7 @@
   "deleteConfirmationTitle": "Silme Onayı",
   "deleteConfirmationContent": "Bu öğeyi silmek istediğinizden emin misiniz?",
   "delete": "Sil",
-  "orderNo": "Sipariş №",
+  "orderNo": "Invoice №",
   "addInvoice": "Konteyner Ekle",
   "noAdminsWithContainers": "Konteyneri olan yönetici yok",
   "emailPrefix": "📧",

@@ -356,7 +356,7 @@ abstract class AppLocalizations {
   /// No description provided for @orderNo.
   ///
   /// In en, this message translates to:
-  /// **'Order No.'**
+  /// **'Invoice №'**
   String get orderNo;
 
   /// No description provided for @addInvoice.

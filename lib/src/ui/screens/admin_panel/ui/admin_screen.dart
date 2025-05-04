@@ -32,6 +32,14 @@ class _AdminScreenState extends State<AdminScreen> {
   }
 
   Future<void> _addInvoice() async {
+    await _createInvoice(passport: null);
+  }
+
+  Future<void> _addInvoiceWithPassport(String passport) async {
+    await _createInvoice(passport: passport);
+  }
+
+  Future<void> _createInvoice({String? passport}) async {
     try {
       QuerySnapshot snapshot = await _firestore.collection('invoices').get();
       int newId = 1;
@@ -47,6 +55,7 @@ class _AdminScreenState extends State<AdminScreen> {
         'invoice_no': newId,
         'created_by': _userEmail,
         'created_at': FieldValue.serverTimestamp(),
+        if (passport != null) 'passport': passport,
       });
     } catch (e) {
       debugPrint(e.toString());
@@ -91,7 +100,10 @@ class _AdminScreenState extends State<AdminScreen> {
 
   Widget _buildInvoiceCard(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
+    final passport = (data['passport'] ?? '').toString().trim();
     final invoiceId = doc.id;
+
     return GestureDetector(
       onTap:
           () => Navigator.push(
@@ -126,9 +138,8 @@ class _AdminScreenState extends State<AdminScreen> {
                   ),
                   tooltip: AppLocalizations.of(context).addInvoice,
                   onPressed: () {
-                    final passport = (data['passport'] ?? '').toString().trim();
+                    // final passport = (data['passport'] ?? '').toString().trim();
                     if (passport.isEmpty) {
-                      // Паспорта нет — показываем ошибку
                       showDialog(
                         context: context,
                         builder:
@@ -148,8 +159,7 @@ class _AdminScreenState extends State<AdminScreen> {
                             ),
                       );
                     } else {
-                      // Паспорта есть — можно добавить новый контейнер
-                      _addInvoice();
+                      _addInvoiceWithPassport(passport);
                     }
                   },
                 ),

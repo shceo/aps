@@ -46,7 +46,7 @@
   "deleteConfirmationTitle": "O'chirishni tasdiqlash",
   "deleteConfirmationContent": "Ushbu elementni o'chirmoqchimisiz?",
   "delete": "O'chirish",
-  "orderNo": "Buyurtma №",
+  "orderNo": "Invoice №",
   "addInvoice": "Konteyner qo'shish",
   "noAdminsWithContainers": "Konteyneri bo‘lgan admin yo‘q",
   "emailPrefix": "📧",

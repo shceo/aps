@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:aps/l10n/app_localizations.dart';
-import 'package:aps/src/ui/components/pdf_export.dart';
+import 'package:aps/src/ui/widgets/pdf_export.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -275,9 +275,14 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
               isLessThan: Timestamp.fromDate(firstOfNextMonth),
             )
             .get();
+
     double sumThisMonth = 0;
     for (var doc in qs.docs) {
-      sumThisMonth += double.tryParse(doc.get('total_value') as String) ?? 0;
+      final data = doc.data();
+      if (data.containsKey('total_value')) {
+        final tv = (data['total_value'] as String?) ?? '0';
+        sumThisMonth += double.tryParse(tv) ?? 0;
+      }
     }
 
     if (sumThisMonth + total > 200) {
@@ -355,39 +360,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
       );
     }
   }
-
-  // void _onTotalValueChanged(String value) {
-  //   final loc = AppLocalizations.of(context);
-  //   if (value.isNotEmpty && !RegExp(r'^\d+\$').hasMatch(value)) {
-  //     setState(() => _totalValueError = loc.digitsOnlyError);
-  //   } else {
-  //     setState(() => _totalValueError = null);
-  //     double total = double.tryParse(value) ?? 0;
-  //     if (total >= 100 && total < 200 && !_warningShown) {
-  //       _warningShown = true;
-  //       showDialog(
-  //         context: context,
-  //         builder:
-  //             (context) => AlertDialog(
-  //               title: Text(loc.warningTitle),
-  //               content: Text(loc.closeToLimit),
-  //               actions: [
-  //                 TextButton(
-  //                   onPressed: () => Navigator.pop(context),
-  //                   child: const Text("ОК"),
-  //                 ),
-  //               ],
-  //             ),
-  //       );
-  //     } else if (total < 100) {
-  //       _warningShown = false;
-  //     }
-  //     setState(() {
-  //       _isOverLimit = total > 200;
-  //       _isDataModified = true;
-  //     });
-  //   }
-  // }
 
   TableRow _buildTableRow(
     String label,
@@ -474,8 +446,12 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     _productDetailsController.dispose();
     _bruttoController.dispose();
     _totalValueController.dispose();
-    for (var c in _productControllers) c.dispose();
-    for (var f in _productFocusNodes) f.dispose();
+    for (var c in _productControllers) {
+      c.dispose();
+    }
+    for (var f in _productFocusNodes) {
+      f.dispose();
+    }
     super.dispose();
   }
 
@@ -529,7 +505,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                 final List products = json.decode(snap.data!.body);
                 final matches =
                     products.where((p) {
-                      final name = (p['english'] ?? '') as String;
+                      final name = (p['russian'] ?? '') as String;
                       return name.toLowerCase().contains(term.toLowerCase());
                     }).toList();
 
@@ -557,7 +533,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                         shrinkWrap: true,
                         children:
                             matches.map((p) {
-                              final name = (p['english'] ?? '') as String;
+                              final name = (p['russian'] ?? '') as String;
                               return ListTile(
                                 title: Text(name),
                                 onTap: () {
