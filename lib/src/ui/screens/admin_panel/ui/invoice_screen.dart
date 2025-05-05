@@ -1,12 +1,11 @@
-import 'dart:convert';
 import 'dart:math';
 import 'package:aps/l10n/app_localizations.dart';
+import 'package:aps/src/ui/screens/admin_panel/components/invoice_service.dart';
 import 'package:aps/src/ui/widgets/pdf_export.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
 
 class InvoiceFormScreen extends StatefulWidget {
   final int invoiceId;
@@ -29,14 +28,15 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
       TextEditingController();
   final TextEditingController _bruttoController = TextEditingController();
   final TextEditingController _totalValueController = TextEditingController();
-
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final TextEditingController _totalDeliverySumController =
+      TextEditingController();
+  late final InvoiceService _service;
 
   bool _isDataModified = false;
   bool _isOverLimit = false;
   bool _isLoading = true;
   bool _submitted = false;
-  bool _warningShown = false;
+  // bool _warningShown = false;
   bool _citySelected = false;
   String _sixDigit = "";
   String _cityCode = "";
@@ -47,7 +47,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   @override
   void initState() {
     super.initState();
+    _service = InvoiceService();
     _loadData();
+
     for (var i = 0; i < _productFocusNodes.length; i++) {
       _productFocusNodes[i].addListener(() {
         if (_productFocusNodes[i].hasFocus) {
@@ -59,14 +61,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
   Future<void> _loadData() async {
     try {
-      final doc =
-          await _firestore
-              .collection('invoices')
-              .doc(widget.invoiceId.toString())
-              .get();
+      final data = await _service.loadInvoice(widget.invoiceId);
 
-      if (doc.exists) {
-        final data = doc.data()!;
+      if (data != null) {
+        // final data = doc.data()!;
 
         _orderCodeController.text = data['order_code'] ?? "";
         _senderNameController.text = data['sender_name'] ?? "";
@@ -79,6 +77,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         _citySelected = _addressController.text.isNotEmpty;
         _bruttoController.text = data['brutto'] ?? "";
         _totalValueController.text = data['total_value'] ?? "";
+        _totalDeliverySumController.text = data['total_delivery_sum'] ?? "";
 
         if (_orderCodeController.text.length >= 6) {
           _sixDigit = _orderCodeController.text.substring(0, 6);
@@ -192,14 +191,11 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   }
 
   Future<void> _selectDistrict() async {
-    final response = await http.post(
-      Uri.parse('https://khaledo.pythonanywhere.com/districts/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'region': _addressController.text}),
-    );
-    if (response.statusCode != 200) return;
+    final districts = await _service.fetchDistricts(_addressController.text);
 
-    final List districts = json.decode(response.body) as List;
+    // if (response.statusCode != 200) return;
+
+    // final List districts = json.decode(response.body) as List;
     final selected = await showDialog<String>(
       context: context,
       builder:
@@ -209,7 +205,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                 districts.map((d) {
                   return SimpleDialogOption(
                     onPressed: () => Navigator.pop(context, d),
-                    child: Text(d as String),
+                    child: Text(d),
                   );
                 }).toList(),
           ),
@@ -234,6 +230,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         _productControllers.every((c) => c.text.trim().isNotEmpty) &&
         _bruttoController.text.trim().isNotEmpty &&
         _totalValueController.text.trim().isNotEmpty &&
+        _totalDeliverySumController.text.trim().isNotEmpty &&
         _totalValueError == null;
   }
 
@@ -259,31 +256,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     }
 
     final double total = double.tryParse(_totalValueController.text) ?? 0;
-    final now = DateTime.now();
-    final firstOfMonth = DateTime(now.year, now.month, 1);
-    final firstOfNextMonth = DateTime(now.year, now.month + 1, 1);
-    final qs =
-        await _firestore
-            .collection('invoices')
-            .where('passport', isEqualTo: _passportController.text)
-            .where(
-              'created_at',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(firstOfMonth),
-            )
-            .where(
-              'created_at',
-              isLessThan: Timestamp.fromDate(firstOfNextMonth),
-            )
-            .get();
-
-    double sumThisMonth = 0;
-    for (var doc in qs.docs) {
-      final data = doc.data();
-      if (data.containsKey('total_value')) {
-        final tv = (data['total_value'] as String?) ?? '0';
-        sumThisMonth += double.tryParse(tv) ?? 0;
-      }
-    }
+    final sumThisMonth = await _service.sumThisMonth(_passportController.text);
 
     if (sumThisMonth + total > 200) {
       await showDialog(
@@ -303,28 +276,30 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
       return;
     }
     try {
-      await _firestore
-          .collection('invoices')
-          .doc(widget.invoiceId.toString())
-          .set({
-            'invoice_no': widget.invoiceId,
-            'order_code': _orderCodeController.text,
-            'sender_name': _senderNameController.text,
-            'sender_tel': _senderTelController.text,
-            'receiver_name': _receiverNameController.text,
-            'receiver_tel': _receiverTelController.text,
-            'passport': _passportController.text,
-            'birth_date': _birthDateController.text,
-            'address': _addressController.text,
-            'product_details': _productControllers
-                .map((c) => c.text.trim())
-                .join('\n'),
+      await _service.saveInvoice(widget.invoiceId, {
+        // .collection('invoices')
+        // .doc(widget.invoiceId.toString())
+        // .set({
+        'invoice_no': widget.invoiceId,
+        'order_code': _orderCodeController.text,
+        'sender_name': _senderNameController.text,
+        'sender_tel': _senderTelController.text,
+        'receiver_name': _receiverNameController.text,
+        'receiver_tel': _receiverTelController.text,
+        'passport': _passportController.text,
+        'birth_date': _birthDateController.text,
+        'address': _addressController.text,
+        'product_details': _productControllers
+            .map((c) => c.text.trim())
+            .join('\n'),
 
-            'brutto': _bruttoController.text,
-            'total_value': _totalValueController.text,
-            'created_at': FieldValue.serverTimestamp(),
-            'section': _selectedSection,
-          }, SetOptions(merge: true));
+        'brutto': _bruttoController.text,
+        'total_value': _totalValueController.text,
+        'total_delivery_sum': _totalDeliverySumController.text,
+        'created_at': FieldValue.serverTimestamp(),
+        'section': _selectedSection,
+      });
+      SetOptions(merge: true);
       setState(() => _isDataModified = false);
       await showDialog(
         context: context,
@@ -446,6 +421,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     _productDetailsController.dispose();
     _bruttoController.dispose();
     _totalValueController.dispose();
+    _totalDeliverySumController.dispose();
     for (var c in _productControllers) {
       c.dispose();
     }
@@ -491,10 +467,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
           width: fieldSize.width,
           child: Material(
             elevation: 4,
-            child: FutureBuilder<http.Response>(
-              future: http.get(
-                Uri.parse('https://khaledo.pythonanywhere.com/products/lists/'),
-              ),
+            child: FutureBuilder<List<Map<String, dynamic>>>(
+              future: _service.fetchProductList(),
               builder: (ctx, snap) {
                 if (!snap.hasData) {
                   return const SizedBox(
@@ -502,7 +476,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }
-                final List products = json.decode(snap.data!.body);
+                final List products = snap.data!;
                 final matches =
                     products.where((p) {
                       final name = (p['russian'] ?? '') as String;
@@ -574,16 +548,60 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String _passportPrefix = '';
-
     final loc = AppLocalizations.of(context);
+    String passportPrefix = '';
+
+
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(title: Text('${loc.invoice} № ${widget.invoiceId}')),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
-    if (!_hasSelectedSection) {}
+    if (!_hasSelectedSection) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(loc.chooseSectionTitle), 
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedSection = loc.sectionMail;  // например «Почта»
+                  _hasSelectedSection = true;
+                });
+              },
+              child: Text(loc.sectionMail),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedSection = loc.sectionShop; // например «Интернет-магазин»
+                  _hasSelectedSection = true;
+                });
+              },
+              child: Text(loc.sectionShop),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedSection = loc.sectionOther; // «Прочее»
+                  _hasSelectedSection = true;
+                });
+              },
+              child: Text(loc.sectionOther),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
     return WillPopScope(
       onWillPop: _onWillPop,
@@ -690,9 +708,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                                           ),
                                     );
                                     if (prefix != null) {
-                                      _passportPrefix = prefix;
+                                      passportPrefix = prefix;
                                       _passportController.text =
-                                          '$_passportPrefix${_passportController.text.replaceAll(RegExp(r'[^0-9\.,]'), '')}';
+                                          '$passportPrefix${_passportController.text.replaceAll(RegExp(r'[^0-9\.,]'), '')}';
                                       _passportController.selection =
                                           TextSelection.fromPosition(
                                             TextPosition(
@@ -940,6 +958,12 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                       _buildTableRow(
                         loc.totalValue,
                         _totalValueController,
+                        keyboardType: TextInputType.number,
+                        icon: Icons.attach_money,
+                      ),
+                      _buildTableRow(
+                        loc.totalDeliverySum,
+                        _totalDeliverySumController,
                         keyboardType: TextInputType.number,
                         icon: Icons.attach_money,
                       ),

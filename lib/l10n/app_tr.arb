@@ -101,7 +101,16 @@
   "leave": "Çık"
 ,
 "monthlyLimitExceeded": "Bu ay için $200 limiti aşıldı",
-"noPassportError": "Yeni konteyner eklenemedi: pasaport doldurulmadı"
+"noPassportError": "Yeni konteyner eklenemedi: pasaport doldurulmadı",
+"totalDeliverySum": "Toplam Teslimat Değeri",
+"chooseSectionTitle": "İlgili bölümü seçin",
+"sectionMail": "Posta",
+"sectionShop": "Çevrimiçi mağaza","sectionOther": "Diğer"
+
+
+
+
+
 
 
 

@@ -36,7 +36,7 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> _checkOrderCode() async {
     final prefs = await SharedPreferences.getInstance();
     bool verified = prefs.getBool('isOrderCodeVerified') ?? false;
-    if (verified) {
+    if (verified && mounted) {
       setState(() {
         _isOrderCodeVerified = true;
       });

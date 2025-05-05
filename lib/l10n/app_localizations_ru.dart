@@ -295,4 +295,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get noPassportError => 'Невозможно добавить новый контейнер: поле «Паспорт» не заполнено';
+
+  @override
+  String get totalDeliverySum => 'Общая стоимость доставки';
+
+  @override
+  String get chooseSectionTitle => 'Выберите соответствующий раздел';
+
+  @override
+  String get sectionMail => 'Почта';
+
+  @override
+  String get sectionShop => 'Интернет магазин';
+
+  @override
+  String get sectionOther => 'Прочее';
 }

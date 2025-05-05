@@ -295,4 +295,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noPassportError => 'Cannot add new container: passport not filled';
+
+  @override
+  String get totalDeliverySum => '总交付金额';
+
+  @override
+  String get chooseSectionTitle => '请选择相应的部分';
+
+  @override
+  String get sectionMail => '邮件';
+
+  @override
+  String get sectionShop => '网上商店';
+
+  @override
+  String get sectionOther => '其他';
 }

@@ -295,4 +295,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noPassportError => 'Cannot add new container: passport not filled';
+
+  @override
+  String get totalDeliverySum => 'Total Delivery Value';
+
+  @override
+  String get chooseSectionTitle => 'Choose the appropriate section';
+
+  @override
+  String get sectionMail => 'Mail';
+
+  @override
+  String get sectionShop => 'Online store';
+
+  @override
+  String get sectionOther => 'Other';
 }

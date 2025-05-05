@@ -98,7 +98,15 @@
   "stay": "Stay",
   "leave": "Leave",
   "monthlyLimitExceeded": "Monthly limit of $200 exceeded",
-  "noPassportError": "Cannot add new container: passport not filled"
+  "noPassportError": "Cannot add new container: passport not filled",
+  "totalDeliverySum" : "Total Delivery Value",
+  "chooseSectionTitle": "Choose the appropriate section",
+  "sectionMail": "Mail",
+  "sectionShop": "Online store",
+"sectionOther": "Other"
+
+
+
 
 
 

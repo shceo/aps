@@ -39,6 +39,15 @@
   "reset_order_code_button": "重置订单代码",
   "cancel": "取消",
   "confirm": "确认",
-  "monthlyLimitExceeded": "本月 $200 限额已超出"
+  "monthlyLimitExceeded": "本月 $200 限额已超出",
+  "totalDeliverySum": "总交付金额",
+  "chooseSectionTitle": "请选择相应的部分","sectionMail": "邮件",
+  "sectionShop": "网上商店",
+  "sectionOther": "其他"
+
+
+
+
+
 
 }

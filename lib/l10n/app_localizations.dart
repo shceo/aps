@@ -676,6 +676,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cannot add new container: passport not filled'**
   String get noPassportError;
+
+  /// No description provided for @totalDeliverySum.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Delivery Value'**
+  String get totalDeliverySum;
+
+  /// No description provided for @chooseSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the appropriate section'**
+  String get chooseSectionTitle;
+
+  /// No description provided for @sectionMail.
+  ///
+  /// In en, this message translates to:
+  /// **'Mail'**
+  String get sectionMail;
+
+  /// No description provided for @sectionShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Online store'**
+  String get sectionShop;
+
+  /// No description provided for @sectionOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get sectionOther;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

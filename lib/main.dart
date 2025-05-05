@@ -1,5 +1,4 @@
 import 'package:aps/src/firebase_options.dart';
-import 'package:aps/src/ui/constants/components_export.dart';
 import 'package:aps/src/ui/screens/admin_panel/ui/admin_screen.dart';
 import 'package:aps/src/ui/screens/admin_panel/ui/login_admin_screen.dart';
 import 'package:aps/src/ui/screens/after_screen/main_screen.dart';
@@ -70,7 +69,7 @@ class AppRouteInformationParser extends RouteInformationParser<AppRoutePath> {
   Future<AppRoutePath> parseRouteInformation(
     RouteInformation routeInformation,
   ) async {
-    final uri = Uri.parse(routeInformation.location ?? '/');
+    final uri = Uri.parse(routeInformation.location);
     if (uri.pathSegments.isEmpty) return AppRoutePath.home();
 
     if (uri.pathSegments.length == 1) {

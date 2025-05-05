@@ -99,7 +99,17 @@
   "stay": "Qolish",
   "leave": "Chiqish",
   "monthlyLimitExceeded": "Joriy oy uchun $200 limiti oshib ketdi",
-  "noPassportError": "Yangi konteyner qoʻshib boʻlmadi: pasport toʻldirilmagan"
+  "noPassportError": "Yangi konteyner qoʻshib boʻlmadi: pasport toʻldirilmagan",
+  "totalDeliverySum": "Yetkazib berishning umumiy qiymati",
+  "chooseSectionTitle": "Tegishli bo'limni tanlang",
+  "sectionMail": "Pochta",
+  "sectionShop": "Onlayn do‘kon",
+  "sectionOther": "Boshqa"
+
+
+
+
+
 
 
 }

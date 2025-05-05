@@ -295,4 +295,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get noPassportError => 'Yeni konteyner eklenemedi: pasaport doldurulmadı';
+
+  @override
+  String get totalDeliverySum => 'Toplam Teslimat Değeri';
+
+  @override
+  String get chooseSectionTitle => 'İlgili bölümü seçin';
+
+  @override
+  String get sectionMail => 'Posta';
+
+  @override
+  String get sectionShop => 'Çevrimiçi mağaza';
+
+  @override
+  String get sectionOther => 'Diğer';
 }

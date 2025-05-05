@@ -295,4 +295,19 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get noPassportError => 'Yangi konteyner qoʻshib boʻlmadi: pasport toʻldirilmagan';
+
+  @override
+  String get totalDeliverySum => 'Yetkazib berishning umumiy qiymati';
+
+  @override
+  String get chooseSectionTitle => 'Tegishli bo\'limni tanlang';
+
+  @override
+  String get sectionMail => 'Pochta';
+
+  @override
+  String get sectionShop => 'Onlayn do‘kon';
+
+  @override
+  String get sectionOther => 'Boshqa';
 }
