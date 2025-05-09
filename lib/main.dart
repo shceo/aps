@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:aps/src/core/di/injection.dart' as di;
 import 'package:aps/src/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -7,15 +9,25 @@ import 'package:aps/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:aps/src/core/routes.dart';
 
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await di.initDI();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
-  String savedLocale = prefs.getString("locale") ?? 'ru';
-  runApp(MyApp(isLoggedIn: isLoggedIn, savedLocale: Locale(savedLocale)));
+Future<void> main() async {
+  // Оборачиваем запуск приложения в зону с обработкой ошибок
+  runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      await di.initDi();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      bool isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
+      String savedLocale = prefs.getString("locale") ?? 'ru';
+      runApp(MyApp(isLoggedIn: isLoggedIn, savedLocale: Locale(savedLocale)));
+    },
+    (error, stack) {
+      debugPrint('Caught error in runZonedGuarded: \$error');
+      debugPrintStack(stackTrace: stack);
+    },
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -90,7 +102,6 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
 
 // Пример placeholder‑страниц для маршрутов:
 

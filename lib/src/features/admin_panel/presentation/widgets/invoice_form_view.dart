@@ -1,8 +1,11 @@
 // // lib/src/ui/screens/admin_panel/components/invoice_form_view.dart
 
-// import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 // import 'package:aps/l10n/app_localizations.dart';
+// // Импортируем FormField из Cubit-а
+// import 'package:flutter/material.dart' hide FormField;
+
+// import 'package:aps/src/features/admin_panel/presentation/view_models/invoice_form_cubit.dart';
 
 // /// Чистый, stateless-вид для формы счета без бизнес-логики и без сторонних виджетов.
 // /// Всё передаётся через контроллеры, флаги и колбэки.
@@ -30,7 +33,9 @@
 //   final String? totalValueError;
 //   final bool isOverLimit;
 
-//   final ValueChanged<String> onFieldChanged;
+//   // Колбэк теперь принимает и поле, и значение
+//   final void Function(FormField field, String value) onFieldChanged;
+
 //   final void Function(int index, String value) onProductChanged;
 //   final void Function(int index) onAddProduct;
 //   final VoidCallback onSelectCity;
@@ -73,9 +78,10 @@
 //   }) : super(key: key);
 
 //   TableRow _buildTableRow(
-//     BuildContext ctx,
-//     String label,
-//     TextEditingController controller, {
+//     BuildContext ctx, {
+//     required FormField field,
+//     required String label,
+//     required TextEditingController controller,
 //     TextInputType keyboardType = TextInputType.text,
 //     IconData? icon,
 //     String? errorText,
@@ -109,7 +115,7 @@
 //               ),
 //               errorText: errorText,
 //             ),
-//             onChanged: onFieldChanged,
+//             onChanged: (value) => onFieldChanged(field, value),
 //           ),
 //         ),
 //       ],
@@ -157,27 +163,31 @@
 //                     children: [
 //                       _buildTableRow(
 //                         context,
-//                         loc.senderName,
-//                         senderNameController,
+//                         field: FormField.senderName,
+//                         label: loc.senderName,
+//                         controller: senderNameController,
 //                         icon: Icons.person,
 //                       ),
 //                       _buildTableRow(
 //                         context,
-//                         loc.senderTel,
-//                         senderTelController,
+//                         field: FormField.senderTel,
+//                         label: loc.senderTel,
+//                         controller: senderTelController,
 //                         keyboardType: TextInputType.phone,
 //                         icon: Icons.phone,
 //                       ),
 //                       _buildTableRow(
 //                         context,
-//                         loc.receiverName,
-//                         receiverNameController,
+//                         field: FormField.receiverName,
+//                         label: loc.receiverName,
+//                         controller: receiverNameController,
 //                         icon: Icons.person_outline,
 //                       ),
 //                       _buildTableRow(
 //                         context,
-//                         loc.receiverTel,
-//                         receiverTelController,
+//                         field: FormField.receiverTel,
+//                         label: loc.receiverTel,
+//                         controller: receiverTelController,
 //                         keyboardType: TextInputType.phone,
 //                         icon: Icons.phone_android,
 //                       ),
@@ -214,7 +224,9 @@
 //                                   borderSide: BorderSide.none,
 //                                 ),
 //                               ),
-//                               onChanged: onFieldChanged,
+//                               onChanged:
+//                                   (value) =>
+//                                       onFieldChanged(FormField.passport, value),
 //                             ),
 //                           ),
 //                         ],
@@ -299,7 +311,9 @@
 //                                   borderSide: BorderSide.none,
 //                                 ),
 //                               ),
-//                               onChanged: onFieldChanged,
+//                               onChanged:
+//                                   (value) =>
+//                                       onFieldChanged(FormField.address, value),
 //                             ),
 //                           ),
 //                         ],
@@ -362,14 +376,16 @@
 
 //                       _buildTableRow(
 //                         context,
-//                         loc.bruttoWeight,
-//                         bruttoController,
+//                         field: FormField.brutto,
+//                         label: loc.bruttoWeight,
+//                         controller: bruttoController,
 //                         icon: Icons.line_weight,
 //                       ),
 //                       _buildTableRow(
 //                         context,
-//                         loc.totalValue,
-//                         totalValueController,
+//                         field: FormField.totalValue,
+//                         label: loc.totalValue,
+//                         controller: totalValueController,
 //                         keyboardType: TextInputType.number,
 //                         icon: Icons.attach_money,
 //                         errorText: totalValueError,

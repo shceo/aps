@@ -1,6 +1,9 @@
 // lib/src/core/di/injection.dart
 
-import 'package:aps/src/features/user_interface/presentation/cubit/order_code_cubit.dart';
+import 'package:aps/src/features/admin_panel/data/datasources/exchange_rate_api.dart';
+import 'package:aps/src/features/admin_panel/data/repository/exchange_rate_repository_impl.dart';
+import 'package:aps/src/features/admin_panel/domain/repositories/exchange_rate_repository.dart';
+import 'package:aps/src/features/admin_panel/domain/usecases/get_exchange_rates.dart';
 import 'package:get_it/get_it.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,7 +24,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 final GetIt getIt = GetIt.instance;
 
-Future<void> initDI() async {
+Future<void> initDi() async {
   // 1) Core / external
   getIt.registerLazySingleton<FirebaseFirestore>(
     () => FirebaseFirestore.instance,
@@ -30,29 +33,18 @@ Future<void> initDI() async {
     () => SharedPreferences.getInstance(),
   );
 
-  // // 2) Datasources
-  // getIt.registerLazySingleton<FirestoreApi>(
-  //   () => FirestoreApi(getIt<FirebaseFirestore>()),
-  // );
-  // getIt.registerLazySingleton<PrefsApi>(
-  //   () => PrefsApi(getIt<SharedPreferences>()),
-  // );
+  getIt.registerLazySingleton<ExchangeRateApi>(() => ExchangeRateApi());
+  getIt.registerLazySingleton<ExchangeRateRepository>(
+    () => ExchangeRateRepositoryImpl(getIt()),
+  );
 
-  // // 3) Repositories
-  // getIt.registerLazySingleton<OrderRepository>(
-  //   () => OrderRepositoryImpl(
-  //     firestoreApi: getIt<FirestoreApi>(),
-  //     prefsApi: getIt<PrefsApi>(),
-  //   ),
-  // );
+  // Юз-кейс
+  getIt.registerLazySingleton<GetExchangeRates>(
+    () => GetExchangeRates(getIt()),
 
-  // // 4) Use cases
-  // getIt.registerLazySingleton<VerifyOrderCodeUseCase>(
-  //   () => VerifyOrderCodeUseCase(getIt<OrderRepository>()),
-  // );
-
-  // // 5) ViewModels / Cubits
-  // getIt.registerFactory<OrderCodeCubit>(
-  //   () => OrderCodeCubit(getIt<VerifyOrderCodeUseCase>()),
-  // );
+    // getIt.registerFactory<InvoiceViewModel>(
+    //   () => InvoiceViewModel(
+    //     fetchRatesUseCase: getIt(),
+    //     invoiceService: getIt())),
+  );
 }

@@ -246,13 +246,44 @@ class _AdminScreenState extends State<AdminScreen> {
             }).toList();
 
         if (visibleDocs.isEmpty) return _buildEmptyState();
-
+        final now = DateTime.now();
+        final dayAgo = now.subtract(const Duration(days: 1));
+        double sumAll = 0;
+        double sum2days = 0;
+        for (var doc in visibleDocs) {
+          final data = doc.data() as Map<String, dynamic>;
+          final bruttoStr = (data['brutto'] ?? '0').toString();
+          final weight = double.tryParse(bruttoStr) ?? 0;
+          sumAll += weight;
+          final ts = data['created_at'] as Timestamp?;
+          if (ts != null) {
+            final created = ts.toDate();
+            if (created.isAfter(dayAgo)) {
+              sum2days += weight;
+            }
+          }
+        }
         return Padding(
           padding: const EdgeInsets.all(16.0),
-          child: ListView.builder(
-            itemCount: visibleDocs.length,
-            itemBuilder:
-                (context, index) => _buildInvoiceCard(visibleDocs[index]),
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: visibleDocs.length,
+                  itemBuilder:
+                      (context, index) => _buildInvoiceCard(visibleDocs[index]),
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Блок с итоговыми весами
+              Text(
+                'Статистика:\n'
+                'Собрано за сегодня: ${sum2days.toStringAsFixed(0)}кг | '
+                'За всё время: ${sumAll.toStringAsFixed(0)}кг',
+                style: const TextStyle(color: Colors.grey, fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
         );
       },
