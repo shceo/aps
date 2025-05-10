@@ -1,9 +1,6 @@
-import 'dart:convert';
 import 'dart:math';
 import 'package:aps/l10n/app_localizations.dart';
 import 'package:aps/src/core/di/injection.dart';
-import 'package:aps/src/features/admin_panel/data/datasources/exchange_rate_api.dart';
-import 'package:aps/src/features/admin_panel/data/repository/exchange_rate_repository_impl.dart';
 import 'package:aps/src/features/admin_panel/domain/entities/exchange_rate.dart';
 import 'package:aps/src/features/admin_panel/domain/usecases/get_exchange_rates.dart';
 import 'package:aps/src/features/admin_panel/presentation/widgets/invoice_service.dart';
@@ -36,14 +33,14 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   final TextEditingController _totalValueController = TextEditingController();
   final TextEditingController _totalDeliverySumController =
       TextEditingController();
-  List<TextEditingController> _productNameControllers = [
+  final List<TextEditingController> _productNameControllers = [
     TextEditingController(),
   ];
-  List<FocusNode> _productNameFocusNodes = [FocusNode()];
-  List<TextEditingController> _productQtyControllers = [
+  final List<FocusNode> _productNameFocusNodes = [FocusNode()];
+  final List<TextEditingController> _productQtyControllers = [
     TextEditingController(),
   ];
-  List<TextEditingController> _productPriceControllers = [
+  final List<TextEditingController> _productPriceControllers = [
     TextEditingController(),
   ];
 
